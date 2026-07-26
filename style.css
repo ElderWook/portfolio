@@ -1,5 +1,5 @@
 html,body{margin:0}
-.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#3ad4dd;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--pin:#f6d32d;--note:#38bdf8;--rail:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
+.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#3ad4dd;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--head:#f472b6;--pin:#f6d32d;--note:#38bdf8;--rail:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
   --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;}
 @property --glow{syntax:"<number>";inherits:false;initial-value:0}
 /* per-rung energize: a brief pulse that cascades down the parts on load, following the rail sweep */
@@ -26,7 +26,7 @@ html,body{margin:0}
   background:color-mix(in srgb,var(--panel) 50%,transparent);padding:24px 26px 22px}
 /* pin-1 indicator (an IC's pin-1 dot) in the header corner */
 .pf .titleblock::before{content:"";position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
-  background:var(--acc4);box-shadow:0 0 10px color-mix(in srgb,var(--acc4) 60%,transparent)}
+  background:var(--head);box-shadow:0 0 10px color-mix(in srgb,var(--head) 60%,transparent)}
 .pf .tb-brand{grid-column:1;display:flex;align-items:center;gap:11px;margin:0;font-family:var(--mono);
   font-size:clamp(24px,4.5vw,40px);font-weight:800;letter-spacing:.01em;line-height:1.02;color:var(--ink)}
 .pf .tb-brand .gnd{color:var(--acc);font-weight:400}
