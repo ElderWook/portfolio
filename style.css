@@ -1,5 +1,5 @@
 html,body{margin:0}
-.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--dot:#38bdf8;--pin:#3ad4dd;--note:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
+.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--dot:#38bdf8;--pin:#3ad4dd;--note:#33d17a;--rail:#38bdf8;--radius:16px;--grid:28px;--maxw:1480px;
   --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;}
 @property --glow{syntax:"<number>";inherits:false;initial-value:0}
 @view-transition{navigation:auto}
@@ -39,7 +39,19 @@ html,body{margin:0}
 .pf .dim::before{content:"";width:26px;height:6px;flex:none;border-left:1px solid var(--acc2);border-right:1px solid var(--acc2);
   background:linear-gradient(var(--acc2),var(--acc2)) center/100% 1px no-repeat}
 .pf .dim::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
-.pf .schematic{container-type:inline-size;display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.pf .schematic{container-type:inline-size;display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;position:relative}
+/* Ladder-logic POWER RAILS flanking the parts grid: a faint static line + an "energize" glow that
+   sweeps down once on load (the cards are the rungs; hover energises each via --glow). Purely
+   decorative pseudo-elements — never gate content — and the sweep is disabled for reduced-motion. */
+.pf .schematic::before,.pf .schematic::after{content:"";position:absolute;top:-4px;bottom:-4px;width:2px;pointer-events:none;border-radius:2px;
+  background-color:color-mix(in srgb,var(--rail) 20%,transparent);
+  background-image:linear-gradient(180deg,transparent 0,color-mix(in srgb,var(--rail) 92%,#fff) 6%,transparent 13%);
+  background-repeat:no-repeat;background-size:100% 320%;
+  animation:helm-energize 1.5s cubic-bezier(.4,0,.2,1) .15s 1 both}
+.pf .schematic::before{left:-13px}
+.pf .schematic::after{right:-13px}
+@keyframes helm-energize{from{background-position:0 -25%}to{background-position:0 125%}}
+@media (prefers-reduced-motion:reduce){.pf .schematic::before,.pf .schematic::after{animation:none}}
 .pf .part{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
   border:1px solid var(--line);border-radius:6px;background:color-mix(in srgb,var(--panel) 42%,transparent);
   padding:22px 20px 18px;overflow:hidden;--glow:0;transition:--glow .45s ease,transform .18s ease,background .18s ease;
