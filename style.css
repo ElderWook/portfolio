@@ -1,17 +1,17 @@
 html,body{margin:0}
-.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#f5c211;--acc3:#3ad4dd;--radius:16px;
+.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
   --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;}
 @property --glow{syntax:"<number>";inherits:false;initial-value:0}
 @view-transition{navigation:auto}
 .pf{color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100%;
   background:
     radial-gradient(1200px 480px at 8% -10%,color-mix(in srgb,var(--acc2) 13%,transparent),transparent 60%),
-    repeating-linear-gradient(0deg,transparent 0 27px,color-mix(in srgb,var(--acc3) 5%,transparent) 27px 28px),
-    repeating-linear-gradient(90deg,transparent 0 27px,color-mix(in srgb,var(--acc3) 5%,transparent) 27px 28px),
+    repeating-linear-gradient(0deg,transparent 0 calc(var(--grid) - 1px),color-mix(in srgb,var(--acc3) 5%,transparent) calc(var(--grid) - 1px) var(--grid)),
+    repeating-linear-gradient(90deg,transparent 0 calc(var(--grid) - 1px),color-mix(in srgb,var(--acc3) 5%,transparent) calc(var(--grid) - 1px) var(--grid)),
     var(--bg);
   background-attachment:fixed}
 .pf *{box-sizing:border-box}
-.pf .sheet{position:relative;max-width:1480px;margin:0 auto;padding:clamp(24px,3.4vw,52px) clamp(22px,4vw,64px);
+.pf .sheet{position:relative;max-width:var(--maxw);margin:0 auto;padding:clamp(24px,3.4vw,52px) clamp(22px,4vw,64px);
   border:1px solid color-mix(in srgb,var(--acc) 13%,var(--line));border-radius:12px}
 .pf .sheet::before,.pf .sheet::after{content:"";position:absolute;width:18px;height:18px;pointer-events:none;
   border-color:color-mix(in srgb,var(--acc) 42%,transparent)}
