@@ -1,7 +1,10 @@
 html,body{margin:0}
-.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--dot:#38bdf8;--pin:#3ad4dd;--note:#33d17a;--rail:#38bdf8;--radius:16px;--grid:28px;--maxw:1480px;
+.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--dot:#33d17a;--pin:#f6d32d;--note:#33d17a;--rail:#38bdf8;--radius:16px;--grid:28px;--maxw:1480px;
   --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;}
 @property --glow{syntax:"<number>";inherits:false;initial-value:0}
+/* per-rung energize: a brief pulse that cascades down the parts on load, following the rail sweep */
+@property --energize{syntax:"<number>";inherits:false;initial-value:0}
+@keyframes helm-rung{0%{--energize:0}45%{--energize:1}100%{--energize:0}}
 @view-transition{navigation:auto}
 .pf{color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100%;
   background:
@@ -51,17 +54,18 @@ html,body{margin:0}
 .pf .schematic::before{left:-13px}
 .pf .schematic::after{right:-13px}
 @keyframes helm-energize{from{background-position:0 -25%}to{background-position:0 125%}}
-@media (prefers-reduced-motion:reduce){.pf .schematic::before,.pf .schematic::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.pf .schematic::before,.pf .schematic::after,.pf .part{animation:none}}
 .pf .part{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
   border:1px solid var(--line);border-radius:6px;background:color-mix(in srgb,var(--panel) 42%,transparent);
   padding:22px 20px 18px;overflow:hidden;--glow:0;transition:--glow .45s ease,transform .18s ease,background .18s ease;
-  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border) calc(var(--glow)*24%),transparent);
-  border-color:color-mix(in srgb,var(--border) calc(16% + var(--glow)*55%),var(--line))}
+  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border) calc(var(--glow)*24%),transparent),0 0 calc(var(--energize)*18px) color-mix(in srgb,var(--rail) calc(var(--energize)*40%),transparent);
+  border-color:color-mix(in srgb,var(--border) calc(16% + var(--glow)*55% + var(--energize)*20%),var(--line));
+  animation:helm-rung .8s ease-out calc(var(--i,0)*65ms + 250ms) 1 both}
 /* featured parts are FLAGGED via the featured-border accent — frame, glow + corner marks — so
    "featured" reads at a glance while every part still tiles uniformly (a BOM lists parts equally).
    The pin-1 dot is its OWN accent (--dot), shared by all parts, so it stays a consistent indicator. */
-.pf .part.feat{border-color:color-mix(in srgb,var(--border-feat) calc(22% + var(--glow)*55%),var(--line));
-  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border-feat) calc(var(--glow)*26%),transparent)}
+.pf .part.feat{border-color:color-mix(in srgb,var(--border-feat) calc(22% + var(--glow)*55% + var(--energize)*20%),var(--line));
+  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border-feat) calc(var(--glow)*26%),transparent),0 0 calc(var(--energize)*18px) color-mix(in srgb,var(--rail) calc(var(--energize)*40%),transparent)}
 .pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--border-feat) calc(30% + var(--glow)*55%),transparent)}
 .pf .part::before,.pf .part::after{content:"";position:absolute;width:13px;height:13px;pointer-events:none;
   border-color:color-mix(in srgb,var(--border) calc(28% + var(--glow)*55%),transparent)}
@@ -94,4 +98,7 @@ html,body{margin:0}
 @container (max-width:440px){.pf .schematic{grid-template-columns:1fr}}
 
 .pf a.part:hover{--glow:1;transform:translateY(-3px);background:color-mix(in srgb,var(--panel) 60%,transparent)}
+/* hover energises the rung: its pin-1 dot lights up like a contact closing (subtle ring + glow) */
+.pf .refdes{transition:box-shadow .2s ease}
+.pf a.part:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--dot) 24%,transparent),0 0 12px var(--dot)}
 .pf .spec .dim{margin:24px 0 12px}
