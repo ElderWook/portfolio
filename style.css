@@ -1,5 +1,5 @@
 html,body{margin:0}
-.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
+.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--dot:#38bdf8;--pin:#3ad4dd;--note:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
   --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;}
 @property --glow{syntax:"<number>";inherits:false;initial-value:0}
 @view-transition{navigation:auto}
@@ -23,7 +23,7 @@ html,body{margin:0}
   background:color-mix(in srgb,var(--panel) 50%,transparent);padding:24px 26px 22px}
 /* pin-1 indicator (an IC's pin-1 dot) in the header corner */
 .pf .titleblock::before{content:"";position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
-  background:var(--acc);box-shadow:0 0 10px color-mix(in srgb,var(--acc) 60%,transparent)}
+  background:var(--dot);box-shadow:0 0 10px color-mix(in srgb,var(--dot) 60%,transparent)}
 .pf .tb-brand{grid-column:1;display:flex;align-items:center;gap:11px;margin:0;font-family:var(--mono);
   font-size:clamp(24px,4.5vw,40px);font-weight:800;letter-spacing:.01em;line-height:1.02;color:var(--ink)}
 .pf .tb-brand .gnd{color:var(--acc);font-weight:400}
@@ -43,33 +43,33 @@ html,body{margin:0}
 .pf .part{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
   border:1px solid var(--line);border-radius:6px;background:color-mix(in srgb,var(--panel) 42%,transparent);
   padding:22px 20px 18px;overflow:hidden;--glow:0;transition:--glow .45s ease,transform .18s ease,background .18s ease;
-  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--acc) calc(var(--glow)*24%),transparent);
-  border-color:color-mix(in srgb,var(--acc) calc(16% + var(--glow)*55%),var(--line))}
-/* featured parts are FLAGGED in the secondary accent (amber) — frame, glow, corner marks + pin-1 dot —
-   so "featured" reads at a glance while every part still tiles uniformly (a BOM lists parts equally) */
-.pf .part.feat{border-color:color-mix(in srgb,var(--acc2) calc(22% + var(--glow)*55%),var(--line));
-  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--acc2) calc(var(--glow)*26%),transparent)}
-.pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--acc2) calc(30% + var(--glow)*55%),transparent)}
-.pf .part.feat .refdes{background:var(--acc2);box-shadow:0 0 8px color-mix(in srgb,var(--acc2) 55%,transparent)}
+  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border) calc(var(--glow)*24%),transparent);
+  border-color:color-mix(in srgb,var(--border) calc(16% + var(--glow)*55%),var(--line))}
+/* featured parts are FLAGGED via the featured-border accent — frame, glow + corner marks — so
+   "featured" reads at a glance while every part still tiles uniformly (a BOM lists parts equally).
+   The pin-1 dot is its OWN accent (--dot), shared by all parts, so it stays a consistent indicator. */
+.pf .part.feat{border-color:color-mix(in srgb,var(--border-feat) calc(22% + var(--glow)*55%),var(--line));
+  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border-feat) calc(var(--glow)*26%),transparent)}
+.pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--border-feat) calc(30% + var(--glow)*55%),transparent)}
 .pf .part::before,.pf .part::after{content:"";position:absolute;width:13px;height:13px;pointer-events:none;
-  border-color:color-mix(in srgb,var(--acc) calc(28% + var(--glow)*55%),transparent)}
+  border-color:color-mix(in srgb,var(--border) calc(28% + var(--glow)*55%),transparent)}
 .pf .part::before{top:9px;right:9px;border-top:1.5px solid;border-right:1.5px solid}
 .pf .part::after{bottom:9px;left:9px;border-bottom:1.5px solid;border-left:1.5px solid}
-/* each component carries the same pin-1 dot in its top-left corner (was a "U0N" refdes badge) */
+/* every component carries the same pin-1 dot in its top-left corner — its OWN accent (--dot) */
 .pf .refdes{position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
-  background:var(--acc);box-shadow:0 0 8px color-mix(in srgb,var(--acc) 55%,transparent)}
+  background:var(--dot);box-shadow:0 0 8px color-mix(in srgb,var(--dot) 55%,transparent)}
 .pf .part-name{margin:0 0 6px;font-size:19px;letter-spacing:-.01em;font-weight:700;color:var(--ink)}
 .pf .part-desc{margin:0 0 13px;color:var(--ink2);font-size:14px}
 .pf .pins{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
-.pf .pins span{font-family:var(--mono);font-size:10.5px;color:var(--acc3);
-  border:1px dashed color-mix(in srgb,var(--acc3) 42%,var(--line));border-radius:3px;padding:2px 7px}
+.pf .pins span{font-family:var(--mono);font-size:10.5px;color:var(--pin);
+  border:1px dashed color-mix(in srgb,var(--pin) 42%,var(--line));border-radius:3px;padding:2px 7px}
 .pf .more{margin-top:auto;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--acc)}
 .pf .back{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;color:var(--ink3);margin-bottom:18px}
 .pf .back:hover{color:var(--acc)}
 .pf .spec{border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--panel) 40%,transparent);padding:2px 22px 22px;margin-top:18px}
 .pf .hl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px}
 .pf .hl li{font-size:14px;color:var(--ink2);padding-left:20px;position:relative;font-family:var(--mono)}
-.pf .hl li::before{content:"\2014";position:absolute;left:0;color:var(--acc)}
+.pf .hl li::before{content:"\2014";position:absolute;left:0;color:var(--note)}
 .pf .clinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 .pf .clinks a{font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--acc);
   border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);border-radius:5px;padding:5px 12px}
