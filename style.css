@@ -1,5 +1,5 @@
 html,body{margin:0}
-.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--dot:#33d17a;--pin:#f6d32d;--note:#33d17a;--rail:#38bdf8;--radius:16px;--grid:28px;--maxw:1480px;
+.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#f472b6;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--pin:#f6d32d;--note:#38bdf8;--rail:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
   --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;}
 @property --glow{syntax:"<number>";inherits:false;initial-value:0}
 /* per-rung energize: a brief pulse that cascades down the parts on load, following the rail sweep */
@@ -26,7 +26,7 @@ html,body{margin:0}
   background:color-mix(in srgb,var(--panel) 50%,transparent);padding:24px 26px 22px}
 /* pin-1 indicator (an IC's pin-1 dot) in the header corner */
 .pf .titleblock::before{content:"";position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
-  background:var(--dot);box-shadow:0 0 10px color-mix(in srgb,var(--dot) 60%,transparent)}
+  background:var(--acc4);box-shadow:0 0 10px color-mix(in srgb,var(--acc4) 60%,transparent)}
 .pf .tb-brand{grid-column:1;display:flex;align-items:center;gap:11px;margin:0;font-family:var(--mono);
   font-size:clamp(24px,4.5vw,40px);font-weight:800;letter-spacing:.01em;line-height:1.02;color:var(--ink)}
 .pf .tb-brand .gnd{color:var(--acc);font-weight:400}
@@ -71,9 +71,11 @@ html,body{margin:0}
   border-color:color-mix(in srgb,var(--border) calc(28% + var(--glow)*55%),transparent)}
 .pf .part::before{top:9px;right:9px;border-top:1.5px solid;border-right:1.5px solid}
 .pf .part::after{bottom:9px;left:9px;border-bottom:1.5px solid;border-left:1.5px solid}
-/* every component carries the same pin-1 dot in its top-left corner — its OWN accent (--dot) */
+/* the pin-1 dot (an IC's pin-1) in each card's top-left corner — the IC accents: standard=acc4,
+   featured=acc5 (the featured override below), so the dots flag featured-vs-standard by colour too */
 .pf .refdes{position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
-  background:var(--dot);box-shadow:0 0 8px color-mix(in srgb,var(--dot) 55%,transparent)}
+  background:var(--acc4);box-shadow:0 0 8px color-mix(in srgb,var(--acc4) 55%,transparent)}
+.pf .part.feat .refdes{background:var(--acc5);box-shadow:0 0 8px color-mix(in srgb,var(--acc5) 55%,transparent)}
 .pf .part-name{margin:0 0 6px;font-size:19px;letter-spacing:-.01em;font-weight:700;color:var(--ink)}
 .pf .part-desc{margin:0 0 13px;color:var(--ink2);font-size:14px}
 .pf .pins{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
@@ -100,5 +102,6 @@ html,body{margin:0}
 .pf a.part:hover{--glow:1;transform:translateY(-3px);background:color-mix(in srgb,var(--panel) 60%,transparent)}
 /* hover energises the rung: its pin-1 dot lights up like a contact closing (subtle ring + glow) */
 .pf .refdes{transition:box-shadow .2s ease}
-.pf a.part:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--dot) 24%,transparent),0 0 12px var(--dot)}
+.pf a.part:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc4) 24%,transparent),0 0 12px var(--acc4)}
+.pf a.part.feat:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc5) 24%,transparent),0 0 12px var(--acc5)}
 .pf .spec .dim{margin:24px 0 12px}
