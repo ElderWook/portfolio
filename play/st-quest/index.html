@@ -88,6 +88,26 @@
   .verdict{font-family:var(--mono);font-size:14px;font-weight:700;padding:11px 14px;border-radius:6px;margin-top:2px}
   .verdict.win{color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent)}
   .verdict.more{color:var(--acc2);background:color-mix(in srgb,var(--acc2) 10%,transparent);border:1px solid color-mix(in srgb,var(--acc2) 40%,transparent)}
+  /* PLC scan-cycle visualizer */
+  .scan{margin-top:12px;border:1px solid color-mix(in srgb,var(--acc) 20%,var(--line));border-radius:8px;padding:14px 16px;background:#0a0f1c}
+  .scan-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;letter-spacing:.05em}
+  .stage{padding:5px 11px;border-radius:5px;border:1px solid var(--line);color:var(--ink3);transition:all .2s}
+  .stage.active{color:var(--bg);background:var(--acc);border-color:var(--acc);box-shadow:0 0 15px color-mix(in srgb,var(--acc) 55%,transparent)}
+  .flow{color:var(--ink3)}
+  .scanpos{margin-left:auto;color:var(--acc)}
+  #replay{font-family:var(--mono);font-size:11px;padding:5px 10px;border:1px solid var(--line);background:transparent;color:var(--ink3);border-radius:5px;cursor:pointer}
+  #replay:hover{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 40%,var(--line))}
+  .scan-io{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:start;margin-top:14px}
+  .io-col{min-width:0}
+  .io-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+  .io-arrow{color:var(--acc);font-size:18px;align-self:center}
+  .io-item{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink2);padding:5px 0;transition:opacity .2s}
+  .io-item b{margin-left:auto;color:var(--ink);font-weight:600}
+  .io-item.ok b{color:var(--acc)} .io-item.bad b{color:var(--bad)}
+  .io-item.pending{opacity:.35}
+  .lamp{width:11px;height:11px;border-radius:50%;background:#26304a;border:1px solid var(--line);flex:none;transition:all .25s}
+  .lamp.on{background:var(--acc);box-shadow:0 0 9px var(--acc);border-color:var(--acc)}
+  .muted{color:var(--ink3);font-family:var(--mono);font-size:12px}
   .loading{font-family:var(--mono);font-size:13px;color:var(--ink3);padding:30px 4px}
   .loading .bar{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-right:8px;animation:pulse 1s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
@@ -138,6 +158,22 @@
           <button id="solution" disabled>Show solution</button>
           <span id="status">loading…</span>
         </div>
+        <div class="scan" id="scan" hidden>
+          <div class="scan-head">
+            <span class="stage" data-s="read">① Read inputs</span>
+            <span class="flow">→</span>
+            <span class="stage" data-s="solve">② Solve logic</span>
+            <span class="flow">→</span>
+            <span class="stage" data-s="write">③ Write outputs</span>
+            <span class="scanpos" id="scanpos"></span>
+            <button id="replay" title="Replay the scan">↻ replay</button>
+          </div>
+          <div class="scan-io">
+            <div class="io-col"><div class="io-label">Field inputs</div><div id="io-in"></div></div>
+            <div class="io-arrow">⟶</div>
+            <div class="io-col"><div class="io-label">Coil / register outputs</div><div id="io-out"></div></div>
+          </div>
+        </div>
         <div class="results" id="results"></div>
       </div>
     </div>
@@ -165,6 +201,27 @@
     "    l = LESSONS[idx]",
     "    res = check_answer(code, l.checks)",
     "    return dict(win=all_passed(res), checks=[dict(passed=r.passed, message=r.message, hint=(r.hint or '')) for r in res])",
+    "from stquest.interpreter import Interpreter, _values_equal",
+    "def scan_trace(code, steps):",
+    "    interp = Interpreter(code); out = []",
+    "    for step in steps:",
+    "        inp = step.get('set', {})",
+    "        interp.set_inputs(inp); interp.scan()",
+    "        outs = {}; ok = True",
+    "        for name, want in step.get('expect', {}).items():",
+    "            got = interp.get(name); m = _values_equal(got, want)",
+    "            ok = ok and m; outs[name] = dict(got=got, want=want, ok=m)",
+    "        out.append(dict(inputs=inp, outputs=outs, ok=ok))",
+    "    return out",
+    "def run_scan(idx, code):",
+    "    l = LESSONS[idx]; sim = None",
+    "    for c in l.checks:",
+    "        if c.get('type') == 'simulate': sim = c; break",
+    "    if not sim: return None",
+    "    try:",
+    "        return dict(steps=scan_trace(code, sim.get('steps', [])))",
+    "    except Exception as e:",
+    "        return dict(error=str(e))",
     ""
   ].join("\n");
 
@@ -230,6 +287,7 @@
     $("task").textContent = L.task;
     $("code").value = L.starter || "";
     $("results").innerHTML = "";
+    hideScan();
   }
 
   function showResults(r){
@@ -251,14 +309,58 @@
     var nl = $("nextlesson"); if (nl) nl.addEventListener("click", function(){ go(cur + 1); });
   }
 
+  // ---- PLC scan-cycle visualizer: READ INPUTS → SOLVE LOGIC → WRITE OUTPUTS ----
+  var scanTimer = null, lastScan = null;
+  function clearScanTimer(){ if(scanTimer){ clearTimeout(scanTimer); scanTimer = null; } }
+  function hideScan(){ clearScanTimer(); $("scan").hidden = true; }
+  function stage(name){ var els = document.querySelectorAll('#scan .stage'); for(var i=0;i<els.length;i++){ els[i].classList.toggle('active', els[i].getAttribute('data-s') === name); } }
+  function fmt(v){ return v === true ? 'TRUE' : v === false ? 'FALSE' : String(v); }
+  function ioItem(name, val, cls){
+    var isBool = (val === true || val === false);
+    var lamp = isBool ? '<span class="lamp'+(val ? ' on' : '')+'"></span>' : '';
+    return '<div class="io-item '+(cls||'')+'">'+lamp+'<span>'+esc(name)+'</span><b>'+esc(fmt(val))+'</b></div>';
+  }
+  function renderInputs(step){
+    var ks = Object.keys(step.inputs || {});
+    $("io-in").innerHTML = ks.length ? ks.map(function(k){ return ioItem(k, step.inputs[k], ''); }).join('') : '<span class="muted">— no field inputs this scan —</span>';
+  }
+  function renderOutputs(step, reveal){
+    var outs = step.outputs || {}, ks = Object.keys(outs);
+    $("io-out").innerHTML = ks.length ? ks.map(function(k){ var o = outs[k]; return ioItem(k, o.got, reveal ? (o.ok ? 'ok' : 'bad') : 'pending'); }).join('') : '<span class="muted">— no outputs —</span>';
+  }
+  function animateScan(steps){
+    clearScanTimer(); lastScan = steps; $("scan").hidden = false;
+    var i = 0;
+    (function doStep(){
+      if(i >= steps.length){ stage('write'); return; }   // hold the final scan's state
+      var step = steps[i];
+      $("scanpos").textContent = 'scan ' + (i+1) + ' / ' + steps.length;
+      stage('read'); renderInputs(step); renderOutputs(step, false);
+      scanTimer = setTimeout(function(){
+        stage('solve');
+        scanTimer = setTimeout(function(){
+          stage('write'); renderOutputs(step, true);
+          scanTimer = setTimeout(function(){ i++; doStep(); }, 780);
+        }, 430);
+      }, 500);
+    })();
+  }
+
   function run(){
     if(!pyodide) return;
     $("run").disabled = true; $("status").textContent = "running…";
     try{
-      var res = pyodide.globals.get("run_checks")(cur, $("code").value).toJs({dict_converter: Object.fromEntries});
+      var code = $("code").value;
+      var res = pyodide.globals.get("run_checks")(cur, code).toJs({dict_converter: Object.fromEntries});
       showResults(res);
       $("status").textContent = res.win ? "✓ passed" : "keep going";
+      // scan-cycle animation — only for lessons whose checks actually execute the code
+      var sc = pyodide.globals.get("run_scan")(cur, code);
+      var st = (sc && sc.toJs) ? sc.toJs({dict_converter: Object.fromEntries}) : null;
+      if (sc && sc.destroy) sc.destroy();
+      if (st && st.steps && st.steps.length) animateScan(st.steps); else hideScan();
     }catch(e){
+      hideScan();
       $("results").innerHTML = '<div class="chk fail"><span class="mark">✗</span><span>interpreter error<span class="hint">'+esc(String(e))+'</span></span></div>';
       $("status").textContent = "error";
     }
@@ -291,9 +393,10 @@
       });
       sel.disabled = false;
       sel.addEventListener("change", function(){ renderLesson(+sel.value); });
-      ["code","run","reset","solution","prev","next","resetprog"].forEach(function(id){ $(id).disabled = false; });
+      ["code","run","reset","solution","prev","next","resetprog","replay"].forEach(function(id){ $(id).disabled = false; });
       $("run").addEventListener("click", run);
-      $("reset").addEventListener("click", function(){ $("code").value = LESSONS[cur].starter || ""; $("results").innerHTML=""; });
+      $("replay").addEventListener("click", function(){ if(lastScan) animateScan(lastScan); });
+      $("reset").addEventListener("click", function(){ $("code").value = LESSONS[cur].starter || ""; $("results").innerHTML=""; hideScan(); });
       $("solution").addEventListener("click", function(){ if(LESSONS[cur].solution) $("code").value = LESSONS[cur].solution; });
       $("prev").addEventListener("click", function(){ go(cur - 1); });
       $("next").addEventListener("click", function(){ go(cur + 1); });
