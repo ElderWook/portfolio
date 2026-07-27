@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>labos — fleet parity</title>
+<meta name="description" content="A replay of the labos control-plane keeping every repo in git-parity from one source of truth.">
+<link rel="stylesheet" href="app.css">
+</head><body>
+<div class="term-wrap">
+  <a class="back" href="../../projects/labos.html">◀ labos</a>
+  <h1>labos <span class="dim">· fleet TUI</span></h1>
+  <p class="note">labos keeps every repo in fast-forward-only git parity from one source of truth. This replays the <b>real</b> dev-status board — repo names only (all public on GitHub); no hosts, IPs, or network topology.</p>
+  <div id="cmds" class="cmds"></div>
+  <div class="terminal">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">labos — dev</span></div>
+    <div id="screen" class="screen"></div>
+  </div>
+</div>
+<script>window.TERMINAL_CONFIG = {"prompt": "$", "commands": [{"label": "Fleet parity", "cmd": "labos dev status", "output": "\n  labos dev · ~/Dev\n  ──────────────────────────────────────────────────────\n  Dev (umbrella)         ✓ in sync (main)\n  CSDK                   ✓ in sync (main)\n  DocGen                 ✓ in sync (main)\n  OGDK                   ✓ in sync (main)\n  void bitFlipper()      ✓ in sync (main)\n  WIP_deps               ✓ in sync (main)\n  Fleet/ChemCAN          ✗ dirty (local changes) (main)\n  Fleet/code2craft       ✓ in sync (main)\n  Fleet/OasisSandbox     ✓ in sync (main)\n  Fleet/OmniBUS_Labs     ✓ in sync (main)\n  Fleet/OpenBook_Release ✓ in sync (main)\n  Fleet/PLC              ✓ in sync (main)\n  Fleet/SkillForge       ✗ dirty (local changes) (main)\n  Fleet/SteamASCIIGen    ✓ in sync (main)\n  Fleet/VoltWright       ✓ in sync (refound/lyra-linux)\n  Fleet/WireGhost        ✓ in sync (main)\n  Fleet/ChronoKeeper     ✓ in sync (main)\n  Fleet/xyzed            ✓ in sync (main)"}]};</script>
+<script src="app.js"></script>
+</body></html>

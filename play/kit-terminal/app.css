@@ -1,0 +1,45 @@
+/* kit-terminal — a self-contained terminal player for the portfolio. Replays REAL captured tool
+   output in a live-looking terminal (not live execution). Theme matches the schematic portfolio. */
+:root{
+  --bg:#0b0f14; --panel:#0f151c; --line:#1e2a36; --ink:#e6ecf3; --ink2:#aab7c4; --ink3:#6b7b8a;
+  --acc:#33d17a; --amber:#f6d32d; --sky:#38bdf8; --red:#ff6b6b; --mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(1200px 600px at 20% -10%,#101a22,transparent),var(--bg);color:var(--ink);
+  font-family:var(--mono);line-height:1.5;padding:28px 20px 60px;min-height:100vh}
+.term-wrap{max-width:920px;margin:0 auto}
+.back{display:inline-block;color:var(--ink3);text-decoration:none;font-size:13px;letter-spacing:.05em;margin-bottom:18px}
+.back:hover{color:var(--acc)}
+h1{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+h1 .dim{color:var(--acc);font-weight:400}
+.note{color:var(--ink3);font-size:12.5px;margin:0 0 20px;max-width:70ch}
+.note b{color:var(--ink2);font-weight:600}
+.cmds{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 16px}
+.cmds button{font-family:var(--mono);font-size:13px;color:var(--acc);cursor:pointer;
+  background:color-mix(in srgb,var(--acc) 8%,transparent);border:1px solid color-mix(in srgb,var(--acc) 42%,var(--line));
+  border-radius:7px;padding:8px 16px;transition:background .15s ease,transform .1s ease}
+.cmds button:hover:not(:disabled){background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.cmds button:active:not(:disabled){transform:translateY(1px)}
+.cmds button:disabled{opacity:.5;cursor:default}
+.cmds button.active{background:color-mix(in srgb,var(--acc) 20%,transparent);border-color:var(--acc)}
+.terminal{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);
+  box-shadow:0 20px 60px -30px #000}
+.bar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#0c1219;border-bottom:1px solid var(--line)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.bar .title{margin-left:8px;color:var(--ink3);font-size:12px;letter-spacing:.05em}
+.screen{padding:16px 18px;height:min(62vh,560px);overflow:auto;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.screen .line{min-height:1.1em}
+.cmdline .prompt{color:var(--sky)}
+.cmdline{color:var(--ink)}
+.ok{color:var(--acc)}
+.info{color:var(--sky)}
+.warn{color:var(--amber)}
+.err{color:var(--red)}
+.cursor{display:inline-block;width:8px;height:15px;background:var(--acc);margin-left:2px;vertical-align:-2px;
+  animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cursor{animation:none}}
+.screen::-webkit-scrollbar{width:10px}
+.screen::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
