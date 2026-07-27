@@ -41,7 +41,8 @@ html,body{margin:0}
   font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)}
 .pf .dim::before{content:"";width:26px;height:6px;flex:none;border-left:1px solid var(--acc2);border-right:1px solid var(--acc2);
   background:linear-gradient(var(--acc2),var(--acc2)) center/100% 1px no-repeat}
-.pf .dim::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+/* the divider reads as a continuous ladder RUNG wire (extends the contact tick) reaching to the rail */
+.pf .dim::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--rail) 26%,transparent)}
 .pf .schematic{container-type:inline-size;display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;position:relative}
 /* Ladder-logic POWER RAILS flanking the parts grid: a faint static line + an "energize" glow that
    sweeps down once on load (the cards are the rungs; hover energises each via --glow). Purely
@@ -68,9 +69,9 @@ html,body{margin:0}
    The pin-1 dot is its OWN accent (--dot), shared by all parts, so it stays a consistent indicator. */
 .pf .part.feat{border-color:color-mix(in srgb,var(--border-feat) calc(22% + var(--glow)*55% + var(--energize)*20%),var(--line));
   box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border-feat) calc(var(--glow)*26%),transparent),0 0 calc(var(--energize)*18px) color-mix(in srgb,var(--rail) calc(var(--energize)*40%),transparent)}
-.pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--corner-feat) calc(30% + var(--glow)*55%),transparent)}
+.pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--corner-feat) calc(60% + var(--glow)*40%),transparent)}
 .pf .part::before,.pf .part::after{content:"";position:absolute;width:13px;height:13px;pointer-events:none;
-  border-color:color-mix(in srgb,var(--corner) calc(28% + var(--glow)*55%),transparent)}
+  border-color:color-mix(in srgb,var(--corner) calc(60% + var(--glow)*40%),transparent)}
 .pf .part::before{top:9px;right:9px;border-top:1.5px solid;border-right:1.5px solid}
 .pf .part::after{bottom:9px;left:9px;border-bottom:1.5px solid;border-left:1.5px solid}
 /* the pin-1 dot (an IC's pin-1) in each card's top-left corner — the IC accents: standard=acc4,
@@ -107,3 +108,11 @@ html,body{margin:0}
 .pf a.part:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc4) 24%,transparent),0 0 12px var(--acc4)}
 .pf a.part.feat:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc5) 24%,transparent),0 0 12px var(--acc5)}
 .pf .spec .dim{margin:24px 0 12px}
+/* SEAL-IN nav: clicking a card LATCHES its rung energized (a ladder-logic seal-in) — the frame + corner
+   marks brighten (--glow), the rail-green glow ramps up (--energize), the pin-1 dot seals like a closed
+   contact, and it holds for a beat before the page transitions. A satisfying, snappy circuit latch. */
+.pf a.part.sealing{--glow:1;position:relative;z-index:3;animation:helm-seal .4s ease-out both}
+@keyframes helm-seal{0%{--energize:.25;transform:translateY(-3px) scale(1)}45%{--energize:1;transform:translateY(-3px) scale(1.015)}100%{--energize:1;transform:translateY(-3px) scale(1.01)}}
+.pf a.part.sealing .refdes{box-shadow:0 0 0 4px color-mix(in srgb,var(--acc4) 34%,transparent),0 0 16px var(--acc4)}
+.pf a.part.feat.sealing .refdes{box-shadow:0 0 0 4px color-mix(in srgb,var(--acc5) 34%,transparent),0 0 16px var(--acc5)}
+@media (prefers-reduced-motion:reduce){.pf a.part.sealing{animation:none}}

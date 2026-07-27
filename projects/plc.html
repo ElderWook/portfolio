@@ -14,4 +14,17 @@
   </header>
   <div class="spec"><div class="dim">Stack &middot; pins</div><div class="pins"><span>Electron</span><span>Python</span><span>ST</span></div></div>
   <footer class="foot"><span>ElderWook · Systems &amp; Software Engineer</span><span class="flinks"><a href="https://github.com/ElderWook">GitHub</a></span></footer>
-</div></body></html>
+</div><script>
+(function(){
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest ? e.target.closest('a.part') : null;
+    if (!a || !a.getAttribute('href') || a.dataset.sealing) return;
+    if (rm || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    a.dataset.sealing = '1';
+    a.classList.add('sealing');
+    setTimeout(function(){ window.location.href = a.href; }, 380);
+  });
+})();
+</script></body></html>
