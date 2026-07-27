@@ -128,43 +128,45 @@ html,body{margin:0}
 .pf a.part.feat .seal-loop{background:conic-gradient(from var(--loop-angle),transparent 0 60%,color-mix(in srgb,var(--border-feat) 60%,#fff) 78%,#fff 82%,color-mix(in srgb,var(--border-feat) 60%,#fff) 86%,transparent 94%)}
 @media (prefers-reduced-motion:reduce){.pf a.part .seal-loop{display:none}}
 
-/* ── LADDER LAYOUT (pf.layout==='ladder') — each project a RUNG between the two power rails ──────── */
-.pf .ladder{position:relative;display:flex;flex-direction:column;gap:2px;padding:10px 30px}
-.pf .ladder::before,.pf .ladder::after{content:"";position:absolute;top:2px;bottom:2px;width:2.5px;pointer-events:none;border-radius:2px;
-  background-color:color-mix(in srgb,var(--rail) 46%,transparent);
-  background-image:linear-gradient(180deg,transparent 0,color-mix(in srgb,var(--rail) 95%,#fff) 6%,transparent 13%);
-  background-repeat:no-repeat;background-size:100% 320%;background-position:0 -25%;
-  animation:helm-energize 1.6s cubic-bezier(.4,0,.2,1) .15s 1 both}
-.pf .ladder::before{left:4px}
-.pf .ladder::after{right:4px}
-.pf a.rung{position:relative;display:flex;align-items:center;text-decoration:none;color:inherit;padding:15px 0;--glow:0;
-  transition:--glow .3s ease;animation:helm-rung .8s ease-out calc(var(--i,0)*70ms + 260ms) 1 both}
-/* the rung wire runs rail-to-rail behind everything; brightens as the rung energises */
-.pf a.rung::before{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;transform:translateY(-50%);z-index:0;
-  background:color-mix(in srgb,var(--rail) calc(32% + var(--glow)*56% + var(--energize)*40%),transparent)}
+/* ── LADDER LAYOUT (pf.layout==='ladder') — each project a RUNG wired rail-to-rail. The var(--…,0)
+   fallbacks keep the color-mix valid even where @property is missing, so it never renders blank. ── */
+.pf .ladder{position:relative;display:flex;flex-direction:column;gap:6px;padding:14px 26px}
+/* two power rails, full height; a soft current pulses down them continuously (subtle, alive) */
+.pf .ladder::before,.pf .ladder::after{content:"";position:absolute;top:0;bottom:0;width:2.5px;pointer-events:none;border-radius:2px;
+  background-color:color-mix(in srgb,var(--rail) 48%,transparent);
+  background-image:linear-gradient(180deg,transparent 0,color-mix(in srgb,var(--rail) 98%,#fff) 5%,transparent 11%);
+  background-repeat:no-repeat;background-size:100% 300%;background-position:0 -20%;
+  animation:helm-flow 5s cubic-bezier(.5,0,.5,1) infinite}
+.pf .ladder::before{left:8px}
+.pf .ladder::after{right:8px}
+@keyframes helm-flow{0%{background-position:0 -20%}55%{background-position:0 120%}100%{background-position:0 120%}}
+.pf a.rung{position:relative;display:flex;align-items:center;text-decoration:none;color:inherit;padding:16px 0;--glow:0;min-height:92px;
+  transition:--glow .3s ease;animation:helm-rung .9s ease-out calc(var(--i,0)*80ms + 300ms) 1 both}
+/* the rung wire runs rail-to-rail BEHIND everything; the node's bg breaks it (a device on the wire) */
+.pf a.rung::before{content:"";position:absolute;left:-18px;right:-18px;top:50%;height:2px;transform:translateY(-50%);z-index:0;
+  background:color-mix(in srgb,var(--rail) calc(34% + var(--glow,0)*54% + var(--energize,0)*44%),transparent)}
 .pf a.rung>*{position:relative;z-index:1}
-.pf a.rung .lug{flex:none;width:12px;height:2px;background:color-mix(in srgb,var(--rail) calc(46% + var(--glow)*50%),transparent)}
-/* normally-open contact  ] [  off the left rail */
-.pf a.rung .contact{flex:none;position:relative;width:15px;height:26px;margin-right:2px}
-.pf a.rung .contact::before,.pf a.rung .contact::after{content:"";position:absolute;top:0;bottom:0;width:2.5px;border-radius:2px;background:color-mix(in srgb,var(--rail) calc(56% + var(--glow)*44%),transparent)}
+/* normally-open contact ] [ tapped off the LEFT rail */
+.pf a.rung .contact{flex:none;position:relative;width:15px;height:28px;margin-left:-14px}
+.pf a.rung .contact::before,.pf a.rung .contact::after{content:"";position:absolute;top:0;bottom:0;width:2.5px;border-radius:2px;background:color-mix(in srgb,var(--rail) calc(58% + var(--glow,0)*42%),transparent)}
 .pf a.rung .contact::before{left:0}
 .pf a.rung .contact::after{right:0}
-/* the logic NODE — the project, sitting on the rung */
-.pf a.rung .node{position:relative;flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;padding:13px 20px;border-radius:8px;
-  background:color-mix(in srgb,var(--panel) 82%,transparent);
-  border:1px solid color-mix(in srgb,var(--border) calc(20% + var(--glow)*55%),var(--line));
-  box-shadow:0 0 calc(var(--glow)*24px) color-mix(in srgb,var(--border) calc(var(--glow)*22%),transparent),0 0 calc(var(--energize)*16px) color-mix(in srgb,var(--rail) calc(var(--energize)*38%),transparent)}
-.pf a.rung.feat .node{border-color:color-mix(in srgb,var(--border-feat) calc(24% + var(--glow)*55%),var(--line))}
+/* invisible flex spacers CENTRE the node between the rails (the ::before draws the visible wire) */
+.pf a.rung .lwire,.pf a.rung .rwire{flex:1 1 20px;min-width:16px}
+/* the logic NODE — the project, CENTRED, taller, data one per line */
+.pf a.rung .node{position:relative;flex:0 1 700px;min-width:0;display:flex;flex-direction:column;gap:7px;padding:17px 24px;border-radius:8px;
+  background:color-mix(in srgb,var(--panel) 88%,transparent);
+  border:1px solid color-mix(in srgb,var(--border) calc(22% + var(--glow,0)*55%),var(--line));
+  box-shadow:0 0 calc(var(--glow,0)*26px) color-mix(in srgb,var(--border) calc(var(--glow,0)*24%),transparent),0 0 calc(var(--energize,0)*20px) color-mix(in srgb,var(--rail) calc(var(--energize,0)*44%),transparent)}
+.pf a.rung.feat .node{border-color:color-mix(in srgb,var(--border-feat) calc(26% + var(--glow,0)*55%),var(--line))}
 .pf a.rung .node .refdes{left:-3px;top:-3px}
-.pf a.rung .rung-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.pf a.rung .rung-name{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
-.pf a.rung .rung-desc{color:var(--ink2);font-size:13px;line-height:1.5;max-width:78ch}
-.pf a.rung .pins{margin:0}
-/* output wire → coil ( ) at the right rail */
-.pf a.rung .rwire{flex:0 0 clamp(18px,5vw,74px);height:2px;background:color-mix(in srgb,var(--rail) calc(32% + var(--glow)*56% + var(--energize)*40%),transparent)}
-.pf a.rung .coil{flex:none;width:20px;height:26px;border:2.5px solid transparent;border-radius:50%;
-  border-left-color:color-mix(in srgb,var(--rail) calc(56% + var(--glow)*44%),transparent);
-  border-right-color:color-mix(in srgb,var(--rail) calc(56% + var(--glow)*44%),transparent)}
+.pf a.rung .rung-name{font-family:var(--mono);font-size:16.5px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.pf a.rung .rung-desc{color:var(--ink2);font-size:13.5px;line-height:1.55;max-width:80ch}
+.pf a.rung .pins{margin:2px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+/* output wire → coil ( ) tapped into the RIGHT rail */
+.pf a.rung .coil{flex:none;width:20px;height:28px;margin-right:-14px;border:2.5px solid transparent;border-radius:50%;
+  border-left-color:color-mix(in srgb,var(--rail) calc(58% + var(--glow,0)*42%),transparent);
+  border-right-color:color-mix(in srgb,var(--rail) calc(58% + var(--glow,0)*42%),transparent)}
 /* hover / seal-in = energise the rung (current flows contact → coil) */
 .pf a.rung:hover{--glow:1}
 .pf a.rung.sealing{--glow:1;animation:helm-seal .4s ease-out both}
