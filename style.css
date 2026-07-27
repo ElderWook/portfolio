@@ -47,16 +47,16 @@ html,body{margin:0}
 /* Ladder-logic POWER RAILS flanking the parts grid: a faint static line + an "energize" glow that
    sweeps down once on load (the cards are the rungs; hover energises each via --glow). Purely
    decorative pseudo-elements — never gate content — and the sweep is disabled for reduced-motion. */
-.pf .schematic::before,.pf .schematic::after,.pf .spec::before,.pf .spec::after{content:"";position:absolute;top:-4px;bottom:-4px;width:2px;pointer-events:none;border-radius:2px;
-  background-color:color-mix(in srgb,var(--rail) 20%,transparent);
-  /* faint rung ties climbing the rail (a repeating tick) + the energize glow band that sweeps down */
-  background-image:linear-gradient(180deg,transparent 0,color-mix(in srgb,var(--rail) 92%,#fff) 6%,transparent 13%),repeating-linear-gradient(180deg,color-mix(in srgb,var(--rail) 55%,transparent) 0 2px,transparent 2px 24px);
-  background-repeat:no-repeat,repeat;background-size:100% 320%,100% 24px;background-position:0 -25%,0 0;
+/* SOLID power rails (LadderStudio style): a clean, present rail line + an energize glow that sweeps
+   down once on load. No dashes/ties — the rungs are the section dividers + the seal-in on click. */
+.pf .schematic::before,.pf .schematic::after,.pf .spec::before,.pf .spec::after{content:"";position:absolute;top:-4px;bottom:-4px;width:2.5px;pointer-events:none;border-radius:2px;
+  background-color:color-mix(in srgb,var(--rail) 44%,transparent);
+  background-image:linear-gradient(180deg,transparent 0,color-mix(in srgb,var(--rail) 95%,#fff) 6%,transparent 13%);
+  background-repeat:no-repeat;background-size:100% 320%;background-position:0 -25%;
   animation:helm-energize 1.5s cubic-bezier(.4,0,.2,1) .15s 1 both}
 .pf .schematic::before,.pf .spec::before{left:-13px}
 .pf .schematic::after,.pf .spec::after{right:-13px}
-/* animate ONLY the glow layer's position; the rung ties (2nd layer) stay put */
-@keyframes helm-energize{from{background-position:0 -25%,0 0}to{background-position:0 125%,0 0}}
+@keyframes helm-energize{from{background-position:0 -25%}to{background-position:0 125%}}
 @media (prefers-reduced-motion:reduce){.pf .schematic::before,.pf .schematic::after,.pf .spec::before,.pf .spec::after,.pf .part{animation:none}}
 .pf .part{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
   border:1px solid var(--line);border-radius:6px;background:color-mix(in srgb,var(--panel) 42%,transparent);
@@ -69,9 +69,9 @@ html,body{margin:0}
    The pin-1 dot is its OWN accent (--dot), shared by all parts, so it stays a consistent indicator. */
 .pf .part.feat{border-color:color-mix(in srgb,var(--border-feat) calc(22% + var(--glow)*55% + var(--energize)*20%),var(--line));
   box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border-feat) calc(var(--glow)*26%),transparent),0 0 calc(var(--energize)*18px) color-mix(in srgb,var(--rail) calc(var(--energize)*40%),transparent)}
-.pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--corner-feat) calc(60% + var(--glow)*40%),transparent)}
+.pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--corner-feat) calc(82% + var(--glow)*18%),transparent)}
 .pf .part::before,.pf .part::after{content:"";position:absolute;width:13px;height:13px;pointer-events:none;
-  border-color:color-mix(in srgb,var(--corner) calc(60% + var(--glow)*40%),transparent)}
+  border-color:color-mix(in srgb,var(--corner) calc(82% + var(--glow)*18%),transparent)}
 .pf .part::before{top:9px;right:9px;border-top:1.5px solid;border-right:1.5px solid}
 .pf .part::after{bottom:9px;left:9px;border-bottom:1.5px solid;border-left:1.5px solid}
 /* the pin-1 dot (an IC's pin-1) in each card's top-left corner — the IC accents: standard=acc4,
@@ -116,3 +116,14 @@ html,body{margin:0}
 .pf a.part.sealing .refdes{box-shadow:0 0 0 4px color-mix(in srgb,var(--acc4) 34%,transparent),0 0 16px var(--acc4)}
 .pf a.part.feat.sealing .refdes{box-shadow:0 0 0 4px color-mix(in srgb,var(--acc5) 34%,transparent),0 0 16px var(--acc5)}
 @media (prefers-reduced-motion:reduce){.pf a.part.sealing{animation:none}}
+/* during the seal-in, a light CHASES around the card's border (the energised hover colour looping the
+   rung). .seal-loop is injected by the nav script; a masked conic gradient = a travelling arc. */
+@property --loop-angle{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes helm-loop{to{--loop-angle:360deg}}
+.pf a.part .seal-loop{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:4;padding:2.5px;
+  background:conic-gradient(from var(--loop-angle),transparent 0 60%,color-mix(in srgb,var(--border) 60%,#fff) 78%,#fff 82%,color-mix(in srgb,var(--border) 60%,#fff) 86%,transparent 94%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+  animation:helm-loop .44s linear infinite}
+.pf a.part.feat .seal-loop{background:conic-gradient(from var(--loop-angle),transparent 0 60%,color-mix(in srgb,var(--border-feat) 60%,#fff) 78%,#fff 82%,color-mix(in srgb,var(--border-feat) 60%,#fff) 86%,transparent 94%)}
+@media (prefers-reduced-motion:reduce){.pf a.part .seal-loop{display:none}}

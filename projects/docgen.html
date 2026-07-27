@@ -24,7 +24,8 @@
     e.preventDefault();
     a.dataset.sealing = '1';
     a.classList.add('sealing');
-    setTimeout(function(){ window.location.href = a.href; }, 380);
+    a.insertAdjacentHTML('afterbegin', '<i class="seal-loop" aria-hidden="true"></i>'); // chasing border light
+    setTimeout(function(){ window.location.href = a.href; }, 440);
   });
 })();
 </script></body></html>
