@@ -2,10 +2,10 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>labos</title>
 <meta name="description" content="A monorepo and CLI that runs my homelab as one system: four devices across five OS installs on a Tailscale mesh, kept in git-parity from a single source of truth, with encrypted key backups and an always-on hub for wake-on-LAN and exit-node routing.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230b1020%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2222%22%20text-anchor%3D%22middle%22%20font-family%3D%22ui-monospace%2Cmonospace%22%20font-size%3D%2218%22%20font-weight%3D%22700%22%20fill%3D%22%2333d17a%22%3EE%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230b1020%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2222%22%20text-anchor%3D%22middle%22%20font-family%3D%22ui-monospace%2Cmonospace%22%20font-size%3D%2218%22%20font-weight%3D%22700%22%20fill%3D%22%2333d17a%22%3EO%3C%2Ftext%3E%3C%2Fsvg%3E">
 <link rel="stylesheet" href="../style.css">
 </head><body class="pf"><div class="sheet detail">
-  <a class="back" href="../index.html">◀ ElderWook</a>
+  <a class="back" href="../index.html">◀ Oasis Games</a>
   <header class="titleblock">
     <h1 class="tb-brand" style="view-transition-name:vt-labos"><span class="gnd">⏚</span> labos</h1>
     <div class="tb-role">Homelab fleet control plane</div>
@@ -13,7 +13,7 @@
     <p class="tb-blurb">A monorepo and CLI that runs my homelab as one system: four devices across five OS installs on a Tailscale mesh, kept in git-parity from a single source of truth, with encrypted key backups and an always-on hub for wake-on-LAN and exit-node routing.</p>
   </header>
   <div class="dim">Specifications</div><table class="metrics"><tbody><tr><td>Devices</td><td>4 physical · 5 OS installs</td></tr><tr><td>CLI</td><td>~2,700 lines of Bash</td></tr><tr><td>Automation</td><td>~17 systemd units</td></tr><tr><td>Parity</td><td>fast-forward-only, 3 triggers</td></tr><tr><td>Transport</td><td>Tailscale mesh + Wake-on-LAN</td></tr><tr><td>Backups</td><td>GPG, private key offline on LUKS USB</td></tr></tbody></table><div class="spec"><div class="dim">Notes</div><ul class="hl"><li>A ~2,700-line Bash CLI keeps every machine in fast-forward-only git parity — dirty clones are flagged, never clobbered</li><li>Self-heals on push, on boot, and on a timer, over keyless Tailscale SSH</li><li>~17 systemd units run parity catch-up, a fail-closed VPN leak-guard, wake-on-LAN, and log capture</li><li>An always-on Orange Pi hub: Tailscale exit node, subnet router, and wake-on-LAN relay</li><li>Encrypted GPG key backups, with the private key kept offline on a LUKS USB</li></ul><div class="dim">Stack &middot; pins</div><div class="pins"><span>Bash</span><span>systemd</span><span>Tailscale</span><span>Git</span><span>Ansible</span><span>GPG</span><span>Linux</span></div></div>
-  <footer class="foot"><span>ElderWook · Systems &amp; Software Engineer</span><span class="flinks"><a href="https://github.com/ElderWook">GitHub</a></span></footer>
+  <footer class="foot"><span>Oasis Games · Systems &amp; Software Design</span><span class="flinks"><a href="https://github.com/ElderWook">GitHub</a></span></footer>
 </div><script>
 (function(){
   var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

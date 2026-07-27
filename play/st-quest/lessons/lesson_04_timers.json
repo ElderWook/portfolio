@@ -34,5 +34,11 @@
     "Rockwell: Studio 5000 timer & counter instructions (TONR/TOFR/RTOR): https://www.rockwellautomation.com/en-ca/docs/studio-5000-logix-designer/37-00/contents-ditamap/instruction-set/timer-and-counter-instructions.html",
     "Allen-Bradley Logix5000 ref manual, TONR in ST: https://www.manualslib.com/manual/1292352/Allen-Bradley-Logix5000.html?page=129",
     "Siemens SCL IEC timers TP/TON/TOF: https://plcblog.in/plc/siemens-tia-portal/siemens-scl-iec-timer-programming-tp-ton-tof-examples.php"
-  ]
+  ],
+  "viz": {
+    "type": "timer",
+    "input": "Run_Cmd",
+    "output": "Motor_Run",
+    "preset_ms": 5000
+  }
 }

@@ -117,6 +117,29 @@
   .lamp.off{background:color-mix(in srgb,var(--bad) 78%,#000);box-shadow:0 0 8px color-mix(in srgb,var(--bad) 50%,transparent);border-color:var(--bad)}
   .muted{color:var(--ink3);font-family:var(--mono);font-size:12px}
   a.tag{text-decoration:none} a.tag:hover{color:color-mix(in srgb,var(--acc) 78%,#fff)}
+  /* array cells (FOR-loop I/O bank) */
+  .cells{display:inline-flex;gap:4px;flex-wrap:wrap}
+  .cells .cell{font-family:var(--mono);font-size:11px;min-width:20px;text-align:center;padding:2px 5px;border-radius:3px;border:1px solid var(--line);color:var(--ink3);background:color-mix(in srgb,var(--panel) 50%,transparent)}
+  .cells .cell.hi{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 45%,var(--line));background:color-mix(in srgb,var(--acc) 12%,transparent)}
+  /* function-call table (lesson 08) */
+  .calltable{margin-top:12px;border:1px solid color-mix(in srgb,var(--acc) 20%,var(--line));border-radius:8px;padding:14px 16px;background:#0a0f1c}
+  .callrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .callrow:last-child{border-bottom:none}
+  .callrow code{color:var(--ink);background:none}
+  .callrow .arr{color:var(--acc3)}
+  .callrow .rv{margin-left:auto;display:flex;align-items:center;gap:9px}
+  .callrow .rv b{font-weight:700}
+  .callrow.ok .rv b{color:var(--acc)} .callrow.bad .rv b{color:var(--bad)}
+  .callmark{flex:none;font-weight:700} .callrow.ok .callmark{color:var(--acc)} .callrow.bad .callmark{color:var(--bad)}
+  /* timer concept animation (lesson 04) */
+  .timerviz{margin-top:12px;border:1px solid color-mix(in srgb,var(--acc) 20%,var(--line));border-radius:8px;padding:14px 16px;background:#0a0f1c}
+  #tstage{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+  .tgrid{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+  .tbarwrap{display:flex;align-items:center;gap:12px}
+  .tbar{flex:1;height:16px;border-radius:5px;background:rgba(255,255,255,.07);border:1px solid var(--line);overflow:hidden}
+  .tfill{display:block;height:100%;width:0;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 70%,transparent),var(--acc));box-shadow:0 0 12px color-mix(in srgb,var(--acc) 50%,transparent)}
+  .tnum{font-family:var(--mono);font-size:12.5px;color:var(--ink2);min-width:92px;text-align:right}
+  #treplay{margin-left:8px}
   .loading{font-family:var(--mono);font-size:13px;color:var(--ink3);padding:30px 4px}
   .loading .bar{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-right:8px;animation:pulse 1s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
@@ -183,6 +206,18 @@
             <div class="io-col"><div class="io-label">Coil / register outputs</div><div id="io-out"></div></div>
           </div>
         </div>
+        <div class="calltable" id="calls" hidden>
+          <div class="scan-head"><span class="stage active">ƒ function calls</span><span class="scanpos" id="callspos"></span></div>
+          <div id="calls-body"></div>
+        </div>
+        <div class="timerviz" id="timer" hidden>
+          <div class="scan-head"><span class="stage" id="tstage">TON on-delay</span><span class="scanpos">illustration · not code-executed</span><button class="nav" id="treplay">↻ replay</button></div>
+          <div class="tgrid">
+            <div id="trow-in"></div>
+            <div class="tbarwrap"><div class="tbar"><span class="tfill" id="tfill"></span></div><span class="tnum" id="tnum"></span></div>
+            <div id="trow-out"></div>
+          </div>
+        </div>
         <div class="results" id="results"></div>
       </div>
     </div>
@@ -205,7 +240,7 @@
     "from stquest.checker import check_answer, all_passed",
     "LESSONS = load_lessons(Path('/stq/lessons'))",
     "def lessons_json():",
-    "    return [dict(id=l.id, title=l.title, concept=l.concept, task=l.task, starter=l.starter, solution=l.solution, ab=l.ab_note, siemens=l.siemens_note) for l in LESSONS]",
+    "    return [dict(id=l.id, title=l.title, concept=l.concept, task=l.task, starter=l.starter, solution=l.solution, ab=l.ab_note, siemens=l.siemens_note, viz=l.viz) for l in LESSONS]",
     "def run_checks(idx, code):",
     "    l = LESSONS[idx]",
     "    res = check_answer(code, l.checks)",
@@ -241,6 +276,35 @@
     "    if not sim: return None",
     "    try:",
     "        return dict(steps=scan_trace(code, sim.get('steps', [])))",
+    "    except Exception as e:",
+    "        return dict(error=str(e))",
+    "def run_calls(idx, code):",
+    "    l = LESSONS[idx]; call = None",
+    "    for c in l.checks:",
+    "        if c.get('type') == 'call': call = c; break",
+    "    if not call: return None",
+    "    try:",
+    "        interp = Interpreter(code); interp.scan(); rows = []",
+    "        for case in call.get('cases', []):",
+    "            got = interp.call_function(case['fn'], case.get('args', []))",
+    "            rows.append(dict(fn=case['fn'], args=case.get('args', []), got=got, want=case['expect'], ok=_values_equal(got, case['expect'])))",
+    "        return dict(rows=rows)",
+    "    except Exception as e:",
+    "        return dict(error=str(e))",
+    "def run_fb(idx, code):",
+    "    from stquest.interpreter import trace_fb",
+    "    l = LESSONS[idx]; fbc = None",
+    "    for c in l.checks:",
+    "        if c.get('type') == 'simulate_fb': fbc = c; break",
+    "    if not fbc: return None",
+    "    try:",
+    "        tr = trace_fb(code, fbc['fb'], fbc.get('steps', [])); steps = []",
+    "        for t in tr:",
+    "            outs = {}",
+    "            for k, got in t['outputs'].items():",
+    "                want = t['expected'].get(k); outs[k] = dict(got=got, want=want, ok=_values_equal(got, want))",
+    "            steps.append(dict(inputs=t['inputs'], outputs=outs, ok=t['ok']))",
+    "        return dict(fb=fbc['fb'], steps=steps)",
     "    except Exception as e:",
     "        return dict(error=str(e))",
     ""
@@ -308,7 +372,7 @@
     $("task").textContent = L.task;
     $("code").value = L.starter || "";
     $("results").innerHTML = "";
-    hideScan();
+    hideAllViz();
   }
 
   function showResults(r){
@@ -339,6 +403,10 @@
   // energized (TRUE) → green · de-energized (FALSE) → red · number/other → neutral
   function ioRow(name, val, opts){
     opts = opts || {};
+    if (Array.isArray(val)) {   // FOR-loop I/O bank → render each element as a cell
+      var cells = val.map(function(x){ var n = (x === true ? 1 : x === false ? 0 : x); var hi = (typeof n === 'number' ? n > 0 : !!x); return '<span class="cell'+(hi ? ' hi' : '')+'">'+esc(String(n))+'</span>'; }).join('');
+      return '<div class="io-item"><span class="lamp"></span><span class="ion">'+esc(name)+'</span><span class="ioval"><span class="cells">'+cells+'</span></span></div>';
+    }
     var isBool = (val === true || val === false);
     var pending = !!opts.pending;
     var cls = pending ? 'pending' : (isBool ? (val ? 'on' : 'off') : '');
@@ -382,25 +450,73 @@
     })();
   }
 
+  // ---- function-call table (lesson 08) ----
+  function hideCalls(){ $("calls").hidden = true; }
+  function renderCalls(rows){
+    hideScan(); hideTimer(); $("calls").hidden = false;
+    $("callspos").textContent = rows.length + (rows.length === 1 ? ' case' : ' cases');
+    $("calls-body").innerHTML = rows.map(function(r){
+      var args = (r.args || []).map(function(a){ return fmt(a); }).join(', ');
+      var mism = r.ok ? '' : '<em class="mism">≠ want '+esc(fmt(r.want))+'</em>';
+      return '<div class="callrow '+(r.ok ? 'ok' : 'bad')+'"><span class="callmark">'+(r.ok ? '✓' : '✗')+'</span><code>'+esc(r.fn)+'('+esc(args)+')</code><span class="arr">→</span><span class="rv">'+mism+'<b>'+esc(fmt(r.got))+'</b></span></div>';
+    }).join('');
+  }
+
+  // ---- TON on-delay timer (lesson 04) — concept illustration, not code-executed ----
+  var timerTO = null, timerIV = null, lastTimer = null;
+  function hideTimer(){ if(timerTO){ clearTimeout(timerTO); timerTO = null; } if(timerIV){ clearInterval(timerIV); timerIV = null; } $("timer").hidden = true; }
+  function animateTimer(viz){
+    hideScan(); hideCalls(); lastTimer = viz; $("timer").hidden = false;
+    var pt = (viz.preset_ms || 5000) / 1000, DUR = 2400;
+    var inName = viz.input || 'Run_Cmd', outName = viz.output || 'Motor_Run';
+    $("trow-in").innerHTML = ioRow(inName, true, {});
+    $("trow-out").innerHTML = ioRow(outName, false, {});
+    $("tstage").textContent = 'timing… (' + inName + ' held on)';
+    var fill = $("tfill");
+    fill.style.transition = 'none'; fill.style.width = '0%'; void fill.offsetWidth;
+    fill.style.transition = 'width ' + DUR + 'ms linear'; fill.style.width = '100%';
+    var k = 0, K = 24;
+    $("tnum").textContent = '0.0 / ' + pt.toFixed(1) + ' s';
+    timerIV = setInterval(function(){ k++; var f = k / K; if(f >= 1){ clearInterval(timerIV); timerIV = null; f = 1; } $("tnum").textContent = (f * pt).toFixed(1) + ' / ' + pt.toFixed(1) + ' s'; }, DUR / K);
+    timerTO = setTimeout(function(){
+      $("trow-out").innerHTML = ioRow(outName, true, {});
+      $("tstage").textContent = 'output energized (t ≥ preset)';
+      $("tnum").textContent = pt.toFixed(1) + ' / ' + pt.toFixed(1) + ' s';
+    }, DUR + 40);
+  }
+
+  function hideAllViz(){ hideScan(); hideCalls(); hideTimer(); }
+  function toJsCall(fn, code){
+    var p = pyodide.globals.get(fn)(cur, code);
+    var v = (p && p.toJs) ? p.toJs({ dict_converter: Object.fromEntries }) : null;
+    if (p && p.destroy) p.destroy();
+    return v;
+  }
+
   function run(){
     if(!pyodide) return;
-    $("run").disabled = true; $("status").textContent = "running…";
+    $("run").disabled = true; $("status").textContent = "running…"; hideAllViz();
     try{
       var code = $("code").value;
       var res = pyodide.globals.get("run_checks")(cur, code).toJs({dict_converter: Object.fromEntries});
       showResults(res);
       $("status").textContent = res.win ? "✓ passed" : "keep going";
-      // scan-cycle animation — only for lessons whose checks actually execute the code
-      var sc = pyodide.globals.get("run_scan")(cur, code);
-      var st = (sc && sc.toJs) ? sc.toJs({dict_converter: Object.fromEntries}) : null;
-      if (sc && sc.destroy) sc.destroy();
-      if (st && st.steps && st.steps.length) animateScan(st.steps); else hideScan();
+      // pick the right visual: scan cycle → function-block scan → function-call table → timer illustration
+      var st = toJsCall("run_scan", code);
+      if (st && st.steps && st.steps.length) { animateScan(st.steps); return; }
+      var fb = toJsCall("run_fb", code);
+      if (fb && fb.steps && fb.steps.length) { animateScan(fb.steps); return; }
+      var cl = toJsCall("run_calls", code);
+      if (cl && cl.rows && cl.rows.length) { renderCalls(cl.rows); return; }
+      var L = LESSONS[cur];
+      if (L && L.viz && L.viz.type === 'timer') { animateTimer(L.viz); return; }
     }catch(e){
-      hideScan();
+      hideAllViz();
       $("results").innerHTML = '<div class="chk fail"><span class="mark">✗</span><span>interpreter error<span class="hint">'+esc(String(e))+'</span></span></div>';
       $("status").textContent = "error";
+    }finally{
+      $("run").disabled = false;
     }
-    $("run").disabled = false;
   }
 
   async function boot(){
@@ -432,7 +548,8 @@
       ["code","run","reset","solution","prev","next","resetprog","replay"].forEach(function(id){ $(id).disabled = false; });
       $("run").addEventListener("click", run);
       $("replay").addEventListener("click", function(){ if(lastScan) animateScan(lastScan); });
-      $("reset").addEventListener("click", function(){ $("code").value = LESSONS[cur].starter || ""; $("results").innerHTML=""; hideScan(); });
+      $("treplay").addEventListener("click", function(){ if(lastTimer) animateTimer(lastTimer); });
+      $("reset").addEventListener("click", function(){ $("code").value = LESSONS[cur].starter || ""; $("results").innerHTML=""; hideAllViz(); });
       $("solution").addEventListener("click", function(){ if(LESSONS[cur].solution) $("code").value = LESSONS[cur].solution; });
       $("prev").addEventListener("click", function(){ go(cur - 1); });
       $("next").addEventListener("click", function(){ go(cur + 1); });
