@@ -133,6 +133,8 @@ html,body{margin:0}
 .pf .foot .flinks{display:inline-flex;gap:14px;flex-wrap:wrap}
 .pf .foot a{color:var(--ink3);text-decoration:none}
 .pf .foot a:hover{color:var(--acc)}
+/* the Oasis Games LLC brand mark — a full-width line centered under the footer row, on every page */
+.pf .foot .mark{flex-basis:100%;text-align:center;letter-spacing:.1em;opacity:.6;margin-top:5px}
 @container (max-width:440px){.pf .schematic{grid-template-columns:1fr}}
 
 .pf a.part:hover{--glow:1;transform:translateY(-3px);background:color-mix(in srgb,var(--panel) 60%,transparent)}
