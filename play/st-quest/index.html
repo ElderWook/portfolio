@@ -109,6 +109,9 @@
   .io-item.off .ioval b{color:var(--bad)}     /* de-energized → red  */
   .io-item.pending{opacity:.35}
   .mism{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--acc2)}
+  .trend{font-size:10px;line-height:1}
+  .trend.up{color:var(--acc2)}   /* rising  ▲ */
+  .trend.down{color:var(--acc3)} /* falling ▼ */
   .lamp{width:11px;height:11px;border-radius:50%;background:#26304a;border:1px solid var(--line);flex:none;transition:all .25s}
   .lamp.on{background:var(--acc);box-shadow:0 0 9px var(--acc);border-color:var(--acc)}
   .lamp.off{background:color-mix(in srgb,var(--bad) 78%,#000);box-shadow:0 0 8px color-mix(in srgb,var(--bad) 50%,transparent);border-color:var(--bad)}
@@ -209,20 +212,26 @@
     "    return dict(win=all_passed(res), checks=[dict(passed=r.passed, message=r.message, hint=(r.hint or '')) for r in res])",
     "from stquest.interpreter import Interpreter, _values_equal",
     "def scan_trace(code, steps):",
-    "    names = []",
+    "    names = []; onames = []",
     "    for step in steps:",
     "        for k in step.get('set', {}):",
     "            if k not in names: names.append(k)",
+    "        for k in step.get('expect', {}):",
+    "            if k not in onames: onames.append(k)",
     "    interp = Interpreter(code); out = []; state = {}",
     "    for step in steps:",
     "        state.update(step.get('set', {}))",
     "        interp.set_inputs(step.get('set', {})); interp.scan()",
     "        inputs = {}",
     "        for k in names: inputs[k] = state[k] if k in state else interp.get(k)",
-    "        outs = {}; ok = True",
-    "        for name, want in step.get('expect', {}).items():",
-    "            got = interp.get(name); m = _values_equal(got, want)",
-    "            ok = ok and m; outs[name] = dict(got=got, want=want, ok=m)",
+    "        expect = step.get('expect', {}); outs = {}; ok = True",
+    "        for name in onames:",
+    "            got = interp.get(name)",
+    "            if name in expect:",
+    "                m = _values_equal(got, expect[name]); ok = ok and m",
+    "                outs[name] = dict(got=got, want=expect[name], ok=m)",
+    "            else:",
+    "                outs[name] = dict(got=got)",
     "        out.append(dict(inputs=inputs, outputs=outs, ok=ok))",
     "    return out",
     "def run_scan(idx, code):",
@@ -335,28 +344,38 @@
     var cls = pending ? 'pending' : (isBool ? (val ? 'on' : 'off') : '');
     var lamp = pending || !isBool ? '<span class="lamp"></span>' : '<span class="lamp '+(val ? 'on' : 'off')+'"></span>';
     var mism = (!pending && opts.want !== undefined && !opts.ok) ? '<em class="mism">≠ want '+esc(fmt(opts.want))+'</em>' : '';
-    return '<div class="io-item '+cls+'">'+lamp+'<span class="ion">'+esc(name)+'</span><span class="ioval">'+mism+'<b>'+esc(fmt(val))+'</b></span></div>';
+    // rising/falling arrow for analog (numeric) values vs the previous scan
+    var tr = (opts.trend === 'up' || opts.trend === 'down') ? '<span class="trend '+opts.trend+'" title="'+(opts.trend==='up'?'rising':'falling')+'">'+(opts.trend==='up'?'▲':'▼')+'</span>' : '';
+    return '<div class="io-item '+cls+'">'+lamp+'<span class="ion">'+esc(name)+'</span><span class="ioval">'+mism+tr+'<b>'+esc(fmt(val))+'</b></span></div>';
   }
-  function renderInputs(step){
+  function trendOf(v, pv){ return (typeof v === 'number' && typeof pv === 'number' && v !== pv) ? (v > pv ? 'up' : 'down') : undefined; }
+  function renderInputs(step, prev){
     var ks = Object.keys(step.inputs || {});
-    $("io-in").innerHTML = ks.length ? ks.map(function(k){ return ioRow(k, step.inputs[k], {}); }).join('') : '<span class="muted">— no field inputs —</span>';
+    $("io-in").innerHTML = ks.length ? ks.map(function(k){
+      var pv = prev && prev.inputs ? prev.inputs[k] : undefined;
+      return ioRow(k, step.inputs[k], { trend: trendOf(step.inputs[k], pv) });
+    }).join('') : '<span class="muted">— no field inputs —</span>';
   }
-  function renderOutputs(step, reveal){
+  function renderOutputs(step, prev, reveal){
     var outs = step.outputs || {}, ks = Object.keys(outs);
-    $("io-out").innerHTML = ks.length ? ks.map(function(k){ var o = outs[k]; return ioRow(k, o.got, reveal ? { want: o.want, ok: o.ok } : { pending: true }); }).join('') : '<span class="muted">— no outputs —</span>';
+    $("io-out").innerHTML = ks.length ? ks.map(function(k){
+      var o = outs[k];
+      var pv = (prev && prev.outputs && prev.outputs[k]) ? prev.outputs[k].got : undefined;
+      return ioRow(k, o.got, reveal ? { want: o.want, ok: o.ok, trend: trendOf(o.got, pv) } : { pending: true });
+    }).join('') : '<span class="muted">— no outputs —</span>';
   }
   function animateScan(steps){
     clearScanTimer(); lastScan = steps; $("scan").hidden = false;
     var i = 0;
     (function doStep(){
       if(i >= steps.length){ stage('write'); return; }   // hold the final scan's state
-      var step = steps[i];
+      var step = steps[i], prev = i > 0 ? steps[i-1] : null;
       $("scanpos").textContent = 'scan ' + (i+1) + ' / ' + steps.length;
-      stage('read'); renderInputs(step); renderOutputs(step, false);
+      stage('read'); renderInputs(step, prev); renderOutputs(step, prev, false);
       scanTimer = setTimeout(function(){
         stage('solve');
         scanTimer = setTimeout(function(){
-          stage('write'); renderOutputs(step, true);
+          stage('write'); renderOutputs(step, prev, true);
           scanTimer = setTimeout(function(){ i++; doStep(); }, 780);
         }, 430);
       }, 500);
