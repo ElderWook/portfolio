@@ -90,11 +90,10 @@ html,body{margin:0}
    reads as labelled sections (Flagships / Infrastructure / Applications) instead of one flat grid. */
 .pf .dim.band{margin-top:34px;color:var(--acc)}
 .pf .dim.band::after{background:color-mix(in srgb,var(--rail) 40%,transparent)}
-/* card footer row: a media BADGE (▶ playable / ⊞ modules) on the left, "open ▸" on the right. The
-   playable badge wears the featured accent + a faint fill so the real interactive demos pull the eye. */
-.pf .cardfoot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px}
-.pf .cardfoot .more{margin-top:0}
-.pf .badges{margin:0 0 12px}
+/* a media BADGE (▶ playable / ⊞ modules) sits under the title as its own tag; the featured accent +
+   faint fill make the real interactive demos pull the eye. The "open ▸" link stays a consistent
+   bottom-left footer on every card (was fighting the badge for the footer row on desktop). */
+.pf .badges{margin:0 0 13px}
 .pf .badge{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--note);white-space:nowrap;
   border:1px solid color-mix(in srgb,var(--note) 38%,var(--line));border-radius:999px;padding:3px 10px;display:inline-flex;gap:5px;align-items:center}
 .pf .badge.play{color:var(--acc5);border-color:color-mix(in srgb,var(--acc5) 55%,var(--line));background:color-mix(in srgb,var(--acc5) 12%,transparent)}
