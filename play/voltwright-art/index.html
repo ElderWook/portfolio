@@ -1,0 +1,365 @@
+<title>VoltWright · Art Bible — Visual System</title>
+<style>
+  :root{
+    /* --- the real system, from skin.py + emblems + phase-identification.md --- */
+    --ground:#0d1618; --offboard:#04080a; --panel:#101d20; --panel-2:#0a1417;
+    --gold:#f8c448; --copper:#d09a52; --brand:#2ad0ca; --silk:#deeaea;
+    --muted:#8fa3a8; --faint:#5c6f74; --line:#22343a;
+    /* net-role (Okabe-Ito CUD) */
+    --power:#e69f00; --gnd:#aab4bd; --clock:#f0e442; --bus:#56b4e9;
+    --diff:#cc79a7; --analog:#0072b2; --signal:#4d9f97;
+    /* status */
+    --ok:#3ee484; --warn:#ff9500; --fault:#ff3b30;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 600px at 70% -10%, #12262a 0%, transparent 60%),
+      var(--ground);
+    color:var(--silk);
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px 80px}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+  .eyebrow{
+    font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px;
+    letter-spacing:.22em; text-transform:uppercase; color:var(--brand);
+  }
+  h1,h2,h3{font-family:'Outfit','Inter',system-ui,sans-serif; font-weight:600; text-wrap:balance; margin:0}
+  a{color:var(--brand)}
+
+  /* ---------- header ---------- */
+  header.top{
+    position:sticky; top:0; z-index:10;
+    background:linear-gradient(var(--offboard),rgba(4,8,10,.86));
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .top-in{max-width:var(--maxw); margin:0 auto; padding:14px 20px; display:flex; gap:18px; align-items:center; flex-wrap:wrap}
+  .mark{width:38px; height:38px; flex:0 0 auto}
+  .title h1{font-size:20px; letter-spacing:.01em}
+  .title .sub{font-size:12px; color:var(--muted)}
+  .cvd{margin-left:auto; display:flex; gap:6px; align-items:center; flex-wrap:wrap}
+  .cvd .lbl{font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); margin-right:2px}
+  .cvd button{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.04em;
+    color:var(--muted); background:var(--panel-2); border:1px solid var(--line);
+    padding:6px 9px; border-radius:6px; cursor:pointer; transition:.15s;
+  }
+  .cvd button:hover{color:var(--silk); border-color:var(--brand)}
+  .cvd button[aria-pressed="true"]{color:var(--ground); background:var(--gold); border-color:var(--gold); font-weight:600}
+  .cvd button:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:44px 0 12px}
+  .hero h1.big{font-size:clamp(30px,5vw,46px); line-height:1.05; letter-spacing:-.01em}
+  .hero .lede{max-width:60ch; color:var(--muted); margin-top:14px; font-size:16px}
+  .hero .gold{color:var(--gold)}
+  .rule{height:2px; border:0; margin:26px 0 0;
+    background:linear-gradient(90deg,var(--gold),transparent 42%);}
+
+  /* ---------- sections ---------- */
+  section{margin-top:52px}
+  .sec-h{display:flex; align-items:baseline; gap:12px; margin-bottom:6px}
+  .sec-h h2{font-size:24px}
+  .sec-h .idx{font-family:'IBM Plex Mono',monospace; color:var(--gold); font-size:13px}
+  .sec-note{color:var(--muted); max-width:70ch; margin:2px 0 20px; font-size:14px}
+  .anchor{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px;
+    color:var(--brand); border:1px solid var(--line); border-radius:5px;
+    padding:2px 8px; margin:0 0 14px;
+  }
+
+  /* stage = the CVD-filtered content */
+  .stage{transition:filter .2s}
+
+  /* swatch grids */
+  .grid{display:grid; gap:12px}
+  .g-invar{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .g-role{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .sw{
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    background:var(--panel-2); display:flex; flex-direction:column;
+  }
+  .sw .chip{height:66px; position:relative}
+  .sw .body{padding:9px 11px}
+  .sw .name{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px}
+  .sw .hex{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted)}
+  .sw .use{font-size:11px; color:var(--faint); margin-top:3px; line-height:1.35}
+  .badge{
+    position:absolute; top:7px; right:7px; font-family:'IBM Plex Mono',monospace;
+    font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+    background:rgba(0,0,0,.55); color:#fff; padding:2px 6px; border-radius:4px;
+  }
+
+  /* phase table */
+  .scroll{overflow-x:auto; border:1px solid var(--line); border-radius:10px}
+  table{border-collapse:collapse; width:100%; min-width:560px; font-size:13px}
+  th,td{padding:10px 12px; text-align:left; border-bottom:1px solid var(--line)}
+  th{font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); font-weight:400}
+  tbody tr:last-child td{border-bottom:0}
+  .wire{display:inline-flex; align-items:center; gap:7px; white-space:nowrap}
+  .dot{width:16px; height:16px; border-radius:4px; border:1px solid rgba(255,255,255,.14); flex:0 0 auto}
+  .tag{font-family:'IBM Plex Mono',monospace; font-size:10px; padding:2px 7px; border-radius:20px; letter-spacing:.04em}
+  .tag.mand{background:rgba(248,196,72,.14); color:var(--gold); border:1px solid rgba(248,196,72,.4)}
+  .tag.conv{background:rgba(143,163,168,.12); color:var(--muted); border:1px solid var(--line)}
+  .bands{display:inline-flex; gap:3px; vertical-align:middle}
+  .bands i{width:5px; height:16px; background:var(--gold); border-radius:1px; display:inline-block}
+
+  /* semantic cards */
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px}
+  .card{border:1px solid var(--line); border-left-width:3px; border-radius:10px; padding:14px 16px; background:var(--panel-2)}
+  .card h3{font-size:14px; margin-bottom:5px}
+  .card p{font-size:13px; color:var(--muted); margin:0}
+
+  /* emblems */
+  .emb-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:14px}
+  .emb{border:1px solid var(--line); border-radius:12px; background:
+      radial-gradient(120px 90px at 50% 30%, #12262a, var(--panel-2)); padding:14px; text-align:center}
+  .emb svg{width:100%; height:auto; max-width:90px; display:block; margin:0 auto 8px}
+  .emb .cap{font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted)}
+  .ladder{display:flex; gap:14px; flex-wrap:wrap; margin-top:16px}
+  .rank{flex:1 1 120px; text-align:center; border:1px solid var(--line); border-radius:12px; padding:14px 10px; background:var(--panel-2)}
+  .rank svg{width:76px; height:76px; display:block; margin:0 auto 8px}
+  .rank .r-n{font-family:'Outfit',sans-serif; font-weight:600; font-size:13px}
+  .rank .r-t{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--faint); letter-spacing:.06em}
+  .rank.top{border-color:rgba(248,196,72,.5)}
+  .rank.top .r-n{color:var(--gold)}
+
+  /* typography specimen */
+  .type-row{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:var(--panel-2); margin-bottom:10px}
+  .type-row .k{font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint)}
+  .disp{font-family:'Outfit','Inter',sans-serif; font-weight:600; font-size:30px; letter-spacing:-.01em}
+  .bodyspec{font-size:15px; color:var(--silk)}
+  .monospec{font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--brand)}
+
+  footer{margin-top:60px; border-top:1px solid var(--line); padding-top:22px; color:var(--faint); font-size:12px}
+  footer a{color:var(--muted)}
+  footer .src{font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.9}
+
+  @media (max-width:560px){ .title .sub{display:none} .hero{padding-top:30px} }
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+
+<!-- CVD simulation filter defs (sRGB daltonization matrices) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="protanopia" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/></filter>
+  <filter id="deuteranopia" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/></filter>
+  <filter id="tritanopia" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/></filter>
+  <filter id="grayscale" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0"/></filter>
+</defs></svg>
+
+<header class="top">
+  <div class="top-in">
+    <svg class="mark" viewBox="0 0 200 200" aria-hidden="true"><path d="M 162.16 100 L 179.29 90.99 L 177.04 79.18 L 157.79 77.12 L 150.29 63.46 L 158.85 46.11 L 150.09 37.88 L 133.31 47.52 L 119.21 40.88 L 115.94 21.81 L 104.01 20.3 L 96.1 37.96 L 80.79 40.88 L 66.93 27.37 L 56.4 33.17 L 60.38 52.1 L 49.71 63.46 L 30.56 60.68 L 25.44 71.56 L 39.79 84.54 L 37.84 100 L 20.71 109.01 L 22.96 120.82 L 42.21 122.88 L 49.71 136.54 L 41.15 153.89 L 49.91 162.12 L 66.69 152.48 L 80.79 159.12 L 84.06 178.19 L 95.99 179.7 L 103.9 162.04 L 119.21 159.12 L 133.07 172.63 L 143.6 166.83 L 139.62 147.9 L 150.29 136.54 L 169.44 139.32 L 174.56 128.44 L 160.21 115.46 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><circle cx="100" cy="100" r="42" fill="none" stroke="#2ad0ca" stroke-width="3.6"/><circle cx="100" cy="100" r="25.2" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="7.14" fill="#f8c448"/></svg>
+    <div class="title">
+      <h1>VoltWright · Art Bible</h1>
+      <div class="sub mono">Visual system — anchored on real-world research, tuned for teachability</div>
+    </div>
+    <div class="cvd" role="group" aria-label="Color-vision simulation">
+      <span class="lbl">Sim CVD</span>
+      <button data-f="" aria-pressed="true">Normal</button>
+      <button data-f="protanopia" aria-pressed="false">Protan</button>
+      <button data-f="deuteranopia" aria-pressed="false">Deutan</button>
+      <button data-f="tritanopia" aria-pressed="false">Tritan</button>
+      <button data-f="grayscale" aria-pressed="false">Gray</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <a href="../../projects/voltwright.html" style="display:inline-block;font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.05em;color:#7f9491;text-decoration:none;margin:0 0 16px">◀ VoltWright</a>
+  <div class="hero">
+    <div class="eyebrow">The one idea</div>
+    <h1 class="big">VoltWright looks like <span class="gold">a real circuit board, lit.</span></h1>
+    <p class="lede">Every functional color traces to a standard a player can carry to a bench — never a mood
+      board. Two research anchors: the PCB net-roles are the <strong style="color:var(--silk)">Okabe-Ito
+      colorblind-safe</strong> palette; the power phases are the real <strong style="color:var(--silk)">NEC/IEC
+      wire code</strong>. Toggle a color-vision simulation up top — the palettes are engineered to survive it.</p>
+    <hr class="rule">
+  </div>
+
+  <main class="stage" id="stage">
+
+    <!-- 1 · invariants -->
+    <section>
+      <div class="sec-h"><span class="idx mono">01</span><h2>The golden thread &amp; ground</h2></div>
+      <p class="sec-note">Shared by every surface — 2D skin, 3D board, UI, emblems. ENIG gold <span class="mono">#f8c448</span>
+        appears <em>identically</em> in the skin and the emblems already; it is the one accent that never changes.</p>
+      <div class="grid g-invar">
+        <div class="sw"><div class="chip" style="background:#0d1618"></div><div class="body"><div class="name">FR4 ground</div><div class="hex">#0d1618</div><div class="use">dark teal-black board substrate</div></div></div>
+        <div class="sw"><div class="chip" style="background:#f8c448"></div><div class="body"><div class="name">ENIG gold</div><div class="hex">#f8c448</div><div class="use">pads · card-edge fingers · emblem centers · promotion</div></div></div>
+        <div class="sw"><div class="chip" style="background:#d09a52"></div><div class="body"><div class="name">Copper</div><div class="hex">#d09a52</div><div class="use">exposed / finished copper</div></div></div>
+        <div class="sw"><div class="chip" style="background:#deeaea"></div><div class="body"><div class="name">Silk</div><div class="hex">#deeaea</div><div class="use">legend text + designators</div></div></div>
+        <div class="sw"><div class="chip" style="background:#2ad0ca"></div><div class="body"><div class="name">Brand teal</div><div class="hex">#2ad0ca</div><div class="use">identity only — chrome / logo, never a net · retires #00D2FF (A1)</div></div></div>
+      </div>
+    </section>
+
+    <!-- 2 · net-role -->
+    <section>
+      <div class="sec-h"><span class="idx mono">02</span><h2>Net-role palette · the PCB domain</h2></div>
+      <span class="anchor mono">RESEARCH ANCHOR ① — Okabe-Ito Color Universal Design (2008)</span>
+      <p class="sec-note">There is no industry net-role color standard, so the most-teachable choice is the most
+        <em>distinguishable</em>: an 8-color set engineered to survive color-vision deficiency (~8% of men).
+        <strong style="color:var(--silk)">skin.py already <em>is</em> Okabe-Ito.</strong> Hit “Deutan” above — the roles stay apart.</p>
+      <div class="grid g-role">
+        <div class="sw"><div class="chip" style="background:#e69f00"></div><div class="body"><div class="name">power</div><div class="hex">#e69f00</div><div class="use">+3V3 / +5V / VIN / VDDA</div></div></div>
+        <div class="sw"><div class="chip" style="background:#aab4bd"></div><div class="body"><div class="name">gnd</div><div class="hex">#aab4bd</div><div class="use">GND / return</div></div></div>
+        <div class="sw"><div class="chip" style="background:#f0e442"></div><div class="body"><div class="name">clock</div><div class="hex">#f0e442</div><div class="use">*CLK · XTAL · OSC</div></div></div>
+        <div class="sw"><div class="chip" style="background:#56b4e9"></div><div class="body"><div class="name">bus</div><div class="hex">#56b4e9</div><div class="use">SPI · I2C · UART · CAN</div></div></div>
+        <div class="sw"><div class="chip" style="background:#cc79a7"></div><div class="body"><div class="name">diff</div><div class="hex">#cc79a7</div><div class="use">USB D± · LVDS · TXP/RXN</div></div></div>
+        <div class="sw"><div class="chip" style="background:#0072b2"></div><div class="body"><div class="name">analog</div><div class="hex">#0072b2</div><div class="use">ADC · DAC · VREF · SENSE</div></div></div>
+        <div class="sw"><div class="chip" style="background:#4d9f97"></div><div class="body"><div class="name">signal</div><div class="hex">#4d9f97</div><div class="use">generic GPIO (default)</div></div></div>
+      </div>
+    </section>
+
+    <!-- 3 · phase -->
+    <section>
+      <div class="sec-h"><span class="idx mono">03</span><h2>Phase palette · the power domain</h2></div>
+      <span class="anchor mono">RESEARCH ANCHOR ② — NEC/IEC wire code · core/standards/phase-identification.md</span>
+      <p class="sec-note">The teachable subtlety that makes it authentic: <strong style="color:var(--silk)">the NEC
+        mandates only a few colors — the rest is convention.</strong> Neutral (white/grey), EGC/ground (green),
+        and the 4-wire-delta high-leg (orange) are fixed; the phase colors are employer/AHJ convention. Above
+        600&nbsp;V there is no code at all — you identify by <em>stripe-count</em>.</p>
+
+      <div class="eyebrow" style="margin:2px 0 8px">Learning palette · shipped teaching default — exact <span class="mono" style="text-transform:none">PhasePalette.h</span> values (FLinearColor → sRGB)</div>
+      <div class="grid g-role" style="margin-bottom:20px">
+        <div class="sw"><div class="chip" style="background:#B18255"></div><div class="body"><div class="name">Phase A</div><div class="hex">#B18255</div><div class="use">dark brown</div></div></div>
+        <div class="sw"><div class="chip" style="background:#FBB338"></div><div class="body"><div class="name">Phase B</div><div class="hex">#FBB338</div><div class="use">orange (red-heavy)</div></div></div>
+        <div class="sw"><div class="chip" style="background:#FBF482"></div><div class="body"><div class="name">Phase C</div><div class="hex">#FBF482</div><div class="use">yellow (green-heavy)</div></div></div>
+        <div class="sw"><div class="chip" style="background:#EAECF1"></div><div class="body"><div class="name">Neutral · X0</div><div class="hex">#EAECF1</div><div class="use">grey</div></div></div>
+        <div class="sw"><div class="chip" style="background:#59c46c"></div><div class="body"><div class="name">Ground · EGC</div><div class="hex">#59c46c</div><div class="use">bonded · quiet ~0 A</div></div></div>
+        <div class="sw"><div class="chip" style="background:#F9C489"></div><div class="body"><div class="name">Energized</div><div class="hex">#F9C489</div><div class="use">hot copper of a live feed</div></div></div>
+      </div>
+
+      <div class="eyebrow" style="margin:2px 0 8px">Standards-strict · the real per-class code</div>
+      <div class="scroll"><table>
+        <thead><tr><th>System / class</th><th>L1 / A</th><th>L2 / B</th><th>L3 / C</th><th>Neutral</th><th>EGC</th><th>Fixed?</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>120 / 208 / 240 V</td>
+            <td><span class="wire"><span class="dot" style="background:#20242a"></span>black</span></td>
+            <td><span class="wire"><span class="dot" style="background:#d0342c"></span>red</span></td>
+            <td><span class="wire"><span class="dot" style="background:#2f6fce"></span>blue</span></td>
+            <td><span class="wire"><span class="dot" style="background:#eef1f3"></span>white</span></td>
+            <td><span class="wire"><span class="dot" style="background:#59c46c"></span>green</span></td>
+            <td><span class="tag conv">phases = conv.</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--silk)">277 / 480 V</strong> · the game’s service</td>
+            <td><span class="wire"><span class="dot" style="background:#7a4a24"></span>brown</span></td>
+            <td><span class="wire"><span class="dot" style="background:#e8842b"></span>orange</span></td>
+            <td><span class="wire"><span class="dot" style="background:#f2d21e"></span>yellow</span></td>
+            <td><span class="wire"><span class="dot" style="background:#c9d0d6"></span>grey</span></td>
+            <td><span class="wire"><span class="dot" style="background:#59c46c"></span>green</span></td>
+            <td><span class="tag conv">phases = conv.</span></td>
+          </tr>
+          <tr>
+            <td>120 / 240 V high-leg delta</td>
+            <td><span class="wire"><span class="dot" style="background:#20242a"></span>black</span></td>
+            <td><span class="wire"><span class="dot" style="background:#e8842b"></span>orange</span></td>
+            <td><span class="wire"><span class="dot" style="background:#2f6fce"></span>blue</span></td>
+            <td><span class="wire"><span class="dot" style="background:#eef1f3"></span>white</span></td>
+            <td><span class="wire"><span class="dot" style="background:#59c46c"></span>green</span></td>
+            <td><span class="tag mand">high-leg = mandated</span></td>
+          </tr>
+          <tr>
+            <td>MV 12.47 kV</td>
+            <td colspan="3"><span class="wire">no color code → <span class="bands"><i></i></span>A · <span class="bands"><i></i><i></i></span>B · <span class="bands"><i></i><i></i><i></i></span>C &nbsp;stripe-count + utility palette</span></td>
+            <td>—</td><td>—</td>
+            <td><span class="tag conv">practice</span></td>
+          </tr>
+        </tbody>
+      </table></div>
+      <p class="sec-note" style="margin-top:14px">Shipped in two data-driven modes: a <strong style="color:var(--silk)">learning
+        palette</strong> (one vivid color per phase — max distinguishable) as the teaching default, and
+        <strong style="color:var(--silk)">standards-strict per-class</strong> (the table) for authenticity.
+        Per AGENTS #7 we model the framework and label the designation — never reproduce NEC table text.</p>
+    </section>
+
+    <!-- 4 · status + semantics -->
+    <section>
+      <div class="sec-h"><span class="idx mono">04</span><h2>Status &amp; semantic rules</h2></div>
+      <p class="sec-note">The colors don’t just look real — they <em>mean</em> what they mean in the field, so the game never trains a wrong reflex.</p>
+      <div class="grid g-invar" style="margin-bottom:16px">
+        <div class="sw"><div class="chip" style="background:#3ee484"></div><div class="body"><div class="name">energized / ok</div><div class="hex">#3ee484</div><div class="use">correct · closed breaker · trace-energize sweep</div></div></div>
+        <div class="sw"><div class="chip" style="background:#ff9500"></div><div class="body"><div class="name">warning</div><div class="hex">#ff9500</div><div class="use">caution · fault-pending</div></div></div>
+        <div class="sw"><div class="chip" style="background:#ff3b30"></div><div class="body"><div class="name">fault</div><div class="hex">#ff3b30</div><div class="use">short · violation · ground-current alarm</div></div></div>
+      </div>
+      <div class="cards">
+        <div class="card" style="border-left-color:#59c46c"><h3>Green = ground / safe</h3><p>On any conductor, green always means EGC/bonded — never a generic “success” that could mislead at a live panel.</p></div>
+        <div class="card" style="border-left-color:#ff3b30"><h3>Red = hazard</h3><p>Fault, energized-danger, and the facility rule: current in a ground conductor is <em>always</em> alarm-red.</p></div>
+        <div class="card" style="border-left-color:#2ad0ca"><h3>Two codes, separated</h3><p>Net-role in the PCB view; phase in the wiring view. Where they meet, the safety-semantic (phase/ground) code wins.</p></div>
+        <div class="card" style="border-left-color:#f8c448"><h3>CVD-safe → gated</h3><p>Both anchors are distinguishable, so a colorblind-check joins the art gate. Verify it with the toggle above.</p></div>
+      </div>
+    </section>
+
+    <!-- 5 · emblems -->
+    <section>
+      <div class="sec-h"><span class="idx mono">05</span><h2>Emblems — the identity spine</h2></div>
+      <p class="sec-note">The near-final art (48 SVGs). Drawing rules, extracted so every future emblem matches:
+        200×200 canvas · line-art only (round caps/joins) · primary stroke <span class="mono">5.5</span>,
+        secondary <span class="mono">3.6</span> · brand-teal linework + gold focal node · green for live/energized.
+        These double as the menu-board silk glyphs and the facility device icons.</p>
+      <div class="emb-grid">
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 162.16 100 L 179.29 90.99 L 177.04 79.18 L 157.79 77.12 L 150.29 63.46 L 158.85 46.11 L 150.09 37.88 L 133.31 47.52 L 119.21 40.88 L 115.94 21.81 L 104.01 20.3 L 96.1 37.96 L 80.79 40.88 L 66.93 27.37 L 56.4 33.17 L 60.38 52.1 L 49.71 63.46 L 30.56 60.68 L 25.44 71.56 L 39.79 84.54 L 37.84 100 L 20.71 109.01 L 22.96 120.82 L 42.21 122.88 L 49.71 136.54 L 41.15 153.89 L 49.91 162.12 L 66.69 152.48 L 80.79 159.12 L 84.06 178.19 L 95.99 179.7 L 103.9 162.04 L 119.21 159.12 L 133.07 172.63 L 143.6 166.83 L 139.62 147.9 L 150.29 136.54 L 169.44 139.32 L 174.56 128.44 L 160.21 115.46 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><circle cx="100" cy="100" r="42" fill="none" stroke="#2ad0ca" stroke-width="3.6"/><circle cx="100" cy="100" r="25.2" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="7.14" fill="#f8c448"/></svg><div class="cap">gear</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 58 58 L 142 58 L 142 142 L 58 142 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><g fill="#f8c448"><circle cx="74.8" cy="44.56" r="2.94"/><circle cx="74.8" cy="155.44" r="2.94"/><circle cx="44.56" cy="125.2" r="2.94"/><circle cx="155.44" cy="125.2" r="2.94"/><circle cx="91.6" cy="44.56" r="2.94"/><circle cx="91.6" cy="155.44" r="2.94"/><circle cx="44.56" cy="108.4" r="2.94"/><circle cx="155.44" cy="108.4" r="2.94"/><circle cx="108.4" cy="44.56" r="2.94"/><circle cx="108.4" cy="155.44" r="2.94"/><circle cx="44.56" cy="91.6" r="2.94"/><circle cx="155.44" cy="91.6" r="2.94"/><circle cx="125.2" cy="44.56" r="2.94"/><circle cx="125.2" cy="155.44" r="2.94"/><circle cx="44.56" cy="74.8" r="2.94"/><circle cx="155.44" cy="74.8" r="2.94"/><circle cx="69.76" cy="69.76" r="4.2"/></g><g stroke="#f8c448" stroke-width="3.6"><path d="M74.8 58 74.8 44.56M74.8 142 74.8 155.44M58 125.2 44.56 125.2M142 125.2 155.44 125.2M91.6 58 91.6 44.56M91.6 142 91.6 155.44M58 108.4 44.56 108.4M142 108.4 155.44 108.4M108.4 58 108.4 44.56M108.4 142 108.4 155.44M58 91.6 44.56 91.6M142 91.6 155.44 91.6M125.2 58 125.2 44.56M125.2 142 125.2 155.44M58 74.8 44.56 74.8M142 74.8 155.44 74.8"/></g></svg><div class="cap">chip</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="52.08" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><path d="M 89.92 71.44 L 89.92 128.56" fill="none" stroke="#2ad0ca" stroke-width="7.5" stroke-linecap="round"/><path d="M 24.4 100 L 89.92 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 89.92 85.72 L 133.6 58 L 133.6 24.4" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 89.92 114.28 L 133.6 142 L 133.6 175.6" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 117.54 124.35 L 110.79 134.99 L 124.8 136.42 Z" fill="#f8c448" stroke="#f8c448" stroke-width="3.6"/><g fill="#f8c448"><circle cx="24.4" cy="100" r="4.2"/><circle cx="133.6" cy="24.4" r="4.2"/><circle cx="133.6" cy="175.6" r="4.2"/></g></svg><div class="cap">transistor</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><g stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"><path d="M 116.8 100 L 165.52 100"/><path d="M 108.4 85.45 L 132.76 43.26"/><path d="M 91.6 85.45 L 67.24 43.26"/><path d="M 83.2 100 L 34.48 100"/><path d="M 91.6 114.55 L 67.24 156.74"/><path d="M 108.4 114.55 L 132.76 156.74"/></g><circle cx="100" cy="100" r="16.8" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="9.24" fill="#f8c448"/><g fill="#f8c448"><circle cx="165.52" cy="100" r="5.88"/><circle cx="132.76" cy="43.26" r="5.88"/><circle cx="67.24" cy="43.26" r="5.88"/><circle cx="34.48" cy="100" r="5.88"/><circle cx="67.24" cy="156.74" r="5.88"/><circle cx="132.76" cy="156.74" r="5.88"/></g></svg><div class="cap">via-star</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><g fill="none" stroke-width="5.5" stroke-linecap="round"><path d="M 81.52 121.84 A 10.92 10.92 0 0 0 81.52 143.68" stroke="#2ad0ca"/><path d="M 118.48 121.84 A 10.92 10.92 0 0 1 118.48 143.68" stroke="#3ee484"/><path d="M 81.52 100 A 10.92 10.92 0 0 0 81.52 121.84" stroke="#2ad0ca"/><path d="M 118.48 100 A 10.92 10.92 0 0 1 118.48 121.84" stroke="#3ee484"/><path d="M 81.52 78.16 A 10.92 10.92 0 0 0 81.52 100" stroke="#2ad0ca"/><path d="M 118.48 78.16 A 10.92 10.92 0 0 1 118.48 100" stroke="#3ee484"/><path d="M 81.52 56.32 A 10.92 10.92 0 0 0 81.52 78.16" stroke="#2ad0ca"/><path d="M 118.48 56.32 A 10.92 10.92 0 0 1 118.48 78.16" stroke="#3ee484"/><path d="M81.52 56.32 81.52 24.4M81.52 143.68 81.52 175.6" stroke="#2ad0ca"/><path d="M118.48 56.32 118.48 24.4M118.48 143.68 118.48 175.6" stroke="#3ee484"/></g><g stroke="#f8c448" stroke-width="3.6"><path d="M95.8 58 95.8 142M104.2 58 104.2 142"/></g></svg><div class="cap">transformer</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 22.72 100 L 177.28 100" fill="none" stroke="#1a4e4c" stroke-width="3.6"/><path d="M 28.6 100 C 40 80 52 62 64.3 61.36 C 78 62 90 84 100 100 C 110 116 122 132 135.7 138.64 C 150 138 162 116 171.4 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 28.6 133.46 C 40 138 52 137 64.3 119.32 C 78 96 90 78 100 66.54 C 112 62 124 66 135.7 80.68 C 150 100 162 122 171.4 133.46" fill="none" stroke="#3ee484" stroke-width="5.5" stroke-linecap="round"/><path d="M 28.6 66.54 C 40 80 52 100 64.3 119.32 C 78 132 90 137 100 133.46 C 112 126 124 100 135.7 80.68 C 150 62 162 64 171.4 66.54" fill="none" stroke="#f8c448" stroke-width="5.5" stroke-linecap="round"/></svg><div class="cap">three-phase</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 24.4 100 L 76.48 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 123.52 100 L 175.6 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 76.48 66.4 L 76.48 133.6 L 123.52 100 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><path d="M 123.52 66.4 L 123.52 133.6" fill="none" stroke="#3ee484" stroke-width="7.5" stroke-linecap="round"/><g stroke="#f8c448" stroke-width="3.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M 98.32 63.04 L 123.52 34.48M 112.6 36.16 L 123.52 34.48 L 121.84 45.4M 113.44 74.8 L 138.64 46.24M 127.72 47.92 L 138.64 46.24 L 136.96 57.16"/></g><circle cx="24.4" cy="100" r="4.2" fill="#f8c448"/><circle cx="175.6" cy="100" r="4.2" fill="#f8c448"/></svg><div class="cap">led</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="52.08" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><g fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"><path d="M 100 100 L 100 66.4M 100 47.92 L 100 21.88M 100 100 L 70.9 116.8M 54.9 126.04 L 32.35 139.06M 100 100 L 129.1 116.8M 145.1 126.04 L 167.65 139.06"/></g><circle cx="100" cy="100" r="4.2" fill="#f8c448"/><g fill="#f8c448"><circle cx="100" cy="21.88" r="4.2"/><circle cx="32.35" cy="139.06" r="4.2"/><circle cx="167.65" cy="139.06" r="4.2"/></g></svg><div class="cap">motor</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 58 49.6 L 58 150.4 L 150.4 100 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><g fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"><path d="M 24.4 74.8 L 58 74.8M 24.4 125.2 L 58 125.2M 150.4 100 L 179.8 100"/></g><g stroke="#f8c448" stroke-width="3.6" fill="none" stroke-linecap="round"><path d="M 66.4 74.8 L 76.48 74.8M 71.44 69.76 L 71.44 79.84"/></g><path d="M 66.4 125.2 L 76.48 125.2" fill="none" stroke="#3ee484" stroke-width="3.6" stroke-linecap="round"/><circle cx="24.4" cy="74.8" r="3.78" fill="#f8c448"/><circle cx="24.4" cy="125.2" r="3.78" fill="#f8c448"/><circle cx="179.8" cy="100" r="4.2" fill="#f8c448"/></svg><div class="cap">op-amp</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 24.4 100 L 58 100 L 66.4 74.8 L 79.84 125.2 L 93.28 74.8 L 106.72 125.2 L 120.16 74.8 L 133.6 125.2 L 142 100 L 175.6 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.4" cy="100" r="4.2" fill="#f8c448"/><circle cx="175.6" cy="100" r="4.2" fill="#f8c448"/></svg><div class="cap">resistor</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 24.4 100 L 86.56 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 113.44 100 L 175.6 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 86.56 62.2 L 86.56 137.8" fill="none" stroke="#2ad0ca" stroke-width="7.5" stroke-linecap="round"/><path d="M 113.44 62.2 L 113.44 137.8" fill="none" stroke="#2ad0ca" stroke-width="7.5" stroke-linecap="round"/><circle cx="24.4" cy="100" r="4.2" fill="#f8c448"/><circle cx="175.6" cy="100" r="4.2" fill="#f8c448"/></svg><div class="cap">capacitor</div></div>
+        <div class="emb"><svg viewBox="0 0 200 200"><path d="M 24.4 100 L 73.12 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 126.88 100 L 175.6 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 73.12 62.2 L 73.12 137.8 L 126.88 100 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><path d="M 126.88 62.2 L 126.88 137.8" fill="none" stroke="#3ee484" stroke-width="7.5" stroke-linecap="round"/><circle cx="24.4" cy="100" r="4.2" fill="#f8c448"/><circle cx="175.6" cy="100" r="4.2" fill="#f8c448"/></svg><div class="cap">diode</div></div>
+      </div>
+
+      <h3 style="font-size:15px; margin:26px 0 2px">Prestige ladder — the card-customization unlock spine</h3>
+      <p class="sec-note">Rank gates the “design-your-card” unlocks (soldermask · silk · shape · loadout). Complexity + gold accrue with rank.</p>
+      <div class="ladder">
+        <div class="rank"><svg viewBox="0 0 200 200"><path d="M 155.44 100 L 171.52 89.82 L 168.35 76.6 L 149.4 74.83 L 139.2 60.8 L 143.37 42.23 L 131.78 35.13 L 117.13 47.27 L 100 44.56 L 89.82 28.48 L 76.6 31.65 L 74.83 50.6 L 60.8 60.8 L 42.23 56.63 L 35.13 68.22 L 47.27 82.87 L 44.56 100 L 28.48 110.18 L 31.65 123.4 L 50.6 125.17 L 60.8 139.2 L 56.63 157.77 L 68.22 164.87 L 82.87 152.73 L 100 155.44 L 110.18 171.52 L 123.4 168.35 L 125.17 149.4 L 139.2 139.2 L 157.77 143.37 L 164.87 131.78 L 152.73 117.13 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><circle cx="100" cy="100" r="16.8" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="5.04" fill="#2ad0ca"/></svg><div class="r-n">Apprentice</div><div class="r-t">I</div></div>
+        <div class="rank"><svg viewBox="0 0 200 200"><path d="M 155.44 100 L 171.92 93.2 L 170.5 84.24 L 152.73 82.87 L 148.01 72.28 L 158.88 58.15 L 153.18 51.1 L 137.1 58.8 L 127.72 51.99 L 130.07 34.32 L 121.6 31.07 L 111.53 45.77 L 100 44.56 L 93.2 28.08 L 84.24 29.5 L 82.87 47.27 L 72.28 51.99 L 58.15 41.12 L 51.1 46.82 L 58.8 62.9 L 51.99 72.28 L 34.32 69.93 L 31.07 78.4 L 45.77 88.47 L 44.56 100 L 28.08 106.8 L 29.5 115.76 L 47.27 117.13 L 51.99 127.72 L 41.12 141.85 L 46.82 148.9 L 62.9 141.2 L 72.28 148.01 L 69.93 165.68 L 78.4 168.93 L 88.47 154.23 L 100 155.44 L 106.8 171.92 L 115.76 170.5 L 117.13 152.73 L 127.72 148.01 L 141.85 158.88 L 148.9 153.18 L 141.2 137.1 L 148.01 127.72 L 165.68 130.07 L 168.93 121.6 L 154.23 111.53 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><circle cx="100" cy="100" r="16.8" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="36.96" fill="none" stroke="#2ad0ca" stroke-width="3.6"/><circle cx="100" cy="100" r="7.14" fill="#f8c448"/><g fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"><path d="M111.88 88.12 126.13 73.87M88.12 88.12 73.87 73.87M88.12 111.88 73.87 126.13M111.88 111.88 126.13 126.13"/></g></svg><div class="r-n">Foreman</div><div class="r-t">III</div></div>
+        <div class="rank top"><svg viewBox="0 0 200 200"><path d="M 164.68 100 L 181.28 94.25 L 180.37 86.62 L 162.89 84.9 L 159.76 75.25 L 172.89 63.58 L 169.14 56.88 L 152.33 61.98 L 145.74 54.26 L 153.4 38.46 L 147.37 33.71 L 133.8 44.85 L 124.75 40.24 L 125.79 22.71 L 118.4 20.62 L 110.12 36.12 L 100 35.32 L 94.25 18.72 L 86.62 19.63 L 84.9 37.11 L 75.25 40.24 L 63.58 27.11 L 56.88 30.86 L 61.98 47.67 L 54.26 54.26 L 38.46 46.6 L 33.71 52.63 L 44.85 66.2 L 40.24 75.25 L 22.71 74.21 L 20.62 81.6 L 36.12 89.88 L 35.32 100 L 18.72 105.75 L 19.63 113.38 L 37.11 115.1 L 40.24 124.75 L 27.11 136.42 L 30.86 143.12 L 47.67 138.02 L 54.26 145.74 L 46.6 161.54 L 52.63 166.29 L 66.2 155.15 L 75.25 159.76 L 74.21 177.29 L 81.6 179.38 L 89.88 163.88 L 100 164.68 L 105.75 181.28 L 113.38 180.37 L 115.1 162.89 L 124.75 159.76 L 136.42 172.89 L 143.12 169.14 L 138.02 152.33 L 145.74 145.74 L 161.54 153.4 L 166.29 147.37 L 155.15 133.8 L 159.76 124.75 L 177.29 125.79 L 179.38 118.4 L 163.88 110.12 Z" fill="none" stroke="#f8c448" stroke-width="5.5" stroke-linejoin="round"/><circle cx="100" cy="100" r="16.8" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="36.96" fill="none" stroke="#2ad0ca" stroke-width="3.6"/><circle cx="100" cy="100" r="50.4" fill="none" stroke="#f8c448" stroke-width="3.6"/><g fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"><path d="M111.88 88.12 126.13 73.87M88.12 88.12 73.87 73.87M88.12 111.88 73.87 126.13M111.88 111.88 126.13 126.13"/></g><g fill="#3ee484"><circle cx="143.68" cy="100" r="2.94"/><circle cx="100" cy="56.32" r="2.94"/><circle cx="56.32" cy="100" r="2.94"/><circle cx="100" cy="143.68" r="2.94"/></g><circle cx="100" cy="100" r="6.3" fill="#f8c448"/></svg><div class="r-n">VOLTWRIGHT</div><div class="r-t">V · MAX</div></div>
+      </div>
+    </section>
+
+    <!-- 6 · type -->
+    <section>
+      <div class="sec-h"><span class="idx mono">06</span><h2>Typography</h2></div>
+      <p class="sec-note">Display <span class="mono">Outfit</span> · body <span class="mono">Inter</span> · data/terminal
+        <span class="mono">IBM Plex Mono</span> (the diegetic console + tabular V/I readouts). All OFL / self-hostable — no CDN.</p>
+      <div class="type-row"><div class="k">Display — Outfit SemiBold</div><div class="disp">Energize the Facility</div></div>
+      <div class="type-row"><div class="k">Body — Inter</div><div class="bodyspec">Aim at a device and press E. The breaker closes, the network re-solves, and the load downstream comes alive — or a loose lug heats up.</div></div>
+      <div class="type-row"><div class="k">Mono — terminal &amp; data</div><div class="monospec">vw&gt; drc --card &nbsp;·&nbsp; PASS 0/0 &nbsp;·&nbsp; L1 277.0V∠0° &nbsp; 12.4A &nbsp; 3.4kW</div></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="margin-bottom:10px">This specimen is the spec the in-editor UMG styles and the 3D board materials match. Deliberately single-theme — it is a lit circuit board.</div>
+    <div class="src">
+      ANCHOR ① &nbsp;Okabe &amp; Ito, “Color Universal Design” (2008) · Wong, <em>Nature Methods</em> 8, 441 (2011)<br>
+      ANCHOR ② &nbsp;NEC / IEC wire color code — VoltWright <span style="color:var(--brand)">docs/core/standards/phase-identification.md</span> (sourced)<br>
+      SYSTEM &nbsp;&nbsp;&nbsp;pcbcore <span style="color:var(--brand)">tools/art-gen/skin/skin.py</span> · emblems <span style="color:var(--brand)">docs/design/emblems/</span> · bible <span style="color:var(--brand)">docs/design/ART-BIBLE.md</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function(){
+    var stage=document.getElementById('stage');
+    var btns=document.querySelectorAll('.cvd button');
+    btns.forEach(function(b){
+      b.addEventListener('click',function(){
+        btns.forEach(function(x){x.setAttribute('aria-pressed','false')});
+        b.setAttribute('aria-pressed','true');
+        var f=b.getAttribute('data-f');
+        stage.style.filter = f ? 'url(#'+f+')' : 'none';
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,617 @@
+<title>VoltWright — Progression Web: The Rectifier Rose</title>
+<style>
+  :root{
+    --fr4:#0b1416; --fr4-2:#0e1a1d; --panel:#102023; --line:#1d3236;
+    --ink:#cfdad8; --ink-dim:#7f9491; --ink-faint:#546764;
+    --gold:#f8c448; --gold-deep:#b8922f; --copper:#e69f00;
+    --teal:#2ad0ca; --green:#3ee484;
+    --elec:#5bb8e8; --elec-deep:#2d6f97;
+    --pa:#b18255; --pb:#fbb338; --pc:#fbf482;
+    --diff:#cc79a7; --clock:#f0e442; --bus:#56b4e9; --signal:#4d9f97; --gnd:#aab4bd;
+    --mono: ui-monospace,"SFMono-Regular","SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 800px at 50% 8%, #12262a 0%, transparent 60%),
+      radial-gradient(900px 900px at 50% 62%, #0e1c20 0%, transparent 70%),
+      var(--fr4);
+    color:var(--ink); font-family:var(--sans); line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1160px; margin:0 auto; padding:clamp(18px,4vw,44px) clamp(14px,3vw,28px) 80px}
+
+  /* ---- schematic titleblock ---- */
+  .tb{border:1px solid var(--line); border-radius:12px; background:linear-gradient(180deg,#10201f,#0d1a1c);
+      overflow:hidden; box-shadow:0 1px 0 #1f3a3e inset, 0 24px 60px -30px #000}
+  .tb-top{display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 18px; padding:18px 22px 14px}
+  .kicker{font-family:var(--mono); font-size:11.5px; letter-spacing:.32em; text-transform:uppercase;
+          color:var(--teal); margin:0}
+  h1{font-family:var(--mono); font-weight:600; font-size:clamp(24px,4.4vw,42px); letter-spacing:.02em;
+     margin:2px 0 0; text-wrap:balance; color:var(--ink)}
+  h1 .rose{color:var(--gold)}
+  .sub{color:var(--ink-dim); max-width:70ch; margin:8px 0 0; font-size:15px}
+  .tb-meta{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); border-top:1px solid var(--line)}
+  .tb-meta div{padding:9px 14px; border-right:1px solid var(--line); font-family:var(--mono); font-size:11px;
+               letter-spacing:.06em; color:var(--ink-faint)}
+  .tb-meta div:last-child{border-right:0}
+  .tb-meta b{display:block; color:var(--ink); letter-spacing:.03em; font-size:12px; margin-top:3px; font-weight:600}
+  .tb-meta .ok{color:var(--green)}
+
+  /* ---- controls ---- */
+  .controls{display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin:20px 0 8px}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#0c1a1c}
+  .seg button{font-family:var(--mono); font-size:12px; letter-spacing:.05em; color:var(--ink-dim);
+              background:transparent; border:0; padding:8px 13px; cursor:pointer; transition:.15s}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button[aria-pressed="true"]{background:#15302f; color:var(--gold)}
+  .seg button:hover{color:var(--ink)}
+  .btn{font-family:var(--mono); font-size:12px; letter-spacing:.05em; color:var(--green);
+       background:#0c1f1b; border:1px solid #1c4a3c; border-radius:9px; padding:8px 14px; cursor:pointer; transition:.15s}
+  .btn:hover{background:#123027; box-shadow:0 0 0 1px #1c4a3c, 0 0 22px -6px var(--green)}
+  .hint{font-family:var(--mono); font-size:11px; color:var(--ink-faint); letter-spacing:.05em; margin-left:auto}
+
+  /* ---- stage ---- */
+  .stagewrap{position:relative; border:1px solid var(--line); border-radius:14px; overflow:hidden;
+             background:radial-gradient(700px 620px at 50% 46%,#12262a,transparent 72%), #091113}
+  svg#web{display:block; width:100%; height:auto}
+  .node{cursor:pointer}
+  .node circle,.node polygon,.node rect{transition:filter .15s, opacity .2s}
+  .node:hover circle,.node:hover polygon,.node:hover rect{filter:brightness(1.5)}
+  .lbl{font-family:var(--mono); fill:var(--ink); letter-spacing:.02em; pointer-events:none}
+  .lbl.dim{fill:var(--ink-faint)}
+  .ringlbl{font-family:var(--mono); fill:var(--ink-faint); letter-spacing:.34em; text-transform:uppercase;
+           pointer-events:none}
+  .edge{fill:none}
+  .fogged{opacity:.11 !important; filter:saturate(.3)}
+  .fogged .lbl{opacity:0}
+  @media (prefers-reduced-motion:no-preference){
+    .sweep{stroke-dasharray:14 500; animation:none}
+    .sweep.go{animation:dash 1.5s ease-in-out forwards}
+    @keyframes dash{from{stroke-dashoffset:514}to{stroke-dashoffset:0}}
+  }
+
+  /* ---- tooltip ---- */
+  #tip{position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-118%);
+       background:#0a1618; border:1px solid #244; border-radius:9px; padding:9px 11px; min-width:150px;
+       max-width:250px; box-shadow:0 18px 40px -18px #000; transition:opacity .12s; z-index:5}
+  #tip .t-name{font-family:var(--mono); font-size:12.5px; color:var(--ink); letter-spacing:.02em}
+  #tip .t-kind{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; margin-top:3px}
+  #tip .t-desc{font-size:12px; color:var(--ink-dim); margin-top:6px; line-height:1.45}
+  #tip .t-grade{font-family:var(--mono); font-size:10.5px; margin-top:7px; letter-spacing:.04em}
+
+  /* ---- prose sections ---- */
+  section{margin-top:46px}
+  h2{font-family:var(--mono); font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal);
+     margin:0 0 4px; display:flex; align-items:center; gap:10px}
+  h2::before{content:""; width:22px; height:1px; background:var(--teal); opacity:.6}
+  .lede{color:var(--ink-dim); max-width:74ch; margin:0 0 18px; font-size:14.5px}
+  .grid{display:grid; gap:12px}
+  .cols-2{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+  .cols-3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .card{border:1px solid var(--line); border-radius:11px; background:linear-gradient(180deg,#0f1e20,#0c191b);
+        padding:14px 15px}
+  .card h3{font-family:var(--mono); font-size:13px; margin:0 0 6px; letter-spacing:.02em; color:var(--ink)}
+  .card p{margin:0; font-size:13.5px; color:var(--ink-dim)}
+  .card .tag{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint)}
+  .card.conn{border-left:2px solid var(--line)}
+  .card.conn p{font-size:13px; line-height:1.5}
+  .card.conn b{color:var(--ink)}
+  .cite{font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-faint)}
+  .callout{border:1px solid var(--line); border-left:2px solid var(--diff); border-radius:11px;
+           background:linear-gradient(180deg,#141020,#0d0c17); padding:13px 15px; margin-top:12px}
+  .callout p{margin:0; font-size:13.5px; color:var(--ink-dim)}
+
+  table.tax{width:100%; border-collapse:collapse; font-size:13.5px; overflow:hidden; border-radius:11px}
+  table.tax th,table.tax td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  table.tax thead th{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+                     color:var(--ink-faint); background:#0e1c1e}
+  table.tax td:first-child{font-family:var(--mono); color:var(--ink); white-space:nowrap}
+  table.tax tr:last-child td{border-bottom:0}
+  .swatch{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:7px; vertical-align:baseline;
+          box-shadow:0 0 0 1px #0006}
+  .scroll{overflow-x:auto; border:1px solid var(--line); border-radius:11px}
+
+  ol.calls{counter-reset:c; list-style:none; padding:0; margin:0; display:grid; gap:9px}
+  ol.calls li{position:relative; border:1px solid var(--line); border-left:2px solid var(--green); border-radius:9px;
+              padding:11px 14px 11px 46px; background:#0d1a1c; font-size:13.5px; color:var(--ink-dim)}
+  ol.calls li::before{counter-increment:c; content:counter(c); position:absolute; left:14px; top:11px;
+      font-family:var(--mono); font-size:12px; color:var(--green)}
+  ol.calls b{color:var(--ink); font-weight:600}
+
+  ol.build{list-style:none; counter-reset:b; padding:0; margin:0; display:grid; gap:7px}
+  ol.build li{font-family:var(--mono); font-size:12.5px; color:var(--ink-dim); padding-left:30px; position:relative; line-height:1.5}
+  ol.build li::before{counter-increment:b; content:counter(b,decimal-leading-zero); position:absolute; left:0; top:0; color:var(--gold)}
+  ol.build b{color:var(--ink); font-weight:600}
+  ol.build .rule{color:var(--diff)}
+
+  .legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-family:var(--mono); font-size:11.5px; color:var(--ink-dim);
+          margin-top:12px; letter-spacing:.03em}
+  .legend span{display:inline-flex; align-items:center}
+  footer{margin-top:56px; padding-top:18px; border-top:1px solid var(--line); font-family:var(--mono);
+          font-size:11px; color:var(--ink-faint); letter-spacing:.05em; display:flex; flex-wrap:wrap; gap:6px 18px}
+  footer .ok{color:var(--green)}
+  .em-gold{color:var(--gold)} .em-elec{color:var(--elec)} .em-green{color:var(--green)} .em-teal{color:var(--teal)} .em-diff{color:var(--diff)}
+</style>
+
+<div class="wrap">
+
+  <a href="../../projects/voltwright.html" style="display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink-dim);text-decoration:none;margin:0 0 14px">◀ VoltWright</a>
+  <div class="tb">
+    <div class="tb-top">
+      <div style="flex:1 1 auto">
+        <p class="kicker">VoltWright · Curriculum Progression · concept sheet</p>
+        <h1>The <span class="rose">Rectifier Rose</span></h1>
+        <p class="sub">The skill web is a real balanced circuit: a full-bridge / nested-Wheatstone diamond where
+          <b>radius = assessed mastery</b>, the two tracks are a <b>differential pair over a central ground spine</b>,
+          and a rank greens only when the <b>Wheatstone-null</b> balances — both legs graded. One netlist, two views
+          (this page &amp; the 3D board-menu). Three connection domains ride it:
+          <b class="em-elec">AC power distribution</b> (left) and <b class="em-gold">PCB logic</b> (right) are the
+          pair's two conductors; <b class="em-diff">comms</b> is the signal it carries.</p>
+      </div>
+    </div>
+    <div class="tb-meta">
+      <div>SHAPE<b>full-bridge diamond</b></div>
+      <div>TEACHES<b>power · comms · logic</b></div>
+      <div>ARCHITECTURE<b class="ok">LOCKED · v0.1</b></div>
+      <div>GRADE<b>Wheatstone-null</b></div>
+      <div>UNLOCK<b>competency only</b></div>
+      <div>SPEC<b>one netlist · two views</b></div>
+    </div>
+  </div>
+
+  <div class="controls" role="group" aria-label="web controls">
+    <div class="seg" role="group" aria-label="view">
+      <button id="v-arch" aria-pressed="true">ARCHITECT VIEW</button>
+      <button id="v-begin" aria-pressed="false">BEGINNER VIEW</button>
+    </div>
+    <button class="btn" id="energize">⚡ ENERGIZE THREAD</button>
+    <span class="hint">hover a node · beginner view = the corridor a novice actually sees</span>
+  </div>
+
+  <div class="stagewrap">
+    <svg id="web" viewBox="-180 -40 1360 1125" role="img"
+         aria-label="The Rectifier Rose progression web: a symmetric bridge diamond of skill nodes, electrical wing left, pcbcore wing right, ground capstone at center, 3-phase career crown at top, sources at the bottom.">
+      <defs>
+        <radialGradient id="core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#8affce"/><stop offset="45%" stop-color="#3ee484"/>
+          <stop offset="100%" stop-color="#0f6b47"/>
+        </radialGradient>
+        <filter id="soft"><feGaussianBlur stdDeviation="2.2"/></filter>
+        <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="4.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g id="g-rings"></g>
+      <g id="g-edges"></g>
+      <g id="g-inter"></g>
+      <g id="g-spine"></g>
+      <g id="g-nodes"></g>
+      <g id="g-anno"></g>
+    </svg>
+    <div id="tip" aria-hidden="true"></div>
+  </div>
+
+  <div class="legend" aria-hidden="true">
+    <span><span class="swatch" style="background:var(--gold)"></span>PCB LOGIC — pcbcore wing (KING · solid)</span>
+    <span><span class="swatch" style="background:var(--elec)"></span>AC POWER DIST — ElectricalCore wing (provisional · dashed)</span>
+    <span><span class="swatch" style="background:var(--diff)"></span>COMMS — the differential bus on the axis</span>
+    <span><span class="swatch" style="background:var(--green)"></span>ground spine · capstone</span>
+    <span><span class="swatch" style="background:var(--teal)"></span>interleave-bridge</span>
+    <span><span class="swatch" style="background:var(--pb)"></span>3-phase career crown</span>
+  </div>
+
+  <section>
+    <h2>How to read the shape</h2>
+    <p class="lede">Every element is a real electrical object — the structure <em>is</em> the physics, not decoration.
+      Symmetry is a macro privilege; the underlying prerequisite graph stays a true DAG even where locally asymmetric.</p>
+    <div class="grid cols-3">
+      <div class="card"><span class="tag">center</span><h3 class="em-green">Ground-star + PLC capstone</h3><p>The bridge null/detector node = VOLTWRIGHT rank. A board you designed drives gear you wired — graded by <em>both</em> graders at once.</p></div>
+      <div class="card"><span class="tag">radius</span><h3>Mastery = prestige ring</h3><p>Apprentice (rim) → Journeyman → Foreman → Master → center. Pathing rim→center <em>is</em> current flowing source→ground.</p></div>
+      <div class="card"><span class="tag">vertical axis</span><h3>The two tracks, a diff-pair</h3><p><span class="em-elec">Left = ElectricalCore</span> (dashed, provisional) · <span class="em-gold">right = pcbcore</span> (solid gold). They converge on the reference plane — pcbcore-is-king, in geometry.</p></div>
+      <div class="card"><span class="tag">rings inward</span><h3>Distill-from-flagship spiral</h3><p>Each inner ring re-renders the <em>same</em> subcircuit at higher realism (Bruner). No bespoke tutorial levels.</p></div>
+      <div class="card"><span class="tag">top vertex</span><h3 style="color:var(--pb)">3-phase career crown</h3><p>Factory L1 · Comms L2 · Data-center L3 — the only place 3-fold is primary. Tappable at Master: breadth-after-competency.</p></div>
+      <div class="card"><span class="tag">grade</span><h3>Wheatstone-null = GF_Inspector</h3><p>A ring greens only when <em>both</em> mirror legs are graded — "learn both sides" is a physical constraint, not a nag.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The three main connections — grounded in real standards</h2>
+    <p class="lede">The web teaches three real connection domains — but they are <em>not</em> three co-equal spokes
+      (that was the 3-fold we rejected). They are the <b>anatomy of a differential link</b>: the two wings are the
+      two conductors, the ground spine is the reference, and <b class="em-diff">Comms is the signal the pair carries</b>.
+      Muscle · mind · nerves.</p>
+    <div class="grid cols-3">
+      <div class="card conn" style="border-left-color:var(--elec)">
+        <span class="tag" style="color:var(--elec)">left wing · muscle</span>
+        <h3 class="em-elec">AC Power Distribution</h3>
+        <p><b>Connections:</b> service entrance → panelboard / busbar → feeder → breaker → Δ-Y transformer → branch → load; grounding electrode + bonding jumper.<br>
+        <b>Standard:</b> phase-ID by voltage class — <em>mandated</em> neutral white/grey · EGC green · high-leg orange; phases by convention (208 V blk·red·blu / 480 V brn·org·yel); MV by stripe-count. <span class="cite">phase-identification.md · conductor-sizing.md</span><br>
+        <b>Teaches:</b> get energy source→load safely — ampacity, grounding &amp; bonding, Δ-Y.</p>
+      </div>
+      <div class="card conn" style="border-left-color:var(--gold)">
+        <span class="tag" style="color:var(--gold)">right wing · mind</span>
+        <h3 class="em-gold">PCB Logic</h3>
+        <p><b>Connections:</b> power rail (+3V3 / +5V) · GND pour / plane · signal trace · bus · clock · decoupling · via · header.<br>
+        <b>Standard:</b> Okabe-Ito net-role colours (colourblind-safe) · controlled impedance · the stackup. <span class="cite">ART-BIBLE.md · skin.py</span><br>
+        <b>Teaches:</b> the brain that decides — routing, planes, decoupling, net roles.</p>
+      </div>
+      <div class="card conn" style="border-left-color:var(--diff)">
+        <span class="tag" style="color:var(--diff)">the axis · nerves</span>
+        <h3 class="em-diff">Comms — the signal on the pair</h3>
+        <p><b>Connections:</b> differential buses — USB 90 Ω (board controlled-Z) · RS-485/Modbus &amp; CAN 120 Ω (terminate both ends + bias) · Ethernet 100 Ω; PLC I/O, −48 VDC telecom; the <b>card-edge cluster bus (CBUS_H/L · SYNC_CLK)</b> = the co-op link.<br>
+        <b>Standard:</b> Zdiff + terminate + length-match + continuous reference plane + symmetric vias. <span class="cite">differential-pairs.md</span><br>
+        <b>Teaches:</b> common-mode rejection — the signature "you actually learned this," recurring USB → RS-485/CAN → Ethernet.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><b class="em-diff">The unification.</b> The two wings are the two conductors of a differential pair; the central
+      spine is the ground reference plane; <b>Comms is the differential signal carried on the pair</b>, closing at the
+      PLC capstone — a board (logic) that talks to gear (power) over a bus. Every diff-pair law is a statement about
+      <em>that</em> relationship: <em>continuous reference plane</em> = keep the spine solid under the pair ·
+      <em>symmetry</em> = the two wings mirror · <em>terminate both physical ends</em> = the two source benches and the
+      crown. And the diff-pair difficulty gradient — keep-together → match + terminate → control-Z — <em>is</em> the
+      mastery rings.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Node taxonomy — structure is physics</h2>
+    <div class="scroll">
+      <table class="tax">
+        <thead><tr><th>Web element</th><th>Electrical object</th><th>Curriculum meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="swatch" style="background:var(--gold)"></span>Rim / class</td><td>source terminal (supply pad / service)</td><td>E0 · P0 entry — where progression-current originates</td></tr>
+          <tr><td>Travel edge</td><td>plain conductor segment</td><td>pathing — but never bare filler; a checkable micro-drill</td></tr>
+          <tr><td>Small node</td><td>series passive (R, small L/C)</td><td>one granular step between notables</td></tr>
+          <tr><td><span class="swatch" style="background:var(--signal)"></span>Notable</td><td>functional component (op-amp, xfmr tap, filter, footprint)</td><td>a named competency — green'd by its GF_Inspector scenario</td></tr>
+          <tr><td><span class="swatch" style="background:var(--copper)"></span>Keystone</td><td>topology-defining element <em>with a tradeoff</em></td><td>engineering-judgment nodes; the downside is <em>electrically why</em></td></tr>
+          <tr><td><span class="swatch" style="background:var(--diff)"></span>Socket / jewel</td><td>IC socket / DIN slot / daughtercard header</td><td>the routing-editor challenge instance (2-layer vs 6-layer variant)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede" style="margin-top:14px">Four laws: <b>current flow</b> = directed prerequisite gating (an unpowered node
+      carries no current → unreachable → out-of-order learning impossible <em>by KVL</em>) · <b>ground</b> = the center + the
+      return every path closes to · <b>a phase</b> = one career spoke · <b>a voltage domain</b> = a bounded ring at one potential.</p>
+  </section>
+
+  <section>
+    <h2>The five operator calls — locked</h2>
+    <ol class="calls">
+      <li><b>ElectricalCore is off the per-node critical path.</b> Each wing advances independently, node-by-node; only the rank-up ring-balance needs both legs. The KING never stalls.</li>
+      <li><b>Early electrical grade = connectivity / continuity only</b> (does it close the loop, not solved values) until the model hardens on those very rungs.</li>
+      <li><b>Control / PLC stays subordinate</b> — the convergence center + a local puzzle; never a co-equal domain (which would revive the rejected 3-phase-as-spine reading).</li>
+      <li><b>Every rung is a realism-parameterized variant of ONE flagship subcircuit</b> — the concentric "same circuit, higher realism" unit. No bespoke levels.</li>
+      <li><b>One netlist, two views</b> — this full-screen web page and the 3D board-menu, with pcbcore authoring the menu board. "The menu is the map."</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>What the web forces — build order</h2>
+    <p class="lede">The load-bearing mechanic is #1; it is pure data over the DAG, no risky new engine code. Everything else layers on.</p>
+    <ol class="build">
+      <li><b>Grade-gated current-flow ALLOCATOR</b> — a node lights only if a continuous path to a source exists AND its prereqs are graded ≥ bar.</li>
+      <li><b>Two-render isomorphism</b> — web page &amp; 3D board-menu are ONE netlist (IC-to-IC travel == pathing the DAG).</li>
+      <li><b>Wheatstone-null RING grader</b> — thin logic over GF_Inspector; electrical leg on the lighter provisional bar early.</li>
+      <li><b>"Close-the-loop" completion verb</b> — net-closed (DRC 0/0) &amp; energized (IsLive) collapse to one continuity check.</li>
+      <li><b>Shared 45° routing head</b> proven identical between pcbcore &amp; the facility router.</li>
+      <li><b>Parametric socket layer</b> — drop a distill variant (2-layer↔6-layer) into the same notable.</li>
+      <li><b>Interleave-bridge authoring</b> — a first-class content type: re-test an earlier competency in a new context.</li>
+      <li><b>Balanced-party co-op</b> on the card-edge cluster bus (SYNC_CLK lockstep; idle player = neutral-current inefficiency).</li>
+      <li><b>Career-crown tap</b> + Δ-vs-Y late keystone — last; the reward tier.</li>
+      <li class="rule">RULES OUT — fungible point-buy · travel-filler · XP-only unlocks · respec of knowledge · lattice cross-links for looks.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span class="ok">◆ architecture locked</span>
+    <span>balanced-circuit curriculum · one netlist drives this page + the board-menu</span>
+    <span>palette: Okabe-Ito net roles + NEC/IEC phases · ENIG gold #f8c448 · sacred green #3ee484</span>
+    <span>concept mockup — not the shipped UI</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const SVG="http://www.w3.org/2000/svg";
+  const cx=500, cy=560;
+  // ring index 0=outer(Apprentice) .. 3=inner(Master); center=VOLTWRIGHT
+  const RINGS=[
+    {r:440, rank:"APPRENTICE"},
+    {r:340, rank:"JOURNEYMAN"},
+    {r:240, rank:"FOREMAN"},
+    {r:140, rank:"MASTER"},
+  ];
+  // theta: 0=right, 90=up(top), 180=left, 270=down(bottom). y is up-positive (SVG flipped in pos()).
+  function pos(R, thetaDeg){
+    const t=thetaDeg*Math.PI/180, ux=Math.cos(t), uy=Math.sin(t);
+    const den=Math.abs(ux)+Math.abs(uy)||1;
+    return {x:cx+R*ux/den, y:cy-R*uy/den};
+  }
+  function el(tag,attrs){const e=document.createElementNS(SVG,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+  const gRings=document.getElementById("g-rings"),
+        gEdges=document.getElementById("g-edges"),
+        gInter=document.getElementById("g-inter"),
+        gSpine=document.getElementById("g-spine"),
+        gNodes=document.getElementById("g-nodes"),
+        gAnno=document.getElementById("g-anno");
+
+  // ---- concentric diamond rings + rank labels ----
+  RINGS.forEach((rg,i)=>{
+    const p=[pos(rg.r,0),pos(rg.r,90),pos(rg.r,180),pos(rg.r,270)];
+    gRings.appendChild(el("polygon",{points:p.map(q=>q.x+","+q.y).join(" "),
+      fill:"none", stroke:"#1c3438", "stroke-width":i===0?1.5:1, "stroke-dasharray":i===0?"":"1 6"}));
+    // rank label along the upper-left edge (nudged up/out to clear the sockets + node labels)
+    const lp=pos(rg.r+6,136);
+    const t=el("text",{x:lp.x-6,y:lp.y-4,"text-anchor":"end","font-size":9.5,class:"ringlbl"});
+    t.textContent=rg.rank; gRings.appendChild(t);
+  });
+
+  // ---- curated node model ----
+  // wing: 'R'=pcbcore(gold) 'L'=electrical(elec) 'S'=spine(green)
+  // type: source notable keystone socket small travel capstone crown
+  const N=[];
+  const add=o=>{o.p = o.p || ((o.ring==='c')?{x:cx,y:cy}:pos(RINGS[o.ring].r,o.th)); N.push(o); return o;};
+
+  // center capstone
+  add({id:'cap',ring:'c',th:0,wing:'S',type:'capstone',label:'VOLTWRIGHT',
+       desc:'Ground-star + PLC bridge capstone. The Wheatstone null — graded by BOTH graders at once.',grade:'both'});
+
+  // sources (outer ring, bottom vertices)
+  add({id:'E0',ring:0,th:232,wing:'L',type:'source',label:'Service · Power Bench',
+       desc:'E0 · the split-phase service terminal. Ohm / V·I·P — a breaker toggles a load.',grade:'continuity'});
+  add({id:'P0',ring:0,th:308,wing:'R',type:'source',label:'Supply · Signal Bench',
+       desc:'P0 · the board supply pad. schematic→netlist, one trace, DRC.',grade:'pcbcore'});
+
+  // right column (pcbcore) notables climbing inward
+  add({id:'P1',ring:1,th:0,wing:'R',type:'notable',label:'Trace + GND pour',desc:'P1 · a signal trace referenced to a ground pour — F.Cu+B.Cu, vias, 45° routing, the Okabe-Ito net-role colour code.',grade:'pcbcore'});
+  add({id:'P2',ring:2,th:0,wing:'R',type:'notable',label:'Power / GND planes',desc:'P2 · dedicated power & ground planes + decoupling — the connection every fast net needs: a clean, continuous return.',grade:'pcbcore'});
+  add({id:'P3',ring:3,th:0,wing:'R',type:'notable',label:'Controlled-Z pair',desc:'P3 · controlled-impedance differential pairs, HS confinement, the 6-layer stackup.',grade:'pcbcore'});
+
+  // left column (electrical) notables
+  add({id:'E1',ring:1,th:180,wing:'L',type:'notable',label:'Panelboard · split-φ',desc:'E1 · a 120/240 center-tap panel — two hots + neutral + the main bonding jumper. Also hardens the electrical model.',grade:'continuity'});
+  add({id:'E2',ring:2,th:180,wing:'L',type:'notable',label:'Feeder + Δ-Y',desc:'E2 · a 208/480 feeder into a wye/delta transformer — phasors, rotation, balance.',grade:'provisional'});
+  add({id:'E3',ring:3,th:180,wing:'L',type:'notable',label:'Switchgear + MV',desc:'E3 · MV service → switchgear: the service transformer, LOTO, grounding, ampacity/fault.',grade:'provisional'});
+
+  // keystones (rank gates on the wings — voltage-domain crossings)
+  add({id:'kR12',ring:1,th:330,wing:'R',type:'keystone',label:'stackup jump',desc:'Add a plane layer (+isolation / −cost). A voltage-domain crossing.',grade:'—'});
+  add({id:'kR23',ring:2,th:340,wing:'R',type:'keystone',label:'diff-pair law',desc:'Controlled impedance (+SI / −routing freedom).',grade:'—'});
+  add({id:'kL12',ring:1,th:210,wing:'L',type:'keystone',label:'Δ-Y transform',desc:'Wye↔delta (+balance / −neutral). Engineering judgment.',grade:'—'});
+  add({id:'kL23',ring:2,th:200,wing:'L',type:'keystone',label:'single-pt ground',desc:'Single vs distributed ground (+noise / −flexibility).',grade:'—'});
+
+  // super-keystone on the spine at Master: card-edge cluster connector
+  add({id:'cardedge',ring:3,th:244,wing:'C',type:'keystone',label:'card-edge cluster bus',desc:'The co-op terminus of the comms axis — carries CBUS_H/L + SYNC_CLK + power/GND fingers. P3 + the multiplayer bus + board-menu identity: a super-keystone.',grade:'both'});
+  // shared router node on the spine (bottom, between sources and center)
+  add({id:'router',ring:2,th:296,wing:'S',type:'notable',label:'45° routing head',desc:'The octilinear discipline shared by pcbcore AND the facility routing-editor.',grade:'shared'});
+  // comms — the differential-pair PROGRESSION climbing the axis (USB → RS-485/CAN → Ethernet), per differential-pairs.md
+  add({id:'commsUSB',ring:1,th:270,wing:'C',type:'notable',label:'USB · 90Ω',desc:'The first differential pair: board-level controlled-Z, keep the pair together, ±150 mil skew. The Apprentice diff-pair skill.',grade:'controlled-Z'});
+  add({id:'comms485',ring:2,th:270,wing:'C',type:'notable',label:'RS-485/CAN · 120Ω',desc:'A terminated industrial bus — 120Ω at both physical ends + fail-safe bias. Same core skill as USB, longer reach.',grade:'terminate'});
+  add({id:'commsEth',ring:3,th:270,wing:'C',type:'notable',label:'Ethernet · 100Ω',desc:'100Ω pairs + magnetics, 4-pair symmetry, via-count matched. The Master diff-pair skill.',grade:'controlled-Z'});
+
+  // sockets (routing-editor challenge instances)
+  add({id:'sR',ring:2,th:22,wing:'R',type:'socket',label:'distill socket',desc:'Drop a 2-layer↔6-layer board into the same notable.',grade:'variant'});
+  add({id:'sL',ring:2,th:158,wing:'L',type:'socket',label:'raceway socket',desc:'Conduit/tray/bus routing challenge instance (routing-editor slice).',grade:'variant'});
+
+  // crown: 3-phase careers above the top vertex
+  const crownR=RINGS[0].r+92;
+  [['cA','AC Power Dist · L1','var(--pa)',96],['cB','Communications · L2','var(--pb)',90],['cC','Logic Processing · L3','var(--pc)',84]]
+    .forEach(([id,label,col,th])=>{
+      const p=pos(crownR,th);
+      add({id,ring:'crown',th,wing:'crown',type:'crown',label,col,desc:'Career spoke — the 3-phase supply crown. Tappable only at Master (breadth after competency).',grade:'Master',p});
+    });
+
+  // ---- procedural filler small/travel nodes for web density ----
+  const occupied={};
+  N.forEach(n=>{ if(n.ring!=='c'&&n.ring!=='crown') occupied[n.ring+':'+Math.round(n.th)]=true; });
+  const slots=[18,45,72,108,135,162,198,225,252,288,315,342];
+  RINGS.forEach((rg,ri)=>{
+    slots.forEach(th=>{
+      // keep clear of the very top vertex (crown lane) and exact source/notable slots
+      if(th>78&&th<102) return;
+      let clash=false;
+      for(let d=-14;d<=14;d++){ if(occupied[ri+':'+Math.round(th+d)]){clash=true;break;} }
+      if(clash) return;
+      const wing = (th>90&&th<270)?'L':'R';
+      const type = (th%2===0 && ri>0)?'small':'travel';
+      add({id:'f'+ri+'_'+th,ring:ri,th,wing,type,
+        label:(wing==='L'?'facility drill':'copper drill'),
+        desc:(type==='small'?'A series-passive micro-skill (one concept).':'A conductor micro-drill — never bare filler.'),
+        grade:wing==='L'?'continuity':'pcbcore'});
+      occupied[ri+':'+Math.round(th)]=true;
+    });
+  });
+
+  const byId=Object.fromEntries(N.map(n=>[n.id,n]));
+
+  // ---- edges: radial PREREQ (inward) + ring laterals ----
+  function wingColor(w){return w==='L'?'var(--elec)':w==='R'?'var(--gold)':w==='C'?'var(--diff)':'var(--green)';}
+  function edgeLine(a,b,opt){opt=opt||{};
+    return el("line",{x1:a.p.x,y1:a.p.y,x2:b.p.x,y2:b.p.y,
+      stroke:opt.stroke||"#24424a","stroke-width":opt.w||1,
+      "stroke-dasharray":opt.dash||"","stroke-linecap":"round",opacity:opt.op||0.5,class:"edge"});}
+
+  // radial: connect each node to nearest-theta node one ring inward (higher ring index); ring3 -> center
+  function ringNodes(ri){return N.filter(n=>n.ring===ri);}
+  RINGS.forEach((rg,ri)=>{
+    ringNodes(ri).forEach(n=>{
+      let target;
+      if(ri<RINGS.length-1){
+        const inner=ringNodes(ri+1);
+        let best=1e9; inner.forEach(m=>{let d=Math.abs(((m.th-n.th+540)%360)-180); if(d<best){best=d;target=m;}});
+      } else { target=byId.cap; }
+      if(target){
+        const w=n.wing;
+        gEdges.appendChild(edgeLine(n,target,{stroke:wingColor(w==='S'?'S':w),
+          w:(n.type==='notable'||n.type==='source')?1.6:1,
+          dash:(w==='L')?"4 5":"", op:(w==='S')?0.75:0.55}));
+      }
+    });
+  });
+  // ring laterals (thin, along the diamond between theta-adjacent nodes)
+  RINGS.forEach((rg,ri)=>{
+    const ns=ringNodes(ri).slice().sort((a,b)=>a.th-b.th);
+    for(let i=0;i<ns.length;i++){
+      const a=ns[i], b=ns[(i+1)%ns.length];
+      if(a===b) continue;
+      gEdges.appendChild(edgeLine(a,b,{stroke:"#1b3238",w:0.8,op:0.4}));
+    }
+  });
+
+  // ---- ground spine (vertical green) + ground-star ----
+  const topSpine=pos(RINGS[0].r,90), botSpine=pos(RINGS[0].r,270);
+  gSpine.appendChild(el("line",{x1:cx,y1:botSpine.y+34,x2:cx,y2:topSpine.y-30,
+    stroke:"var(--green)","stroke-width":2,opacity:.42,"stroke-linecap":"round"}));
+  // ---- COMMS differential bus carried ON the axis (the signal over the ground reference) ----
+  const commsCol="var(--diff)", dxb=7, yTopC=topSpine.y-30, yBotC=botSpine.y+34;
+  [-dxb,dxb].forEach(off=>{
+    gSpine.appendChild(el("line",{x1:cx+off,y1:yBotC,x2:cx+off,y2:yTopC,
+      stroke:commsCol,"stroke-width":1.6,opacity:.7,"stroke-dasharray":"1 4","stroke-linecap":"round"}));
+  });
+  // 120Ω terminations at both physical ends of the bus
+  [yTopC,yBotC].forEach(yy=>{
+    gSpine.appendChild(el("rect",{x:cx-dxb-2,y:yy-3,width:dxb*2+4,height:6,rx:1.5,
+      fill:"#170f1a",stroke:commsCol,"stroke-width":1.2,opacity:.85}));
+  });
+
+  // ---- interleave-bridges (dashed teal, bowed) ----
+  function bow(a,b,k){const mx=(a.p.x+b.p.x)/2, my=(a.p.y+b.p.y)/2;
+    const dx=b.p.x-a.p.x, dy=b.p.y-a.p.y; const nx=-dy, ny=dx; const L=Math.hypot(nx,ny)||1;
+    return `M ${a.p.x} ${a.p.y} Q ${mx+nx/L*k} ${my+ny/L*k} ${b.p.x} ${b.p.y}`;}
+  [['P3','P1',80,'re-test pour / return path'],['E3','E1',-80,'re-test bonding']].forEach(([a,b,k,lab])=>{
+    const path=el("path",{d:bow(byId[a],byId[b],k),stroke:"var(--teal)","stroke-width":1.6,fill:"none",
+      "stroke-dasharray":"2 7",opacity:.7});
+    path.setAttribute("data-inter","1"); gInter.appendChild(path);
+  });
+
+  // ---- crown edges (phase-colored dashed from Master ring to crown) ----
+  ['cA','cB','cC'].forEach(id=>{
+    const c=byId[id]; const anchor=pos(RINGS[3].r,90);
+    gInter.appendChild(el("path",{d:`M ${anchor.x} ${anchor.y} Q ${cx} ${cy-RINGS[0].r} ${c.p.x} ${c.p.y}`,
+      stroke:c.col,"stroke-width":1.4,fill:"none","stroke-dasharray":"3 6",opacity:.6}));
+  });
+
+  // ---- node glyphs ----
+  const tip=document.getElementById("tip"), stage=document.querySelector(".stagewrap");
+  function showTip(n,evt){
+    tip.innerHTML=`<div class="t-name">${n.label}</div>
+      <div class="t-kind" style="color:${n.wing==='L'?'var(--elec)':n.wing==='R'?'var(--gold)':n.wing==='C'?'var(--diff)':'var(--green)'}">${n.type}${n.wing==='L'?' · AC power dist (provisional)':n.wing==='R'?' · PCB logic (pcbcore, proven)':n.wing==='C'?' · comms (differential)':''}</div>
+      <div class="t-desc">${n.desc||''}</div>
+      ${n.grade?`<div class="t-grade" style="color:${gradeColor(n.grade)}">grader ▸ ${n.grade}</div>`:''}`;
+    const r=stage.getBoundingClientRect();
+    tip.style.left=(evt.clientX-r.left)+"px"; tip.style.top=(evt.clientY-r.top)+"px";
+    tip.style.opacity=1;
+  }
+  function gradeColor(g){return g==='pcbcore'?'var(--gold)':g==='continuity'||g==='both'||g==='shared'?'var(--green)':g==='provisional'?'var(--elec)':'var(--ink-dim)';}
+  function hideTip(){tip.style.opacity=0;}
+
+  function drawNode(n){
+    const g=el("g",{class:"node","data-id":n.id,"data-wing":n.wing,tabindex:0});
+    const col = n.wing==='L'?'var(--elec)':n.wing==='R'?'var(--gold)':n.wing==='C'?'var(--diff)':'var(--green)';
+    const provisional = n.wing==='L';
+    let r=4, glyph;
+    if(n.type==='capstone'){
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:34,fill:"none",stroke:"var(--green)","stroke-width":1,opacity:.35}));
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:21,fill:"url(#core)",filter:"url(#glow)"}));
+      // ground-star hatch
+      for(let i=0;i<3;i++) g.appendChild(el("line",{x1:n.p.x-13+i*4,y1:n.p.y+15+i*4,x2:n.p.x+13-i*4,y2:n.p.y+15+i*4,stroke:"var(--green)","stroke-width":1.4,opacity:.8}));
+      r=null;
+    } else if(n.type==='source'){
+      glyph=el("rect",{x:n.p.x-8,y:n.p.y-8,width:16,height:16,rx:3,fill:"#0c1a1c",stroke:col,"stroke-width":2});
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:20,fill:"none",stroke:col,"stroke-width":1,opacity:.4,"stroke-dasharray":provisional?"3 4":""}));
+      g.appendChild(glyph);
+    } else if(n.type==='keystone'){
+      glyph=el("rect",{x:n.p.x-8,y:n.p.y-8,width:16,height:16,fill:"#1a1206",stroke:"var(--copper)","stroke-width":2,transform:`rotate(45 ${n.p.x} ${n.p.y})`});
+      g.appendChild(glyph);
+    } else if(n.type==='socket'){
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:8,fill:"none",stroke:"var(--diff)","stroke-width":2}));
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:3.2,fill:"var(--diff)"}));
+    } else if(n.type==='crown'){
+      const s=11;
+      g.appendChild(el("polygon",{points:`${n.p.x},${n.p.y-s} ${n.p.x-s},${n.p.y+s} ${n.p.x+s},${n.p.y+s}`,
+        fill:"#0d1a1c",stroke:n.col,"stroke-width":2}));
+    } else if(n.type==='notable'){
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:8.5,fill:"#0c1a1c",stroke:col,"stroke-width":2.4,
+        "stroke-dasharray":provisional?"3 3":""}));
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:3,fill:col}));
+    } else { // small / travel
+      r = n.type==='small'?4.2:2.6;
+      g.appendChild(el("circle",{cx:n.p.x,cy:n.p.y,r:r,fill:provisional?"#0c1a1c":col,
+        stroke:col,"stroke-width":n.type==='small'?1.6:1,opacity:.9,
+        "stroke-dasharray":provisional&&n.type==='small'?"2 2":""}));
+    }
+
+    // labels for the important nodes
+    if(['capstone','source','notable','keystone','crown','socket'].includes(n.type)){
+      const armH  = n.type==='notable' && (n.th===0 || n.th===180); // horizontal wing notables
+      const commsV= n.type==='notable' && n.th===270;               // vertical comms-bus notables
+      let below = n.p.y>cy-10 && n.type!=='crown';
+      if(armH) below = (n.ring%2===1);   // ring1 below · ring2 above · ring3 below → neighbours never share a line
+      if(n.type==='socket' && n.p.x<cx-20) below = true; // left socket drops below, clearing the rank labels
+      let anchor="middle", lx=n.p.x,
+          ly=n.type==='capstone'? n.p.y+50 : (below? n.p.y+22 : n.p.y-16);
+      if(commsV){ anchor="end"; lx=n.p.x-13; ly=n.p.y+3.5; }        // sit left of the differential bus, not on it
+      else if(n.id==='cardedge'){ anchor="end"; lx=n.p.x+34; }      // keep this wide label clear of the vertical bus
+      else if(n.type==='crown'){ if(n.p.x<cx-5) lx-=38; else if(n.p.x>cx+5) lx+=38; } // fan the (longer) crown trio apart
+      const t=el("text",{x:lx,y:ly,"text-anchor":anchor,"font-size":n.type==='capstone'?12.5:11.5,
+        class:"lbl"+(['small','travel'].includes(n.type)?" dim":"")});
+      t.textContent=n.label; t.setAttribute("fill", n.type==='capstone'?'var(--green)':(n.type==='crown'?n.col:'var(--ink)'));
+      g.appendChild(t);
+    }
+
+    g.addEventListener("mouseenter",e=>showTip(n,e));
+    g.addEventListener("mousemove",e=>showTip(n,e));
+    g.addEventListener("mouseleave",hideTip);
+    g.addEventListener("focus",e=>{const r=n.p; showTip(n,{clientX:stage.getBoundingClientRect().left+ (r.x/1000)*stage.clientWidth, clientY:stage.getBoundingClientRect().top+(r.y/1080)*stage.clientHeight});});
+    g.addEventListener("blur",hideTip);
+    gNodes.appendChild(g);
+  }
+  N.forEach(drawNode);
+
+  // ---- annotations ----
+  function anno(x,y,txt,col,anchor,opt){opt=opt||{};
+    const t=el("text",{x,y,"text-anchor":anchor||"start","font-size":opt.fs||10.5, class:"ringlbl"});
+    if(opt.ls!=null) t.style.letterSpacing=opt.ls;  // inline style beats the .ringlbl class tracking
+    t.setAttribute("fill",col||"var(--ink-faint)"); t.textContent=txt; gAnno.appendChild(t);}
+  anno(cx, -14, "▲ 3-PHASE CAREER CROWN — TAPPABLE AT MASTER", "var(--pb)","middle");
+  anno(cx-RINGS[0].r-4, cy, "◀ AC POWER DISTRIBUTION · EC (prov.)", "var(--elec)","end",{fs:10,ls:".03em"});
+  anno(cx+RINGS[0].r+4, cy, "PCB LOGIC · pcbcore (KING) ▶", "var(--gold)","start",{fs:10,ls:".03em"});
+  anno(cx+20, cy-150, "COMMS ▸ diff-pair bus · USB→RS-485→ETH", "var(--diff)","start",{fs:10,ls:".07em"});
+  anno(cx, botSpine.y+64, "SOURCES ▾  path inward = current → ground", "var(--ink-faint)","middle");
+
+  // ---- golden thread / energize: the recommended spine path ----
+  const threadIds=['E0','E1','router','cardedge','cap','P1','P2','P3'];
+  function threadPath(){
+    const pts=['P0','P1','P2','P3','cap','E3','E2','E1','E0'].map(id=>byId[id].p);
+    return pts;
+  }
+  const gt=el("path",{d:"",stroke:"var(--gold)","stroke-width":2.4,fill:"none",opacity:.9,
+    filter:"url(#glow)","stroke-linecap":"round","stroke-linejoin":"round",class:"sweep"});
+  gSpine.appendChild(gt);
+  function setThread(){
+    const pts=['P0','P1','P2','P3','cap','E3','E2','E1','E0'].map(id=>byId[id].p);
+    gt.setAttribute("d","M "+pts.map(p=>p.x+" "+p.y).join(" L "));
+  }
+  setThread();
+  document.getElementById("energize").addEventListener("click",()=>{
+    gt.classList.remove("go"); void gt.getBBox(); gt.classList.add("go");
+  });
+
+  // ---- view toggle: architect (all) vs beginner (corridor only) ----
+  const vArch=document.getElementById("v-arch"), vBegin=document.getElementById("v-begin");
+  const corridor=new Set(['E0','E1','P0','P1','router','cap']);
+  function setView(begin){
+    vArch.setAttribute("aria-pressed",(!begin).toString());
+    vBegin.setAttribute("aria-pressed",begin.toString());
+    document.querySelectorAll("#g-nodes .node").forEach(g=>{
+      const id=g.getAttribute("data-id");
+      g.classList.toggle("fogged", begin && !corridor.has(id));
+    });
+    gAnno.style.opacity = begin?0.25:1;
+    document.querySelectorAll("#g-inter [data-inter]").forEach(p=>p.style.opacity=begin?0.06:0.7);
+  }
+  vArch.addEventListener("click",()=>setView(false));
+  vBegin.addEventListener("click",()=>setView(true));
+})();
+</script>
