@@ -86,6 +86,39 @@ html,body{margin:0}
 .pf .pins span{font-family:var(--mono);font-size:10.5px;color:var(--pin);
   border:1px dashed color-mix(in srgb,var(--pin) 42%,var(--line));border-radius:3px;padding:2px 7px}
 .pf .more{margin-top:auto;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--acc)}
+/* index BANDS: a group label is a .dim divider tinted with the structure accent, so the cards page
+   reads as labelled sections (Flagships / Infrastructure / Applications) instead of one flat grid. */
+.pf .dim.band{margin-top:34px;color:var(--acc)}
+.pf .dim.band::after{background:color-mix(in srgb,var(--rail) 40%,transparent)}
+/* card footer row: a media BADGE (▶ playable / ⊞ modules) on the left, "open ▸" on the right. The
+   playable badge wears the featured accent + a faint fill so the real interactive demos pull the eye. */
+.pf .cardfoot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px}
+.pf .cardfoot .more{margin-top:0}
+.pf .badges{margin:0 0 12px}
+.pf .badge{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--note);white-space:nowrap;
+  border:1px solid color-mix(in srgb,var(--note) 38%,var(--line));border-radius:999px;padding:3px 10px;display:inline-flex;gap:5px;align-items:center}
+.pf .badge.play{color:var(--acc5);border-color:color-mix(in srgb,var(--acc5) 55%,var(--line));background:color-mix(in srgb,var(--acc5) 12%,transparent)}
+/* slim 'row' cards: standard app cards span the FULL width and stack as a slim horizontal series,
+   CHAINED by a short pin-1 connector wire dropping from each row into the next (daisy-chained on a
+   left bus). overflow:visible lets the connector cross the grid gap; corner marks drop for a clean row. */
+.pf .part.row{grid-column:1/-1;flex-direction:row;align-items:center;gap:20px;padding:13px 22px 13px 24px;overflow:visible}
+.pf .part.row .row-head{flex:none;min-width:150px;display:flex;flex-direction:column;gap:3px}
+.pf .part.row .part-name{font-size:16px;margin:0}
+.pf .part.row .part-sub{margin:0}
+.pf .part.row .part-desc{flex:1;margin:0;font-size:13px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf .part.row .row-tail{flex:none;display:flex;align-items:center;gap:12px;margin-left:auto}
+.pf .part.row .pins{margin:0}.pf .part.row .more{margin:0}
+.pf .part.row::before{content:none}
+.pf .part.row::after{content:"";border:0;left:50%;right:auto;transform:translateX(-50%);top:100%;bottom:auto;width:2px;height:19px;border-radius:2px;
+  background:color-mix(in srgb,var(--rail) 55%,transparent)}
+.pf .part.row:last-child::after{content:none}
+/* showcase image: a framed screenshot/render under a project's title block. */
+.pf .shot{margin:20px 0 0;padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:color-mix(in srgb,var(--panel) 40%,transparent)}
+.pf .shot img{display:block;width:100%;height:auto}
+.pf .shot figcaption{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--ink3);padding:9px 13px;border-top:1px solid var(--line)}
+@container (max-width:520px){.pf .part.row{flex-wrap:wrap;gap:7px 14px}
+  .pf .part.row .part-desc{white-space:normal;flex-basis:100%;order:3}
+  .pf .part.row .row-tail{margin-left:0}}
 .pf .back{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;color:var(--ink3);margin-bottom:18px}
 .pf .back:hover{color:var(--acc)}
 .pf .spec{position:relative;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--panel) 40%,transparent);padding:2px 22px 22px;margin-top:18px}
