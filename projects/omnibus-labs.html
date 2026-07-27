@@ -18,13 +18,14 @@
 (function(){
   var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.addEventListener('click', function(e){
-    var a = e.target && e.target.closest ? e.target.closest('a.part') : null;
+    var a = e.target && e.target.closest ? e.target.closest('a.part, a.rung') : null;
     if (!a || !a.getAttribute('href') || a.dataset.sealing) return;
     if (rm || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     e.preventDefault();
     a.dataset.sealing = '1';
     a.classList.add('sealing');
-    a.insertAdjacentHTML('afterbegin', '<i class="seal-loop" aria-hidden="true"></i>'); // chasing border light
+    // grid cards get a chasing border light; ladder rungs energise the whole rung (contact → coil).
+    if (a.classList.contains('part')) a.insertAdjacentHTML('afterbegin', '<i class="seal-loop" aria-hidden="true"></i>');
     setTimeout(function(){ window.location.href = a.href; }, 440);
   });
 })();
