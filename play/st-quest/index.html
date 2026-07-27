@@ -31,6 +31,17 @@
   .lesson-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:6px 0 20px}
   select{font-family:var(--mono);font-size:13px;background:var(--panel);color:var(--ink);
     border:1px solid color-mix(in srgb,var(--acc) 34%,var(--line));border-radius:6px;padding:8px 12px;min-width:min(420px,80vw)}
+  button.nav{padding:8px 12px;font-size:13px}
+  button.nav.ghost{border-color:var(--line);color:var(--ink3)}
+  .xpwrap{display:flex;align-items:center;gap:9px;margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink2);flex-wrap:wrap}
+  .xp{color:var(--acc);font-weight:700}
+  .pbar{width:120px;height:8px;border-radius:4px;background:rgba(255,255,255,.09);overflow:hidden;border:1px solid var(--line)}
+  .pfill{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px color-mix(in srgb,var(--acc) 60%,transparent);transition:width .45s ease}
+  .pnum{color:var(--ink3)}
+  .nextbtn{margin-top:10px;font-family:var(--mono);font-size:13px;cursor:pointer;border-radius:6px;padding:10px 18px;border:1px solid var(--acc);background:var(--acc);color:var(--bg);font-weight:700}
+  .nextbtn:hover{background:color-mix(in srgb,var(--acc) 84%,#fff)}
+  .xpgain{color:var(--acc);font-weight:700;animation:rise .5s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   @media (max-width:900px){.grid{grid-template-columns:1fr}}
   .panel{position:relative;border:1px solid var(--line);border-radius:8px;
@@ -94,6 +105,14 @@
   <div class="lesson-bar">
     <label class="tag" for="lesson" style="color:var(--ink3)">Lesson</label>
     <select id="lesson" disabled><option>loading…</option></select>
+    <button class="nav" id="prev" disabled title="Previous lesson">◀</button>
+    <button class="nav" id="next" disabled title="Next lesson">▶</button>
+    <div class="xpwrap">
+      <span class="xp" id="xp">XP 0</span>
+      <span class="pbar"><span class="pfill" id="pfill"></span></span>
+      <span class="pnum" id="pnum">0 / 15</span>
+      <button class="nav ghost" id="resetprog" title="Reset progress">reset</button>
+    </div>
   </div>
 
   <div class="grid">
@@ -181,9 +200,28 @@
 
   var pyodide = null, LESSONS = [], cur = 0;
 
+  // ---- progress / XP (persisted in localStorage; 10 XP per completed lesson) ----
+  var PKEY = "stquest.progress.v1";
+  var DONE = (function(){ try { return new Set(JSON.parse(localStorage.getItem(PKEY) || "[]")); } catch(e){ return new Set(); } })();
+  function saveProg(){ try { localStorage.setItem(PKEY, JSON.stringify(Array.from(DONE))); } catch(e){} }
+  function refreshProgress(){
+    var total = LESSONS.length || 15, n = DONE.size;
+    $("xp").textContent = "XP " + (n * 10);
+    $("pnum").textContent = n + " / " + total;
+    $("pfill").style.width = (total ? Math.round(100 * n / total) : 0) + "%";
+    var sel = $("lesson");
+    for (var i = 0; i < sel.options.length; i++){
+      var L = LESSONS[i]; if (!L) continue;
+      sel.options[i].textContent = (DONE.has(L.id) ? "✓ " : "") + ((i+1<10?"0":"") + (i+1)) + " — " + L.title;
+    }
+  }
+  function go(idx){ if (idx < 0 || idx >= LESSONS.length) return; $("lesson").value = idx; renderLesson(idx); }
+  function refreshNav(){ $("prev").disabled = cur <= 0; $("next").disabled = cur >= LESSONS.length - 1; }
+
   function renderLesson(idx){
     var L = LESSONS[idx]; if(!L) return;
     cur = idx;
+    refreshNav();
     $("concept").innerHTML = md(L.concept);
     var v = "";
     if(L.ab) v += '<div class="ab"><b>Allen-Bradley · Studio 5000</b>'+esc(L.ab)+'</div>';
@@ -200,10 +238,17 @@
       html += '<div class="chk '+(c.passed?"pass":"fail")+'"><span class="mark">'+(c.passed?"✓":"✗")+'</span><span>'+esc(c.message)+
         (!c.passed && c.hint ? '<span class="hint">↳ '+esc(c.hint)+'</span>' : '')+'</span></div>';
     });
-    html += r.win
-      ? '<div class="verdict win">✓ All checks pass — lesson complete. Your ST executed and the outputs are correct.</div>'
-      : '<div class="verdict more">Not yet — fix the failing checks above and Run again.</div>';
+    if (r.win){
+      var L = LESSONS[cur], fresh = !DONE.has(L.id);
+      if (fresh){ DONE.add(L.id); saveProg(); refreshProgress(); }
+      html += '<div class="verdict win">✓ All checks pass — lesson complete. Your ST executed and the outputs are correct.'
+            + (fresh ? ' <span class="xpgain">+10 XP</span>' : '') + '</div>';
+      if (cur < LESSONS.length - 1) html += '<button class="nextbtn" id="nextlesson">Next lesson →</button>';
+    } else {
+      html += '<div class="verdict more">Not yet — fix the failing checks above and Run again.</div>';
+    }
     $("results").innerHTML = html;
+    var nl = $("nextlesson"); if (nl) nl.addEventListener("click", function(){ go(cur + 1); });
   }
 
   function run(){
@@ -246,12 +291,16 @@
       });
       sel.disabled = false;
       sel.addEventListener("change", function(){ renderLesson(+sel.value); });
-      ["code","run","reset","solution"].forEach(function(id){ $(id).disabled = false; });
+      ["code","run","reset","solution","prev","next","resetprog"].forEach(function(id){ $(id).disabled = false; });
       $("run").addEventListener("click", run);
       $("reset").addEventListener("click", function(){ $("code").value = LESSONS[cur].starter || ""; $("results").innerHTML=""; });
       $("solution").addEventListener("click", function(){ if(LESSONS[cur].solution) $("code").value = LESSONS[cur].solution; });
+      $("prev").addEventListener("click", function(){ go(cur - 1); });
+      $("next").addEventListener("click", function(){ go(cur + 1); });
+      $("resetprog").addEventListener("click", function(){ if(confirm("Reset lesson progress and XP to zero?")){ DONE.clear(); saveProg(); refreshProgress(); } });
+      refreshProgress();
       renderLesson(0);
-      $("status").textContent = "ready — 15 lessons";
+      $("status").textContent = LESSONS.length + " lessons — write ST, then Run";
     }catch(e){
       $("concept").innerHTML = '<div class="loading">Failed to load the interpreter: '+esc(String(e))+'<br><br>This playground needs to be served over HTTP (it is, on the live site) and to reach the Pyodide CDN.</div>';
       $("status").textContent = "load failed";

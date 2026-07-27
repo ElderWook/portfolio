@@ -79,7 +79,8 @@ html,body{margin:0}
 .pf .refdes{position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
   background:var(--acc4);box-shadow:0 0 8px color-mix(in srgb,var(--acc4) 55%,transparent)}
 .pf .part.feat .refdes{background:var(--acc5);box-shadow:0 0 8px color-mix(in srgb,var(--acc5) 55%,transparent)}
-.pf .part-name{margin:0 0 6px;font-size:19px;letter-spacing:-.01em;font-weight:700;color:var(--ink)}
+.pf .part-name{margin:0 0 4px;font-size:19px;letter-spacing:-.01em;font-weight:700;color:var(--ink)}
+.pf .part-sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin:0 0 11px;display:block}
 .pf .part-desc{margin:0 0 13px;color:var(--ink2);font-size:14px}
 .pf .pins{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
 .pf .pins span{font-family:var(--mono);font-size:10.5px;color:var(--pin);
