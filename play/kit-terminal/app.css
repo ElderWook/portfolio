@@ -44,3 +44,4 @@ h1 .dim{color:var(--acc);font-weight:400}
 @media (prefers-reduced-motion:reduce){.cursor{animation:none}}
 .screen::-webkit-scrollbar{width:10px}
 .screen::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+.foot-mark{text-align:center;font-size:11px;letter-spacing:.1em;color:var(--ink3);opacity:.7;margin-top:26px}
