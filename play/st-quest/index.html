@@ -102,12 +102,18 @@
   .io-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
   .io-arrow{color:var(--acc);font-size:18px;align-self:center}
   .io-item{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink2);padding:5px 0;transition:opacity .2s}
-  .io-item b{margin-left:auto;color:var(--ink);font-weight:600}
-  .io-item.ok b{color:var(--acc)} .io-item.bad b{color:var(--bad)}
+  .io-item .ion{color:var(--ink2)}
+  .io-item .ioval{margin-left:auto;display:flex;align-items:center;gap:9px}
+  .io-item .ioval b{color:var(--ink);font-weight:600}
+  .io-item.on .ioval b{color:var(--acc)}      /* energized  → green */
+  .io-item.off .ioval b{color:var(--bad)}     /* de-energized → red  */
   .io-item.pending{opacity:.35}
+  .mism{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--acc2)}
   .lamp{width:11px;height:11px;border-radius:50%;background:#26304a;border:1px solid var(--line);flex:none;transition:all .25s}
   .lamp.on{background:var(--acc);box-shadow:0 0 9px var(--acc);border-color:var(--acc)}
+  .lamp.off{background:color-mix(in srgb,var(--bad) 78%,#000);box-shadow:0 0 8px color-mix(in srgb,var(--bad) 50%,transparent);border-color:var(--bad)}
   .muted{color:var(--ink3);font-family:var(--mono);font-size:12px}
+  a.tag{text-decoration:none} a.tag:hover{color:color-mix(in srgb,var(--acc) 78%,#fff)}
   .loading{font-family:var(--mono);font-size:13px;color:var(--ink3);padding:30px 4px}
   .loading .bar{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-right:8px;animation:pulse 1s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
@@ -119,7 +125,7 @@
   <header class="top">
     <a class="back" href="../../projects/plc/st-quest.html">◀ ST-Quest</a>
     <h1><span class="gnd">⏚</span> ST-Quest <span style="color:var(--ink3);font-weight:400">/ Structured Text Playground</span></h1>
-    <span class="tag">runs in your browser</span>
+    <a class="tag" href="ST-Quest_Course_Handbook.pdf" target="_blank" rel="noopener">Player handbook ↗</a>
   </header>
 
   <div class="lesson-bar">
@@ -203,15 +209,21 @@
     "    return dict(win=all_passed(res), checks=[dict(passed=r.passed, message=r.message, hint=(r.hint or '')) for r in res])",
     "from stquest.interpreter import Interpreter, _values_equal",
     "def scan_trace(code, steps):",
-    "    interp = Interpreter(code); out = []",
+    "    names = []",
     "    for step in steps:",
-    "        inp = step.get('set', {})",
-    "        interp.set_inputs(inp); interp.scan()",
+    "        for k in step.get('set', {}):",
+    "            if k not in names: names.append(k)",
+    "    interp = Interpreter(code); out = []; state = {}",
+    "    for step in steps:",
+    "        state.update(step.get('set', {}))",
+    "        interp.set_inputs(step.get('set', {})); interp.scan()",
+    "        inputs = {}",
+    "        for k in names: inputs[k] = state[k] if k in state else interp.get(k)",
     "        outs = {}; ok = True",
     "        for name, want in step.get('expect', {}).items():",
     "            got = interp.get(name); m = _values_equal(got, want)",
     "            ok = ok and m; outs[name] = dict(got=got, want=want, ok=m)",
-    "        out.append(dict(inputs=inp, outputs=outs, ok=ok))",
+    "        out.append(dict(inputs=inputs, outputs=outs, ok=ok))",
     "    return out",
     "def run_scan(idx, code):",
     "    l = LESSONS[idx]; sim = None",
@@ -315,18 +327,23 @@
   function hideScan(){ clearScanTimer(); $("scan").hidden = true; }
   function stage(name){ var els = document.querySelectorAll('#scan .stage'); for(var i=0;i<els.length;i++){ els[i].classList.toggle('active', els[i].getAttribute('data-s') === name); } }
   function fmt(v){ return v === true ? 'TRUE' : v === false ? 'FALSE' : String(v); }
-  function ioItem(name, val, cls){
+  // energized (TRUE) → green · de-energized (FALSE) → red · number/other → neutral
+  function ioRow(name, val, opts){
+    opts = opts || {};
     var isBool = (val === true || val === false);
-    var lamp = isBool ? '<span class="lamp'+(val ? ' on' : '')+'"></span>' : '';
-    return '<div class="io-item '+(cls||'')+'">'+lamp+'<span>'+esc(name)+'</span><b>'+esc(fmt(val))+'</b></div>';
+    var pending = !!opts.pending;
+    var cls = pending ? 'pending' : (isBool ? (val ? 'on' : 'off') : '');
+    var lamp = pending || !isBool ? '<span class="lamp"></span>' : '<span class="lamp '+(val ? 'on' : 'off')+'"></span>';
+    var mism = (!pending && opts.want !== undefined && !opts.ok) ? '<em class="mism">≠ want '+esc(fmt(opts.want))+'</em>' : '';
+    return '<div class="io-item '+cls+'">'+lamp+'<span class="ion">'+esc(name)+'</span><span class="ioval">'+mism+'<b>'+esc(fmt(val))+'</b></span></div>';
   }
   function renderInputs(step){
     var ks = Object.keys(step.inputs || {});
-    $("io-in").innerHTML = ks.length ? ks.map(function(k){ return ioItem(k, step.inputs[k], ''); }).join('') : '<span class="muted">— no field inputs this scan —</span>';
+    $("io-in").innerHTML = ks.length ? ks.map(function(k){ return ioRow(k, step.inputs[k], {}); }).join('') : '<span class="muted">— no field inputs —</span>';
   }
   function renderOutputs(step, reveal){
     var outs = step.outputs || {}, ks = Object.keys(outs);
-    $("io-out").innerHTML = ks.length ? ks.map(function(k){ var o = outs[k]; return ioItem(k, o.got, reveal ? (o.ok ? 'ok' : 'bad') : 'pending'); }).join('') : '<span class="muted">— no outputs —</span>';
+    $("io-out").innerHTML = ks.length ? ks.map(function(k){ var o = outs[k]; return ioRow(k, o.got, reveal ? { want: o.want, ok: o.ok } : { pending: true }); }).join('') : '<span class="muted">— no outputs —</span>';
   }
   function animateScan(steps){
     clearScanTimer(); lastScan = steps; $("scan").hidden = false;
