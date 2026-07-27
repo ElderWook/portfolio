@@ -2,178 +2,100 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ElderWook — Portfolio</title>
 <meta name="description" content="Local-first tools and simulation engines for electrical &amp; industrial work.">
-<style>html,body{margin:0}
-.pf{--bg:#0b1020;--panel:#131b2e;--line:rgba(255,255,255,.12);--ink:#eaf0fb;--ink2:#aab6d0;--ink3:#7c88a3;--acc:#33d17a;--acc2:#33d17a;--acc3:#f6d32d;--acc4:#3ad4dd;--acc5:#33d17a;--border:#33d17a;--border-feat:#f5c211;--corner:#ffffff;--corner-feat:#ffffff;--head:#33d17a;--pin:#f6d32d;--note:#38bdf8;--rail:#33d17a;--radius:16px;--grid:28px;--maxw:1480px;
-  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;}
-@property --glow{syntax:"<number>";inherits:false;initial-value:0}
-/* per-rung energize: a brief pulse that cascades down the parts on load, following the rail sweep */
-@property --energize{syntax:"<number>";inherits:false;initial-value:0}
-@keyframes helm-rung{0%{--energize:0}45%{--energize:1}100%{--energize:0}}
-@view-transition{navigation:auto}
-.pf{color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100%;
-  background:
-    radial-gradient(1200px 480px at 8% -10%,color-mix(in srgb,var(--acc2) 13%,transparent),transparent 60%),
-    repeating-linear-gradient(0deg,transparent 0 calc(var(--grid) - 1px),color-mix(in srgb,var(--acc3) 5%,transparent) calc(var(--grid) - 1px) var(--grid)),
-    repeating-linear-gradient(90deg,transparent 0 calc(var(--grid) - 1px),color-mix(in srgb,var(--acc3) 5%,transparent) calc(var(--grid) - 1px) var(--grid)),
-    var(--bg);
-  background-attachment:fixed}
-.pf *{box-sizing:border-box}
-.pf .sheet{position:relative;max-width:var(--maxw);margin:0 auto;padding:clamp(24px,3.4vw,52px) clamp(22px,4vw,64px);
-  border:1px solid color-mix(in srgb,var(--acc) 13%,var(--line));border-radius:12px}
-.pf .sheet::before,.pf .sheet::after{content:"";position:absolute;width:18px;height:18px;pointer-events:none;
-  border-color:color-mix(in srgb,var(--acc) 42%,transparent)}
-.pf .sheet::before{top:-1px;left:-1px;border-top:2px solid;border-left:2px solid;border-top-left-radius:12px}
-.pf .sheet::after{bottom:-1px;right:-1px;border-bottom:2px solid;border-right:2px solid;border-bottom-right-radius:12px}
-/* the accent is now a dashed "trace" wrapping the WHOLE header frame (schematic-wire feel) */
-.pf .titleblock{position:relative;display:grid;grid-template-columns:1fr auto;gap:4px 24px;align-items:start;
-  border:1.5px dashed color-mix(in srgb,var(--acc) 38%,transparent);border-radius:8px;
-  background:color-mix(in srgb,var(--panel) 50%,transparent);padding:24px 26px 22px}
-/* pin-1 indicator (an IC's pin-1 dot) in the header corner */
-.pf .titleblock::before{content:"";position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
-  background:var(--head);box-shadow:0 0 10px color-mix(in srgb,var(--head) 60%,transparent)}
-.pf .tb-brand{grid-column:1;display:flex;align-items:center;gap:11px;margin:0;font-family:var(--mono);
-  font-size:clamp(24px,4.5vw,40px);font-weight:800;letter-spacing:.01em;line-height:1.02;color:var(--ink)}
-.pf .tb-brand .gnd{color:var(--acc);font-weight:400}
-.pf .tb-role{grid-column:1;font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--acc)}
-.pf .tb-meta{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;align-items:flex-end;gap:5px;
-  font-family:var(--mono);font-size:11px;color:var(--ink3);text-align:right;white-space:nowrap}
-.pf .tb-meta b{color:var(--acc2);font-weight:600;letter-spacing:.08em}
-.pf .tb-meta a{color:var(--ink2);text-decoration:none;border-bottom:1px dotted color-mix(in srgb,var(--acc3) 55%,transparent)}
-.pf .tb-meta a:hover{color:var(--acc3)}
-.pf .tb-blurb{grid-column:1/-1;margin:10px 0 0;color:var(--ink2);font-size:15.5px;max-width:72ch}
-.pf .dim{display:flex;align-items:center;gap:12px;margin:42px 2px 20px;font-family:var(--mono);
-  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)}
-.pf .dim::before{content:"";width:26px;height:6px;flex:none;border-left:1px solid var(--acc2);border-right:1px solid var(--acc2);
-  background:linear-gradient(var(--acc2),var(--acc2)) center/100% 1px no-repeat}
-/* the divider reads as a continuous ladder RUNG wire (extends the contact tick) reaching to the rail */
-.pf .dim::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--rail) 26%,transparent)}
-.pf .schematic{container-type:inline-size;display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;position:relative}
-/* Ladder-logic POWER RAILS flanking the parts grid: a faint static line + an "energize" glow that
-   sweeps down once on load (the cards are the rungs; hover energises each via --glow). Purely
-   decorative pseudo-elements — never gate content — and the sweep is disabled for reduced-motion. */
-/* SOLID power rails (LadderStudio style): a clean, present rail line + an energize glow that sweeps
-   down once on load. No dashes/ties — the rungs are the section dividers + the seal-in on click. */
-.pf .schematic::before,.pf .schematic::after,.pf .spec::before,.pf .spec::after{content:"";position:absolute;top:-4px;bottom:-4px;width:2.5px;pointer-events:none;border-radius:2px;
-  background-color:color-mix(in srgb,var(--rail) 44%,transparent);
-  background-image:linear-gradient(180deg,transparent 0,color-mix(in srgb,var(--rail) 95%,#fff) 6%,transparent 13%);
-  background-repeat:no-repeat;background-size:100% 320%;background-position:0 -25%;
-  animation:helm-energize 1.5s cubic-bezier(.4,0,.2,1) .15s 1 both}
-.pf .schematic::before,.pf .spec::before{left:-13px}
-.pf .schematic::after,.pf .spec::after{right:-13px}
-@keyframes helm-energize{from{background-position:0 -25%}to{background-position:0 125%}}
-@media (prefers-reduced-motion:reduce){.pf .schematic::before,.pf .schematic::after,.pf .spec::before,.pf .spec::after,.pf .part{animation:none}}
-.pf .part{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
-  border:1px solid var(--line);border-radius:6px;background:color-mix(in srgb,var(--panel) 42%,transparent);
-  padding:22px 20px 18px;overflow:hidden;--glow:0;transition:--glow .45s ease,transform .18s ease,background .18s ease;
-  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border) calc(var(--glow)*24%),transparent),0 0 calc(var(--energize)*18px) color-mix(in srgb,var(--rail) calc(var(--energize)*40%),transparent);
-  border-color:color-mix(in srgb,var(--border) calc(16% + var(--glow)*55% + var(--energize)*20%),var(--line));
-  animation:helm-rung .8s ease-out calc(var(--i,0)*65ms + 250ms) 1 both}
-/* featured parts are FLAGGED via the featured-border accent — frame, glow + corner marks — so
-   "featured" reads at a glance while every part still tiles uniformly (a BOM lists parts equally).
-   The pin-1 dot is its OWN accent (--dot), shared by all parts, so it stays a consistent indicator. */
-.pf .part.feat{border-color:color-mix(in srgb,var(--border-feat) calc(22% + var(--glow)*55% + var(--energize)*20%),var(--line));
-  box-shadow:0 0 calc(var(--glow)*26px) color-mix(in srgb,var(--border-feat) calc(var(--glow)*26%),transparent),0 0 calc(var(--energize)*18px) color-mix(in srgb,var(--rail) calc(var(--energize)*40%),transparent)}
-.pf .part.feat::before,.pf .part.feat::after{border-color:color-mix(in srgb,var(--corner-feat) calc(82% + var(--glow)*18%),transparent)}
-.pf .part::before,.pf .part::after{content:"";position:absolute;width:13px;height:13px;pointer-events:none;
-  border-color:color-mix(in srgb,var(--corner) calc(82% + var(--glow)*18%),transparent)}
-.pf .part::before{top:9px;right:9px;border-top:1.5px solid;border-right:1.5px solid}
-.pf .part::after{bottom:9px;left:9px;border-bottom:1.5px solid;border-left:1.5px solid}
-/* the pin-1 dot (an IC's pin-1) in each card's top-left corner — the IC accents: standard=acc4,
-   featured=acc5 (the featured override below), so the dots flag featured-vs-standard by colour too */
-.pf .refdes{position:absolute;left:14px;top:14px;width:7px;height:7px;border-radius:50%;
-  background:var(--acc4);box-shadow:0 0 8px color-mix(in srgb,var(--acc4) 55%,transparent)}
-.pf .part.feat .refdes{background:var(--acc5);box-shadow:0 0 8px color-mix(in srgb,var(--acc5) 55%,transparent)}
-.pf .part-name{margin:0 0 6px;font-size:19px;letter-spacing:-.01em;font-weight:700;color:var(--ink)}
-.pf .part-desc{margin:0 0 13px;color:var(--ink2);font-size:14px}
-.pf .pins{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
-.pf .pins span{font-family:var(--mono);font-size:10.5px;color:var(--pin);
-  border:1px dashed color-mix(in srgb,var(--pin) 42%,var(--line));border-radius:3px;padding:2px 7px}
-.pf .more{margin-top:auto;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--acc)}
-.pf .back{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;color:var(--ink3);margin-bottom:18px}
-.pf .back:hover{color:var(--acc)}
-.pf .spec{position:relative;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--panel) 40%,transparent);padding:2px 22px 22px;margin-top:18px}
-.pf .hl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px}
-.pf .hl li{font-size:14px;color:var(--ink2);padding-left:20px;position:relative;font-family:var(--mono)}
-.pf .hl li::before{content:"\2014";position:absolute;left:0;color:var(--note)}
-.pf .clinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.pf .clinks a{font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--acc);
-  border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);border-radius:5px;padding:5px 12px}
-.pf .clinks a:hover{background:color-mix(in srgb,var(--acc) 12%,transparent)}
-.pf .foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
-  gap:14px;flex-wrap:wrap;align-items:center;font-family:var(--mono);font-size:11px;color:var(--ink3)}
-.pf .foot .flinks{display:inline-flex;gap:14px;flex-wrap:wrap}
-.pf .foot a{color:var(--ink3);text-decoration:none}
-.pf .foot a:hover{color:var(--acc)}
-@container (max-width:440px){.pf .schematic{grid-template-columns:1fr}}
-</style>
-</head><body><div class="pf"><div class="sheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230b1020%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2222%22%20text-anchor%3D%22middle%22%20font-family%3D%22ui-monospace%2Cmonospace%22%20font-size%3D%2218%22%20font-weight%3D%22700%22%20fill%3D%22%2333d17a%22%3EE%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="style.css">
+</head><body class="pf"><div class="sheet">
   <header class="titleblock">
     <h1 class="tb-brand"><span class="gnd">⏚</span> ElderWook</h1>
     <div class="tb-role">Systems &amp; Software Engineer</div>
     <div class="tb-meta"><b>REV 0.1</b><a href="https://github.com/ElderWook">GitHub ↗</a></div>
     <p class="tb-blurb">I built a fleet of local-first apps, simulation engines, and a game about real electrical systems all stamped from one process kit (OGDK) so every project reads and ships the same way.</p>
   </header>
-  <div class="dim">Project Showcase</div>
-  <section class="schematic"><article class="part feat" style="--i:0"><span class="refdes"></span>
+  <div class="dim">Bill of materials &middot; 10 parts</div>
+  <section class="schematic"><a class="part feat" href="projects/ogdk.html" style="--i:0;view-transition-name:vt-ogdk"><span class="refdes"></span>
     <h3 class="part-name">OGDK — Oasis Games Dev Kit</h3>
     <p class="part-desc">An open, model-agnostic process kit for building software with AI agents without losing context, correctness, or files. Twin cross-platform tooling, a one-command gate, and a scaffolder that stamps every new project the same way.</p>
     <div class="pins"><span>Bash</span><span>PowerShell</span><span>Python</span><span>Git</span></div>
-    <ul class="hl"><li>Twin .ps1/.sh tooling with a behavioral-parity harness</li><li>One-command gate: integrity → coverage → tests</li><li>Privacy boundary enforced by a pre-commit marker gate</li></ul>
     
-    </article><article class="part feat" style="--i:1"><span class="refdes"></span>
+    
+    <span class="more">open ▸</span></a><a class="part feat" href="projects/helm.html" style="--i:1;view-transition-name:vt-helm"><span class="refdes"></span>
     <h3 class="part-name">HELM</h3>
     <p class="part-desc">The OGDK Editor — a Tauri app that drives the fleet and builds a public-safe portfolio.</p>
     <div class="pins"><span>Tauri</span><span>SvelteKit</span><span>Rust</span></div>
     
     
-    </article><article class="part feat" style="--i:2"><span class="refdes"></span>
+    <span class="more">open ▸</span></a><a class="part feat" href="projects/plc.html" style="--i:2;view-transition-name:vt-plc"><span class="refdes"></span>
     <h3 class="part-name">PLC</h3>
     <p class="part-desc">Controls &amp; automation portfolio + toolkit monorepo.</p>
     <div class="pins"><span>Electron</span><span>Python</span><span>ST</span></div>
     
     
-    </article><article class="part feat" style="--i:3"><span class="refdes"></span>
+    <span class="more">open ▸</span></a><a class="part feat" href="projects/voltwright.html" style="--i:3;view-transition-name:vt-voltwright"><span class="refdes"></span>
     <h3 class="part-name">VoltWright — electrical simulation game</h3>
     <p class="part-desc">A co-op game about wiring and energizing a real 480V industrial facility, built on a netlist-first C++ PCB/electrical engine with a 45° autorouter and a 6-layer signal-integrity stackup.</p>
     <div class="pins"><span>C++</span><span>CMake</span><span>Unreal Engine 5</span><span>KiCad</span></div>
-    <ul class="hl"><li>Netlist-first engine core (zero UI/engine deps)</li><li>Multilayer 45° router with per-net-class layer policy</li><li>6-layer stackup that meets SI constraints for all high-speed nets</li></ul>
     
-    </article><article class="part" style="--i:4"><span class="refdes"></span>
+    
+    <span class="more">open ▸</span></a><a class="part" href="projects/chronokeeper.html" style="--i:4;view-transition-name:vt-chronokeeper"><span class="refdes"></span>
     <h3 class="part-name">ChronoKeeper — cross-OS daily planner</h3>
     <p class="part-desc">A cross-platform ADHD-friendly daily planner that syncs to Apple Calendar via CalDAV, with recurring anchor frames and color-coded bucket calendars. Ships as a native desktop app.</p>
     <div class="pins"><span>Tauri v2</span><span>SvelteKit</span><span>CalDAV</span></div>
-    <ul class="hl"><li>Credentials in the OS keychain; iCloud as the sync backbone</li><li>In-app frame + bucket editor, persisted to config</li><li>Open-source, installs as a native taskbar app</li></ul>
-    <div class="clinks"><a href="https://github.com/ElderWook/ChronoKeeper">repo ↗</a></div>
-    </article><article class="part" style="--i:5"><span class="refdes"></span>
+    
+    
+    <span class="more">open ▸</span></a><a class="part" href="projects/openbook-release.html" style="--i:5;view-transition-name:vt-openbook-release"><span class="refdes"></span>
     <h3 class="part-name">OpenBook — local-first bookkeeping</h3>
     <p class="part-desc">Bookkeeping for contractors with no cloud and no accounts — a local-first ledger and estimate engine that keeps money math in integer cents and stays on-device.</p>
     <div class="pins"><span>Rust</span><span>Svelte 5</span><span>SQLite</span></div>
-    <ul class="hl"><li>Integer-cents money math (no float drift)</li><li>Isolated estimate engine with a supplier-flagged pipeline</li><li>Local-first SQLite store</li></ul>
     
-    </article><article class="part" style="--i:6"><span class="refdes"></span>
+    
+    <span class="more">open ▸</span></a><a class="part" href="projects/docgen.html" style="--i:6;view-transition-name:vt-docgen"><span class="refdes"></span>
     <h3 class="part-name">DocGen — local-first document generation</h3>
     <p class="part-desc">A desktop suite that generates contracts, estimates, and structured documents entirely on-device — no cloud, no accounts. Pure-core architecture with a thin Tauri/Svelte shell.</p>
     <div class="pins"><span>Rust</span><span>Tauri</span><span>Svelte 5</span><span>PDF</span></div>
-    <ul class="hl"><li>Pure core (zero Tauri/Svelte imports) → testable + portable</li><li>Deterministic PDF output from a document model</li><li>Local-first: your data never leaves the machine</li></ul>
     
-    </article><article class="part" style="--i:7"><span class="refdes"></span>
+    
+    <span class="more">open ▸</span></a><a class="part" href="projects/code2craft.html" style="--i:7;view-transition-name:vt-code2craft"><span class="refdes"></span>
     <h3 class="part-name">code2craft — parametric CNC fabrication</h3>
     <p class="part-desc">Code-driven CNC fabrication: parametric cabinetry generated from source, driving real Blender/CNC output from a compact toolchain.</p>
     <div class="pins"><span>Vite</span><span>React</span><span>Blender</span></div>
-    <ul class="hl"><li>Parametric parts from source, not a GUI</li><li>Gate-and-ship tooling for reproducible output</li></ul>
     
-    </article><article class="part" style="--i:8"><span class="refdes"></span>
+    
+    <span class="more">open ▸</span></a><a class="part" href="projects/xyzed.html" style="--i:8;view-transition-name:vt-xyzed"><span class="refdes"></span>
     <h3 class="part-name">xyzed</h3>
     <p class="part-desc">Professional-CAD-workflow accelerator on FreeCAD: scaffolds sketches + repetitive tasks the industry-standard way into hand-tunable .FCStd.</p>
     <div class="pins"><span>Python 3.12 (uv) + FreeCAD 1.1 (freecadcmd) + build123d (glTF util) + OpenCASCADE</span></div>
     
     
-    </article><article class="part" style="--i:9"><span class="refdes"></span>
+    <span class="more">open ▸</span></a><a class="part" href="projects/omnibus-labs.html" style="--i:9;view-transition-name:vt-omnibus-labs"><span class="refdes"></span>
     <h3 class="part-name">OmniBUS_Labs</h3>
     <p class="part-desc">A long-term vehicle CAN-bus &amp; embedded research lab.</p>
     <div class="pins"><span>STM32</span><span>PlatformIO</span><span>CAN</span></div>
     
     
-    </article></section>
+    <span class="more">open ▸</span></a></section>
   <footer class="foot"><span>ElderWook · Systems &amp; Software Engineer</span><span class="flinks"><a href="https://github.com/ElderWook">GitHub</a></span></footer>
-</div></div></body></html>
+</div><script>
+(function(){
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest ? e.target.closest('a.part, a.rung') : null;
+    if (!a || !a.getAttribute('href') || a.dataset.sealing) return;
+    if (rm || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    a.dataset.sealing = '1';
+    a.classList.add('sealing');
+    // grid cards get a chasing border light; ladder rungs energise the whole rung (contact → coil).
+    if (a.classList.contains('part')) a.insertAdjacentHTML('afterbegin', '<i class="seal-loop" aria-hidden="true"></i>');
+    setTimeout(function(){ window.location.href = a.href; }, 440);
+  });
+  // Reset the seal-in on pageshow — the back/forward CACHE restores this page in its exact state, so a
+  // card left mid-seal (class + injected loop) would come back stuck in the animation. Clear it every
+  // time the page is shown (covers bfcache restore and normal load).
+  window.addEventListener('pageshow', function(){
+    var s = document.querySelectorAll('.sealing');
+    for (var i=0;i<s.length;i++){ s[i].classList.remove('sealing'); if (s[i].dataset) delete s[i].dataset.sealing; }
+    var l = document.querySelectorAll('.seal-loop');
+    for (var j=0;j<l.length;j++){ if (l[j].parentNode) l[j].parentNode.removeChild(l[j]); }
+  });
+})();
+</script></body></html>
