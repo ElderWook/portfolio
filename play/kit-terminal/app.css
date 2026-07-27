@@ -37,6 +37,7 @@ h1 .dim{color:var(--acc);font-weight:400}
 .info{color:var(--sky)}
 .warn{color:var(--amber)}
 .err{color:var(--red)}
+.dim{color:var(--ink3)}
 .cursor{display:inline-block;width:8px;height:15px;background:var(--acc);margin-left:2px;vertical-align:-2px;
   animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}

@@ -12,14 +12,15 @@
   function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   function colorize(line) {
+    if (/█/.test(line)) return '<span class="ok">' + esc(line) + '</span>'; // ascii logo
     var s = esc(line);
     s = s.replace(/\[PASS\]/g, '<span class="ok">[PASS]</span>')
          .replace(/\[INFO\]/g, '<span class="info">[INFO]</span>')
          .replace(/\[WARN\]/g, '<span class="warn">[WARN]</span>')
          .replace(/\[FAIL\]/g, '<span class="err">[FAIL]</span>');
-    s = s.replace(/(GATE PASSED|COVERAGE OK|INTEGRITY OK|GIT IDENTITY OK|safe to commit|✓ in sync|\d+ passed|✔ done)/g, '<span class="ok">$1</span>');
-    s = s.replace(/(✗ dirty[^<]*|offline)/g, '<span class="warn">$1</span>');
-    s = s.replace(/(✓ in sync)/g, '<span class="ok">$1</span>');
+    s = s.replace(/(GATE PASSED|COVERAGE OK|INTEGRITY OK|GIT IDENTITY OK|safe to commit|✓ in sync|✓|\d+ passed|✔ done)/g, '<span class="ok">$1</span>');
+    s = s.replace(/(✗ dirty[^<]*|✗|offline[^<]*)/g, '<span class="warn">$1</span>');
+    s = s.replace(/●/g, '<span class="ok">●</span>').replace(/○/g, '<span class="dim">○</span>');
     return s;
   }
 
