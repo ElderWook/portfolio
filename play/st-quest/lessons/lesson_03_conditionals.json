@@ -1,0 +1,108 @@
+{
+  "id": "03",
+  "title": "IF / ELSIF -- Tank Pump with Real Analog Input",
+  "concept": "Conditional logic uses IF / ELSIF / ELSE / END_IF. Watch the spelling:\nELSIF (one E), END_IF, and a semicolon after END_IF;.\n\n    IF condition THEN\n        (* statements *)\n    ELSIF other_condition THEN\n        (* statements *)\n    END_IF;\n\nComparisons:  =  <>  <  >  <=  >=   ('not equal' is <> ).\n\nReal-world context: Tank_Level is a REAL from a level transmitter (e.g. a\n4-20 mA submersible or radar sensor) scaled to 0.0-100.0 % in the analog input\nmodule. Two setpoints (fill below 20 %, stop above 80 %) create a hysteresis\nband so the pump motor doesn't short-cycle -- rapid start/stop that burns out\ncontactors and motors.",
+  "ab_note": "In Studio 5000 the raw analog count is scaled (module engineering units or an\nSCL/CPT instruction) to give Tank_Level as a REAL. The IF/ELSIF then drives\nPump_Run. In practice you'd also AND in a Pump_OL overload and permissives\nbefore energizing the pump output.",
+  "siemens_note": "SCL is identical: IF / ELSIF / ELSE / END_IF;. The analog channel is scaled\n(NORM_X + SCALE_X) into a REAL level tag, then compared to the setpoints.",
+  "task": "Given Tank_Level : REAL (0-100 %) from the level transmitter and Pump_Run :\nBOOL (pump contactor output), write an IF statement that:\n\n    - Turns the pump ON  (Pump_Run := TRUE)  when Tank_Level < 20.0\n    - Turns the pump OFF (Pump_Run := FALSE) when Tank_Level > 80.0\n    - Leaves it unchanged between 20 and 80 (the hysteresis band)\n\nUse IF ... ELSIF ... END_IF; -- no ELSE needed.",
+  "starter": "(* Lesson 03 -- IF / ELSIF: Tank Pump from a Real Analog Level *)\n\nVAR\n    Tank_Level : REAL;   (* 0.0-100.0 % from the level transmitter (analog input) *)\n    Pump_Run   : BOOL;   (* pump contactor (output)                              *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: pump ON below 20.0 %, OFF above 80.0 %, hold its state in between (hysteresis). *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "\\bif\\b",
+      "message": "Uses an IF statement",
+      "hint": "Begin with  IF Tank_Level < 20.0 THEN"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\belsif\\b",
+      "message": "Uses ELSIF for the second setpoint",
+      "hint": "Second test:  ELSIF Tank_Level > 80.0 THEN  (ELSIF, one E)."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_if\\b",
+      "message": "Closes the block with END_IF",
+      "hint": "Finish with  END_IF;"
+    },
+    {
+      "type": "contains",
+      "pattern": "tank_level\\s*<\\s*20",
+      "message": "Tests Tank_Level < 20.0 (low setpoint)",
+      "hint": "Use  Tank_Level < 20.0"
+    },
+    {
+      "type": "contains",
+      "pattern": "tank_level\\s*>\\s*80",
+      "message": "Tests Tank_Level > 80.0 (high setpoint)",
+      "hint": "Use  Tank_Level > 80.0"
+    },
+    {
+      "type": "contains",
+      "pattern": "pump_run\\s*:=\\s*true",
+      "message": "Turns the pump on with Pump_Run := TRUE",
+      "hint": "First branch:  Pump_Run := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "pump_run\\s*:=\\s*false",
+      "message": "Turns the pump off with Pump_Run := FALSE",
+      "hint": "ELSIF branch:  Pump_Run := FALSE;"
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: pump ON below 20, OFF above 80, unchanged in the band",
+      "steps": [
+        {
+          "set": {
+            "Tank_Level": 90.0
+          },
+          "expect": {
+            "Pump_Run": false
+          }
+        },
+        {
+          "set": {
+            "Tank_Level": 15.0
+          },
+          "expect": {
+            "Pump_Run": true
+          }
+        },
+        {
+          "set": {
+            "Tank_Level": 50.0
+          },
+          "expect": {
+            "Pump_Run": true
+          }
+        },
+        {
+          "set": {
+            "Tank_Level": 10.0
+          },
+          "expect": {
+            "Pump_Run": true
+          }
+        }
+      ],
+      "hint": "Below 20 -> TRUE, above 80 -> FALSE, and leave Pump_Run unchanged between."
+    }
+  ],
+  "solution": "(* Lesson 03 -- IF / ELSIF: Tank Pump from a Real Analog Level *)\n\nVAR\n    Tank_Level : REAL;   (* 0.0-100.0 % from the level transmitter (analog input) *)\n    Pump_Run   : BOOL;   (* pump contactor (output)                              *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nIF Tank_Level < 20.0 THEN\n    Pump_Run := TRUE;\nELSIF Tank_Level > 80.0 THEN\n    Pump_Run := FALSE;\nEND_IF;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Studio 5000 ST constructs (IF/ELSIF/END_IF): https://onlineplcsupport.com/structured-text-rslogix-5000-constructs/",
+    "Siemens SCL programming guide: https://plcblog.in/plc/siemens-tia-portal/scl-programming-siemens-tia-portal-guide.php"
+  ],
+  "viz": {
+    "type": "hysteresis",
+    "input": "Tank_Level",
+    "output": "Pump_Run",
+    "lo": 20,
+    "hi": 80,
+    "unit": "%",
+    "on_when": "below",
+    "on_action": "pump ON (fill)",
+    "off_action": "pump OFF"
+  }
+}

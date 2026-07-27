@@ -1,0 +1,104 @@
+{
+  "id": "12",
+  "slug": "alarms",
+  "title": "HMI Alarms -- Latch & Acknowledge",
+  "concept": "An HMI/SCADA alarm must LATCH the moment a condition trips, so a brief fault is\nnever missed, and stay latched until the operator ACKNOWLEDGES it AND the\ncondition has cleared. That's a seal-in with an acknowledge:\n\n    IF Alarm_In THEN\n        Alarm_Latched := TRUE;         (* trip and hold *)\n    ELSIF Ack THEN\n        Alarm_Latched := FALSE;        (* clear only when condition is gone *)\n    END_IF;\n\nBecause the ELSIF only runs when Alarm_In is FALSE, pressing Ack while the fault\nis still active does NOT clear it -- exactly what you want.",
+  "ab_note": "Studio 5000 has ALARM/ALMD instructions with built-in latch + ack; the logic above is the same idea in plain ST for any HMI tag.",
+  "siemens_note": "TIA Portal WinCC alarms latch in the HMI, but the PLC-side latch/ack logic is identical ST. 'First-out' annunciation extends this by remembering which alarm tripped first.",
+  "task": "Given Alarm_In (BOOL, TRUE when abnormal) and Ack (BOOL, operator acknowledge),\ndrive Alarm_Latched (BOOL):\n  - Latch TRUE as soon as Alarm_In is TRUE\n  - Clear to FALSE only when Ack is pressed AND Alarm_In has cleared\n\nUse IF Alarm_In ... ELSIF Ack ... END_IF;.",
+  "starter": "(* Lesson 12 -- HMI Alarms: Latch & Acknowledge *)\n\nVAR\n    Alarm_In      : BOOL;  (* fault condition     -> XIC (as-is): TRUE = fault active *)\n    Ack           : BOOL;  (* N.O. acknowledge PB -> XIC (as-is)                     *)\n    Alarm_Latched : BOOL;  (* output: latched alarm shown on the HMI                 *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: latch TRUE on Alarm_In; clear on Ack ONLY after the fault has cleared. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "\\bif\\s+alarm_in\\b",
+      "message": "Latches when Alarm_In is TRUE",
+      "hint": "IF Alarm_In THEN Alarm_Latched := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "alarm_latched\\s*:=\\s*true",
+      "message": "Sets Alarm_Latched TRUE on trip",
+      "hint": "Alarm_Latched := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\belsif\\s+ack\\b",
+      "message": "Clears on Ack (ELSIF, so only when Alarm_In is FALSE)",
+      "hint": "ELSIF Ack THEN ..."
+    },
+    {
+      "type": "contains",
+      "pattern": "alarm_latched\\s*:=\\s*false",
+      "message": "Clears Alarm_Latched on acknowledge",
+      "hint": "Alarm_Latched := FALSE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_if\\b",
+      "message": "Closes with END_IF",
+      "hint": "END_IF;"
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: latches, holds unacked, and Ack only clears when the fault is gone",
+      "steps": [
+        {
+          "set": {
+            "Alarm_In": false,
+            "Ack": false
+          },
+          "expect": {
+            "Alarm_Latched": false
+          }
+        },
+        {
+          "set": {
+            "Alarm_In": true
+          },
+          "expect": {
+            "Alarm_Latched": true
+          }
+        },
+        {
+          "set": {
+            "Alarm_In": false
+          },
+          "expect": {
+            "Alarm_Latched": true
+          }
+        },
+        {
+          "set": {
+            "Ack": true
+          },
+          "expect": {
+            "Alarm_Latched": false
+          }
+        },
+        {
+          "set": {
+            "Ack": false,
+            "Alarm_In": true
+          },
+          "expect": {
+            "Alarm_Latched": true
+          }
+        },
+        {
+          "set": {
+            "Ack": true
+          },
+          "expect": {
+            "Alarm_Latched": true
+          }
+        }
+      ],
+      "hint": "Ack while Alarm_In is still TRUE must NOT clear it (the IF re-latches)."
+    }
+  ],
+  "solution": "(* Lesson 12 -- HMI Alarms: Latch & Acknowledge *)\n\nVAR\n    Alarm_In      : BOOL;  (* fault condition     -> XIC (as-is): TRUE = fault active *)\n    Ack           : BOOL;  (* N.O. acknowledge PB -> XIC (as-is)                     *)\n    Alarm_Latched : BOOL;  (* output: latched alarm shown on the HMI                 *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nIF Alarm_In THEN\n    Alarm_Latched := TRUE;\nELSIF Ack THEN\n    Alarm_Latched := FALSE;\nEND_IF;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Studio 5000 ALMD/ALARM instructions overview: https://www.rockwellautomation.com/en-ca/docs/studio-5000-logix-designer/37-00/contents-ditamap.html",
+    "HMI alarm latch/acknowledge pattern: https://plcprogramming.io/blog/plc-alarm-management"
+  ]
+}

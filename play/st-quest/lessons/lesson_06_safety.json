@@ -1,0 +1,142 @@
+{
+  "id": "06",
+  "title": "Machine Enable & Permissives (Safety Architecture)",
+  "concept": "A machine should only run when every safety and process condition is healthy.\nYou gate a machine-enable seal-in with those conditions ANDed in -- and, like\na stop, healthy safety signals are wired NORMALLY-CLOSED, so you AND them as-is\n(never invert):\n\n    Machine_Enable := (Start_PB OR Machine_Enable)\n                      AND Safety_OK AND Guard_Closed AND Air_OK;\n\nAny condition going FALSE drops the machine out immediately. Because it's a\nseal-in, restoring the condition does NOT auto-restart -- the operator must\npress Start again. That deliberate restart is a safety feature.\n\nIMPORTANT SAFETY NOTE: a standard PLC must NOT be the sole E-stop. The E-stop\nfunction belongs to a safety relay or safety PLC (Allen-Bradley GuardLogix,\nSiemens F-CPU) wired to rated safety devices per ISO 13850 / ISO 13849-1. Here\nSafety_OK is a MONITORED status coming FROM that safety system into your normal\nlogic -- you're gating the machine enable, not implementing the E-stop.\n\nEach permissive is read with XIC (as-is). Using XIO (NOT) on a healthy-when-TRUE safety signal would defeat the fail-safe wiring, so never invert them.",
+  "ab_note": "In Studio 5000, Safety_OK typically comes from a GuardLogix safety task or a\nsafety relay's monitored output. Your standard-task ST reads it as a BOOL and\nANDs it (with process permissives) into the enable. Guard interlocks and\nE-stops should be electrically separate, not daisy-chained on one input.",
+  "siemens_note": "In TIA Portal, the safety function lives in an F-CPU / safety program (F-DBs,\nF-blocks). The standard program reads the passivated/monitored safe status and\ngates the enable with permissives -- same :=, AND, OR.",
+  "task": "Given Start_PB (N.O.), and the healthy-when-TRUE signals Safety_OK, Guard_Closed\nand Air_OK, plus output Machine_Enable, write ONE seal-in assignment so:\n\n    - Machine_Enable latches on when Start_PB is pressed AND all conditions OK\n    - It holds after Start releases\n    - Any of Safety_OK / Guard_Closed / Air_OK going FALSE drops it out\n    - After a condition is restored it stays OFF until Start is pressed again\n\nAll three conditions are healthy-when-TRUE -- AND them in as-is, no NOT.",
+  "starter": "(* Lesson 06 -- Machine Enable & Permissives (Safety Architecture) *)\n(* Wiring key:  N.O. contact -> read AS-IS (XIC)   |   N.C. contact -> AS-IS, fail-safe (XIC)   |   NOT x = XIO *)\n\nVAR\n    Start_PB       : BOOL;  (* N.O. start PB      -> XIC (as-is)                     *)\n    Safety_OK      : BOOL;  (* from safety relay  -> XIC (as-is): TRUE = safe        *)\n    Guard_Closed   : BOOL;  (* N.C. guard switch  -> XIC (as-is): TRUE = closed      *)\n    Air_OK         : BOOL;  (* pressure switch    -> XIC (as-is): TRUE = pressure OK *)\n    Machine_Enable : BOOL;  (* output                                               *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: one seal-in enable rung; AND the healthy-when-TRUE permissives in AS-IS (XIC), never inverted. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "machine_enable\\s*:=",
+      "message": "Assigns Machine_Enable with := ",
+      "hint": "Start with  Machine_Enable :="
+    },
+    {
+      "type": "contains",
+      "pattern": "(start_pb\\s+or\\s+machine_enable|machine_enable\\s+or\\s+start_pb)",
+      "message": "Seals in with (Start_PB OR Machine_Enable)",
+      "hint": "Latch: (Start_PB OR Machine_Enable)"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bsafety_ok\\b",
+      "message": "Includes Safety_OK",
+      "hint": "AND Safety_OK in as-is."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bguard_closed\\b",
+      "message": "Includes Guard_Closed",
+      "hint": "AND Guard_Closed in as-is."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bair_ok\\b",
+      "message": "Includes Air_OK",
+      "hint": "AND Air_OK in as-is."
+    },
+    {
+      "type": "not_contains",
+      "pattern": "not\\s+safety_ok",
+      "message": "Does not invert Safety_OK (healthy = TRUE)",
+      "hint": "Safety_OK is TRUE when healthy -- no NOT."
+    },
+    {
+      "type": "not_contains",
+      "pattern": "not\\s+guard_closed",
+      "message": "Does not invert Guard_Closed",
+      "hint": "Guard_Closed is TRUE when shut -- no NOT."
+    },
+    {
+      "type": "not_contains",
+      "pattern": "not\\s+air_ok",
+      "message": "Does not invert Air_OK",
+      "hint": "Air_OK is TRUE when adequate -- no NOT."
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: enables only with all conditions OK; any drop stops it; no auto-restart",
+      "steps": [
+        {
+          "set": {
+            "Start_PB": true,
+            "Safety_OK": true,
+            "Guard_Closed": true,
+            "Air_OK": true
+          },
+          "expect": {
+            "Machine_Enable": true
+          }
+        },
+        {
+          "set": {
+            "Start_PB": false
+          },
+          "expect": {
+            "Machine_Enable": true
+          }
+        },
+        {
+          "set": {
+            "Safety_OK": false
+          },
+          "expect": {
+            "Machine_Enable": false
+          }
+        },
+        {
+          "set": {
+            "Safety_OK": true
+          },
+          "expect": {
+            "Machine_Enable": false
+          }
+        },
+        {
+          "set": {
+            "Start_PB": true
+          },
+          "expect": {
+            "Machine_Enable": true
+          }
+        },
+        {
+          "set": {
+            "Start_PB": false,
+            "Guard_Closed": false
+          },
+          "expect": {
+            "Machine_Enable": false
+          }
+        },
+        {
+          "set": {
+            "Guard_Closed": true,
+            "Start_PB": true
+          },
+          "expect": {
+            "Machine_Enable": true
+          }
+        },
+        {
+          "set": {
+            "Start_PB": false,
+            "Air_OK": false
+          },
+          "expect": {
+            "Machine_Enable": false
+          }
+        }
+      ],
+      "hint": "Latch on Start with all OK; drop on any condition FALSE; require a fresh Start to re-enable."
+    }
+  ],
+  "solution": "(* Lesson 06 -- Machine Enable & Permissives (Safety Architecture) *)\n(* Wiring key:  N.O. contact -> read AS-IS (XIC)   |   N.C. contact -> AS-IS, fail-safe (XIC)   |   NOT x = XIO *)\n\nVAR\n    Start_PB       : BOOL;  (* N.O. start PB      -> XIC (as-is)                     *)\n    Safety_OK      : BOOL;  (* from safety relay  -> XIC (as-is): TRUE = safe        *)\n    Guard_Closed   : BOOL;  (* N.C. guard switch  -> XIC (as-is): TRUE = closed      *)\n    Air_OK         : BOOL;  (* pressure switch    -> XIC (as-is): TRUE = pressure OK *)\n    Machine_Enable : BOOL;  (* output                                               *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nMachine_Enable := (Start_PB OR Machine_Enable) AND Safety_OK AND Guard_Closed AND Air_OK;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "E-stop safety circuit in PLC code (safety relay / safety PLC, not standard logic): https://plcprogramming.io/blog/e-stop-safety-circuit-plc-ladder-logic",
+    "ISO 13850 emergency stop requirements: https://machinerysafety101.com/2026/05/18/iso-13850-emergency-stop-requirements/",
+    "E-stop + safety relay wiring (N.C. devices, interlocks): https://www.dadisick.com/blog/Wiring-Diagram-of-Emergency-Stop-Button-and-Safety-Relay-How-to-Properly-Connect-for-Safety_b4955"
+  ]
+}

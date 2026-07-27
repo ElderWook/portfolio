@@ -1,0 +1,100 @@
+{
+  "id": "05",
+  "title": "CASE -- A Traffic-Light / Sequencer State Machine",
+  "concept": "When a process moves through numbered steps (a sequencer, a batch phase, a\ntraffic light), CASE is cleaner than a stack of IF/ELSIF:\n\n    CASE Seq_Step OF\n        1: (* step 1 *)\n        2: (* step 2 *)\n        ELSE (* fallback *)\n    END_CASE;\n\nCASE tests an integer selector. Each numbered label runs its block, and you set\nthe selector to the NEXT step inside the block so the machine advances.\n\nReal-world note: a production sequencer gates each transition on a condition --\nusually a timer .DN bit (green for 30 s) or a sensor. Here we advance every scan\nto focus on CASE structure; in the field you'd wrap each step with the timer\nfrom Lesson 04.",
+  "ab_note": "Studio 5000 ST supports CASE ... OF ... END_CASE; with a DINT or INT selector.\nThis is the standard way to build a step-based sequencer in Logix ST instead of\na long ladder rung sequence.",
+  "siemens_note": "SCL uses the same CASE ... OF ... END_CASE; and also allows ranges (1..3) and\ncomma lists (1,3,5) as labels. Here we only need single integer labels.",
+  "task": "Build a 3-step traffic light with CASE on Seq_Step : INT. Outputs are\nGreen_Light, Yellow_Light, Red_Light (BOOL lamp outputs):\n\n    Seq_Step = 1 : Green_Light  := TRUE; then advance to step 2\n    Seq_Step = 2 : Yellow_Light := TRUE; then advance to step 3\n    Seq_Step = 3 : Red_Light    := TRUE; then wrap back to step 1\n\nUse CASE Seq_Step OF ... END_CASE;.",
+  "starter": "(* Lesson 05 -- CASE: a Traffic-Light / Sequencer State Machine *)\n\nVAR\n    Seq_Step     : INT := 1;  (* current state, 1..3 (starts at 1) *)\n    Green_Light  : BOOL;      (* output *)\n    Yellow_Light : BOOL;      (* output *)\n    Red_Light    : BOOL;      (* output *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: CASE Seq_Step OF ... 3 states that each set a light and advance, wrapping 3 -> 1. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "case\\s+seq_step\\s+of",
+      "message": "Opens with CASE Seq_Step OF",
+      "hint": "Start with  CASE Seq_Step OF"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_case\\b",
+      "message": "Closes the block with END_CASE",
+      "hint": "Finish with  END_CASE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\b1\\s*:",
+      "message": "Has a label for step 1",
+      "hint": "Write the label as  1:  then that step's statements."
+    },
+    {
+      "type": "contains",
+      "pattern": "green_light\\s*:=\\s*true",
+      "message": "Step 1 sets Green_Light := TRUE",
+      "hint": "Under  1:  add  Green_Light := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "seq_step\\s*:=\\s*2",
+      "message": "Step 1 advances to step 2",
+      "hint": "Under  1:  add  Seq_Step := 2;"
+    },
+    {
+      "type": "contains",
+      "pattern": "yellow_light\\s*:=\\s*true",
+      "message": "Step 2 sets Yellow_Light := TRUE",
+      "hint": "Under  2:  add  Yellow_Light := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "seq_step\\s*:=\\s*3",
+      "message": "Step 2 advances to step 3",
+      "hint": "Under  2:  add  Seq_Step := 3;"
+    },
+    {
+      "type": "contains",
+      "pattern": "red_light\\s*:=\\s*true",
+      "message": "Step 3 sets Red_Light := TRUE",
+      "hint": "Under  3:  add  Red_Light := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "seq_step\\s*:=\\s*1",
+      "message": "Step 3 wraps back to step 1",
+      "hint": "Under  3:  add  Seq_Step := 1;  to loop the sequence."
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: steps advance 1->2->3->1 and light the right lamp",
+      "steps": [
+        {
+          "set": {
+            "Seq_Step": 1
+          },
+          "expect": {
+            "Green_Light": true,
+            "Seq_Step": 2
+          }
+        },
+        {
+          "set": {},
+          "expect": {
+            "Yellow_Light": true,
+            "Seq_Step": 3
+          }
+        },
+        {
+          "set": {},
+          "expect": {
+            "Red_Light": true,
+            "Seq_Step": 1
+          }
+        }
+      ],
+      "hint": "Each step sets its lamp TRUE and advances Seq_Step; step 3 wraps back to 1."
+    }
+  ],
+  "solution": "(* Lesson 05 -- CASE: a Traffic-Light / Sequencer State Machine *)\n\nVAR\n    Seq_Step     : INT := 1;  (* current state, 1..3 (starts at 1) *)\n    Green_Light  : BOOL;      (* output *)\n    Yellow_Light : BOOL;      (* output *)\n    Red_Light    : BOOL;      (* output *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nCASE Seq_Step OF\n    1:\n        Green_Light := TRUE;\n        Seq_Step := 2;\n    2:\n        Yellow_Light := TRUE;\n        Seq_Step := 3;\n    3:\n        Red_Light := TRUE;\n        Seq_Step := 1;\nEND_CASE;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Studio 5000 ST CASE construct: https://onlineplcsupport.com/structured-text-rslogix-5000-constructs/",
+    "Siemens SCL expressions & operations: https://docs.tia.siemens.cloud/r/simatic_s7_1200_manual_collection_enus_20/programming-concepts/programming-language/scl/scl-expressions-and-operations"
+  ]
+}

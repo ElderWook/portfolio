@@ -1,0 +1,38 @@
+{
+  "id": "04",
+  "title": "On-Delay Timers -- Where AB and Siemens DIVERGE",
+  "concept": "Timers are the #1 place Allen-Bradley and Siemens Structured Text look\ndifferent -- a favorite interview topic, so learn both.\n\nAn ON-DELAY timer waits a set time after its input goes TRUE before its output\nturns on. Real example: after the operator presses Run (Run_Cmd), delay 5\nseconds -- warning horn / lube prelube -- then energize Motor_Run.\n\nYou'll implement the 5-second on-delay in EITHER vendor's style; the checker\naccepts both.",
+  "ab_note": "IMPORTANT: Studio 5000 ST does NOT support the plain TON/TOF/RTO you know from\nladder. In ST you use the RESET variants -- TONR, TOFR, RTOR -- and the timer\ntag must be type FBD_TIMER (not TIMER). Preset .PRE and accumulator .ACC are in\nMILLISECONDS.\n\n    Start_Dly.PRE := 5000;               // 5 s, in ms\n    Start_Dly.TimerEnable := Run_Cmd;\n    TONR(Start_Dly);\n    Motor_Run := Start_Dly.DN;           // .DN = done bit",
+  "siemens_note": "TIA Portal / SCL uses the IEC timers TON, TOF, TP as function blocks, each\nneeding an instance data block. Presets use TIME literals (T#5s, T#500ms).\n\n    \"IEC_Timer_0_DB\".TON(IN := Run_Cmd,\n                         PT := T#5s,          // preset time\n                         Q  => Motor_Run);    // output",
+  "task": "Energize Motor_Run 5 seconds after Run_Cmd turns on. Write a 5-second on-delay\nin EITHER style:\n\n    Allen-Bradley:  TONR(...) with a 5000 ms preset, then drive Motor_Run from\n                    the timer's .DN bit.\n    Siemens SCL:    TON(...) with PT := T#5s and send Q => Motor_Run.\n\nThe checker accepts either vendor's syntax.",
+  "starter": "(* Lesson 04 -- On-Delay Timers: where Allen-Bradley and Siemens DIVERGE *)\n\nVAR\n    Run_Cmd   : BOOL;   (* N.O. run command -> XIC (as-is)   *)\n    Motor_Run : BOOL;   (* output: follows Run_Cmd by 5 s    *)\n    Start_Dly : TONR;   (* AB on-delay timer instance        *)\n    (* Siemens equivalent lives in an IEC TON instance DB (IEC_Timer_0_DB) *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: 5-second on-delay so Motor_Run turns on 5 s after Run_Cmd.\n       Pick ONE vendor style below (Allen-Bradley TONR or Siemens TON). *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "normalized": false,
+      "pattern": "\\b(tonr|ton)\\s*\\(",
+      "message": "Calls an on-delay timer (TONR for AB, TON for Siemens)",
+      "hint": "Studio 5000 ST uses TONR(...); Siemens SCL uses TON(...)."
+    },
+    {
+      "type": "contains",
+      "normalized": false,
+      "pattern": "(5000|t#5s)",
+      "message": "Sets a 5-second preset (5000 ms in Studio 5000, or T#5s in SCL)",
+      "hint": "AB: Start_Dly.PRE := 5000;   Siemens: PT := T#5s"
+    },
+    {
+      "type": "contains",
+      "normalized": false,
+      "pattern": "(motor_run\\s*:=[^;\\n]*\\.(dn|q)|q\\s*=>\\s*motor_run)",
+      "message": "Drives Motor_Run from the timer output (.DN in AB, Q in Siemens)",
+      "hint": "AB: Motor_Run := Start_Dly.DN;   Siemens: pass  Q => Motor_Run  in the call."
+    }
+  ],
+  "solution": "(* Lesson 04 -- On-Delay Timers: where Allen-Bradley and Siemens DIVERGE *)\n\nVAR\n    Run_Cmd   : BOOL;   (* N.O. run command -> XIC (as-is)   *)\n    Motor_Run : BOOL;   (* output: follows Run_Cmd by 5 s    *)\n    Start_Dly : TONR;   (* AB on-delay timer instance        *)\n    (* Siemens equivalent lives in an IEC TON instance DB (IEC_Timer_0_DB) *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* --- Allen-Bradley (Studio 5000) --- *)\n    Start_Dly.PRE := 5000;                // 5 seconds, in ms\n    Start_Dly.TimerEnable := Run_Cmd;\n    TONR(Start_Dly);\n    Motor_Run := Start_Dly.DN;\n\n    (* --- Siemens (TIA Portal / SCL) --- *)\n    \"IEC_Timer_0_DB\".TON(IN := Run_Cmd,\n                         PT := T#5s,\n                         Q  => Motor_Run);\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Rockwell: Studio 5000 timer & counter instructions (TONR/TOFR/RTOR): https://www.rockwellautomation.com/en-ca/docs/studio-5000-logix-designer/37-00/contents-ditamap/instruction-set/timer-and-counter-instructions.html",
+    "Allen-Bradley Logix5000 ref manual, TONR in ST: https://www.manualslib.com/manual/1292352/Allen-Bradley-Logix5000.html?page=129",
+    "Siemens SCL IEC timers TP/TON/TOF: https://plcblog.in/plc/siemens-tia-portal/siemens-scl-iec-timer-programming-tp-ton-tof-examples.php"
+  ]
+}

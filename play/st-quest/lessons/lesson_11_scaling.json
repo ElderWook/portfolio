@@ -1,0 +1,74 @@
+{
+  "id": "11",
+  "slug": "scaling",
+  "title": "Analog Scaling (Raw Counts -> Engineering Units)",
+  "concept": "An analog input arrives as RAW COUNTS, not real units. You scale it linearly to\nengineering units (%, PSI, degC). For a 0-10 V channel:\n\n    Siemens: 0 V = 0 counts,  10 V = 27648 counts\n    Allen-Bradley: often 0-32767 (or module engineering-unit scaled)\n\nLinear scale to 0-100 %:   Level := Raw * 100.0 / 27648.0;\n\nGeneral form:  EU := (Raw - RawMin) * (EuMax - EuMin) / (RawMax - RawMin) + EuMin.",
+  "ab_note": "Studio 5000: scale with the module's engineering units, or a CPT/SCL expression on the raw tag to a REAL.",
+  "siemens_note": "SCL uses NORM_X (raw -> 0.0..1.0) then SCALE_X (-> your EU range). The one-liner here does both in a single expression.",
+  "task": "Given Raw : INT from a 0-10 V channel (0..27648 counts), compute Level : REAL as\n0.0..100.0 %. Use a linear scale.\n\n    Level := Raw * 100.0 / 27648.0;",
+  "starter": "(* Lesson 11 -- Analog Scaling: Raw Counts -> Engineering Units *)\n\nVAR\n    Raw   : INT;    (* 0..27648 raw counts from the analog input card *)\n    Level : REAL;   (* output: 0.0..100.0 engineering units (%)       *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: scale Raw (0..27648) linearly to Level (0.0..100.0 %). Use REAL math. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "level\\s*:=",
+      "message": "Assigns Level",
+      "hint": "Level := ..."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\braw\\b",
+      "message": "Uses the Raw input",
+      "hint": "Scale from Raw."
+    },
+    {
+      "type": "contains",
+      "pattern": "27648",
+      "message": "Scales against the 27648 full-scale count",
+      "hint": "Full scale for 0-10 V is 27648 counts."
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: 0 counts=0%, full scale=100%, midscale=50%",
+      "steps": [
+        {
+          "set": {
+            "Raw": 0
+          },
+          "expect": {
+            "Level": 0.0
+          }
+        },
+        {
+          "set": {
+            "Raw": 27648
+          },
+          "expect": {
+            "Level": 100.0
+          }
+        },
+        {
+          "set": {
+            "Raw": 13824
+          },
+          "expect": {
+            "Level": 50.0
+          }
+        },
+        {
+          "set": {
+            "Raw": 6912
+          },
+          "expect": {
+            "Level": 25.0
+          }
+        }
+      ],
+      "hint": "Level = Raw * 100.0 / 27648.0 (use REAL literals so it doesn't do integer math)."
+    }
+  ],
+  "solution": "(* Lesson 11 -- Analog Scaling: Raw Counts -> Engineering Units *)\n\nVAR\n    Raw   : INT;    (* 0..27648 raw counts from the analog input card *)\n    Level : REAL;   (* output: 0.0..100.0 engineering units (%)       *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nLevel := Raw * 100.0 / 27648.0;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Siemens NORM_X / SCALE_X scaling: https://plcblog.in/plc/siemens-tia-portal/norm-x-and-scale-x-in-siemens-tia-portal.php",
+    "Studio 5000 analog scaling (engineering units): https://www.rockwellautomation.com/en-ca/docs/studio-5000-logix-designer/37-00/contents-ditamap.html"
+  ]
+}

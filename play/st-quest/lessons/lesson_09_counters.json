@@ -1,0 +1,107 @@
+{
+  "id": "09",
+  "title": "Counters & Rising-Edge Detection",
+  "concept": "Machines count things: parts made, cycles run, bottles filled. The trick is the\nEDGE — you want to count once per event, not every scan the sensor is TRUE.\n\nA rising-edge \"one-shot\" uses a memory bit that remembers last scan's value:\n\n    IF Part_Sensor AND NOT Sensor_Prev THEN\n        Part_Count := Part_Count + 1;   (* fires once, on the 0->1 edge *)\n    END_IF;\n    Sensor_Prev := Part_Sensor;         (* remember for next scan *)\n\nWithout the edge test, Part_Count would race up every scan the sensor is held\non. The IEC counters (CTU/CTD/CTUD) wrap this pattern in a function block.\n\nNotice the two readings working together: Part_Sensor is used as-is (XIC) while the memory bit is inverted, NOT Sensor_Prev (XIO). A rising edge is simply XIC(input) AND XIO(memory).",
+  "ab_note": "Studio 5000 has a one-shot (ONS) and the CTU counter. In ST you often just do\nthe manual edge shown above with a BOOL memory tag, or call CTU with a\nCOUNTER/FBD_COUNTER structure: check .DN when .ACC >= .PRE.",
+  "siemens_note": "TIA Portal / SCL uses the IEC counter CTU as a function block with an instance\nDB: \"IEC_Counter_0_DB\".CTU(CU := Part_Sensor, PV := 10, Q => Full, CV => Count);\nCU is edge-triggered internally, so the FB does the one-shot for you.",
+  "task": "Count parts on the RISING edge of Part_Sensor (BOOL). Given the output\nPart_Count : DINT and a memory bit Sensor_Prev : BOOL, increment Part_Count by\n1 each time Part_Sensor goes from FALSE to TRUE — and only then.\n\nRemember to update Sensor_Prev at the end so the edge is detected next scan.",
+  "starter": "(* Lesson 09 -- Counters & Rising-Edge Detection *)\n(* Edge = input TRUE now AND memory FALSE last scan  ->  XIC(input) AND XIO(memory). *)\n\nVAR\n    Part_Sensor : BOOL;   (* N.O. photo-eye -> XIC (as-is): TRUE while a part is present *)\n    Sensor_Prev : BOOL;   (* last scan's sensor state (edge-detect memory)              *)\n    Part_Count  : DINT;   (* output: parts counted                                      *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: +1 once per rising (0->1) edge of Part_Sensor, then remember this scan in Sensor_Prev. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "\\bif\\b",
+      "message": "Uses IF to test the edge",
+      "hint": "IF Part_Sensor AND NOT Sensor_Prev THEN"
+    },
+    {
+      "type": "contains",
+      "pattern": "(part_sensor\\s+and\\s+not\\s+sensor_prev|not\\s+sensor_prev\\s+and\\s+part_sensor)",
+      "message": "Detects the rising edge (sensor now, not last scan)",
+      "hint": "Part_Sensor AND NOT Sensor_Prev"
+    },
+    {
+      "type": "contains",
+      "pattern": "part_count\\s*:=\\s*part_count\\s*\\+\\s*1",
+      "message": "Increments Part_Count by 1",
+      "hint": "Part_Count := Part_Count + 1;"
+    },
+    {
+      "type": "contains",
+      "pattern": "sensor_prev\\s*:=\\s*part_sensor",
+      "message": "Updates Sensor_Prev for next scan",
+      "hint": "End with  Sensor_Prev := Part_Sensor;"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_if\\b",
+      "message": "Closes the IF with END_IF",
+      "hint": "Finish the IF with END_IF;"
+    },
+    {
+      "type": "not_contains",
+      "pattern": "sensor_prev\\s*:=\\s*part_sensor[\\s\\S]*if",
+      "message": "Updates Sensor_Prev AFTER the edge test, not before",
+      "hint": "Do the IF first, THEN set Sensor_Prev := Part_Sensor; last."
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: counts one per rising edge, ignores held-on and off",
+      "steps": [
+        {
+          "set": {
+            "Part_Sensor": false
+          },
+          "expect": {
+            "Part_Count": 0
+          }
+        },
+        {
+          "set": {
+            "Part_Sensor": true
+          },
+          "expect": {
+            "Part_Count": 1
+          }
+        },
+        {
+          "set": {
+            "Part_Sensor": true
+          },
+          "expect": {
+            "Part_Count": 1
+          }
+        },
+        {
+          "set": {
+            "Part_Sensor": false
+          },
+          "expect": {
+            "Part_Count": 1
+          }
+        },
+        {
+          "set": {
+            "Part_Sensor": true
+          },
+          "expect": {
+            "Part_Count": 2
+          }
+        },
+        {
+          "set": {
+            "Part_Sensor": false
+          },
+          "expect": {
+            "Part_Count": 2
+          }
+        }
+      ],
+      "hint": "Only the FALSE->TRUE transitions add 1; holding it TRUE must not keep counting."
+    }
+  ],
+  "solution": "(* Lesson 09 -- Counters & Rising-Edge Detection *)\n(* Edge = input TRUE now AND memory FALSE last scan  ->  XIC(input) AND XIO(memory). *)\n\nVAR\n    Part_Sensor : BOOL;   (* N.O. photo-eye -> XIC (as-is): TRUE while a part is present *)\n    Sensor_Prev : BOOL;   (* last scan's sensor state (edge-detect memory)              *)\n    Part_Count  : DINT;   (* output: parts counted                                      *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nIF Part_Sensor AND NOT Sensor_Prev THEN\n    Part_Count := Part_Count + 1;\nEND_IF;\nSensor_Prev := Part_Sensor;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Rockwell Studio 5000 timer & counter instructions (CTU/ONS): https://www.rockwellautomation.com/en-ca/docs/studio-5000-logix-designer/37-00/contents-ditamap/instruction-set/timer-and-counter-instructions.html",
+    "Siemens SCL IEC counters (CTU/CTD/CTUD): https://plcblog.in/plc/siemens-tia-portal/siemens-scl-iec-counter-programming.php"
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "id": "10",
+  "slug": "updown",
+  "title": "Up-Down Counter (CTUD)",
+  "concept": "Sometimes you count both ways: parts IN vs parts OUT of a buffer, cars entering\nand leaving a lot, bottles added and removed. That's an up-down counter (CTUD).\n\nDo it with a rising-edge one-shot on each input (see Lesson 9):\n\n    IF In_Sensor  AND NOT In_Prev  THEN Count := Count + 1; END_IF;\n    IF Out_Sensor AND NOT Out_Prev THEN Count := Count - 1; END_IF;\n    In_Prev := In_Sensor;  Out_Prev := Out_Sensor;\n\nCount now tracks how many are currently in the buffer.",
+  "ab_note": "Studio 5000 has CTUD (up/down) with .ACC; or do the manual edges above with BOOL memory tags.",
+  "siemens_note": "SCL uses the IEC CTUD FB: CU (count up), CD (count down), with CV giving the current value; both inputs are edge-triggered internally.",
+  "task": "A buffer counts items IN and OUT. Given In_Sensor and Out_Sensor (BOOL) with\nmemory bits In_Prev, Out_Prev, and output Count : DINT:\n  - +1 on the rising edge of In_Sensor\n  - -1 on the rising edge of Out_Sensor\nUpdate both memory bits at the end.",
+  "starter": "(* Lesson 10 -- Up-Down Counter (CTUD) *)\n\nVAR\n    In_Sensor  : BOOL;  (* N.O. entry photo-eye -> XIC (as-is) *)\n    Out_Sensor : BOOL;  (* N.O. exit photo-eye  -> XIC (as-is) *)\n    In_Prev    : BOOL;  (* entry edge memory                   *)\n    Out_Prev   : BOOL;  (* exit edge memory                    *)\n    Count      : DINT;  (* output: items currently in buffer   *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: +1 on each entry rising edge, -1 on each exit rising edge; then update both memory bits. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "count\\s*:=\\s*count\\s*\\+\\s*1",
+      "message": "Counts up on the In edge",
+      "hint": "Count := Count + 1;"
+    },
+    {
+      "type": "contains",
+      "pattern": "count\\s*:=\\s*count\\s*-\\s*1",
+      "message": "Counts down on the Out edge",
+      "hint": "Count := Count - 1;"
+    },
+    {
+      "type": "contains",
+      "pattern": "(in_sensor\\s+and\\s+not\\s+in_prev|not\\s+in_prev\\s+and\\s+in_sensor)",
+      "message": "Rising-edge test on In_Sensor",
+      "hint": "In_Sensor AND NOT In_Prev"
+    },
+    {
+      "type": "contains",
+      "pattern": "in_prev\\s*:=\\s*in_sensor",
+      "message": "Updates In_Prev",
+      "hint": "In_Prev := In_Sensor;"
+    },
+    {
+      "type": "contains",
+      "pattern": "out_prev\\s*:=\\s*out_sensor",
+      "message": "Updates Out_Prev",
+      "hint": "Out_Prev := Out_Sensor;"
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: +1 per In edge, -1 per Out edge",
+      "steps": [
+        {
+          "set": {
+            "In_Sensor": false,
+            "Out_Sensor": false
+          },
+          "expect": {
+            "Count": 0
+          }
+        },
+        {
+          "set": {
+            "In_Sensor": true
+          },
+          "expect": {
+            "Count": 1
+          }
+        },
+        {
+          "set": {
+            "In_Sensor": true
+          },
+          "expect": {
+            "Count": 1
+          }
+        },
+        {
+          "set": {
+            "In_Sensor": false
+          },
+          "expect": {
+            "Count": 1
+          }
+        },
+        {
+          "set": {
+            "In_Sensor": true
+          },
+          "expect": {
+            "Count": 2
+          }
+        },
+        {
+          "set": {
+            "Out_Sensor": true
+          },
+          "expect": {
+            "Count": 1
+          }
+        },
+        {
+          "set": {
+            "Out_Sensor": false,
+            "In_Sensor": false
+          },
+          "expect": {
+            "Count": 1
+          }
+        }
+      ],
+      "hint": "One count per edge; holding an input high must not keep counting."
+    }
+  ],
+  "solution": "(* Lesson 10 -- Up-Down Counter (CTUD) *)\n\nVAR\n    In_Sensor  : BOOL;  (* N.O. entry photo-eye -> XIC (as-is) *)\n    Out_Sensor : BOOL;  (* N.O. exit photo-eye  -> XIC (as-is) *)\n    In_Prev    : BOOL;  (* entry edge memory                   *)\n    Out_Prev   : BOOL;  (* exit edge memory                    *)\n    Count      : DINT;  (* output: items currently in buffer   *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nIF In_Sensor AND NOT In_Prev THEN\n    Count := Count + 1;\nEND_IF;\nIF Out_Sensor AND NOT Out_Prev THEN\n    Count := Count - 1;\nEND_IF;\nIn_Prev := In_Sensor;\nOut_Prev := Out_Sensor;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Rockwell CTUD (timer & counter instructions): https://www.rockwellautomation.com/en-ca/docs/studio-5000-logix-designer/37-00/contents-ditamap/instruction-set/timer-and-counter-instructions.html",
+    "Siemens SCL IEC counters CTU/CTD/CTUD: https://plcblog.in/plc/siemens-tia-portal/siemens-scl-iec-counter-programming.php"
+  ]
+}

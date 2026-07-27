@@ -108,6 +108,9 @@ html,body{margin:0}
 .pf a.part:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc4) 24%,transparent),0 0 12px var(--acc4)}
 .pf a.part.feat:hover .refdes{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc5) 24%,transparent),0 0 12px var(--acc5)}
 .pf .spec .dim{margin:24px 0 12px}
+/* ▶ Play CTA on an interactive sub-page (the in-browser demos) — a filled accent button that pops */
+.pf .clinks a.play{color:var(--bg);background:var(--acc);border-color:var(--acc);font-weight:700;letter-spacing:.03em;padding:9px 18px;font-size:13px}
+.pf .clinks a.play:hover{background:color-mix(in srgb,var(--acc) 82%,#fff)}
 /* SEAL-IN nav: clicking a card LATCHES its rung energized (a ladder-logic seal-in) — the frame + corner
    marks brighten (--glow), the rail-green glow ramps up (--energize), the pin-1 dot seals like a closed
    contact, and it holds for a beat before the page transitions. A satisfying, snappy circuit latch. */

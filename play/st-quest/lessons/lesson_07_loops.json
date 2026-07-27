@@ -1,0 +1,113 @@
+{
+  "id": "07",
+  "title": "FOR Loops & Arrays -- Scanning an I/O Bank",
+  "concept": "A FOR loop repeats a block a fixed number of times; arrays hold many values\nunder one name. Together they let you process a bank of I/O in a few lines:\n\n    FOR i := 0 TO 7 DO\n        Total := Total + Data[i];\n    END_FOR;\n\nSyntax: FOR i := start TO end [BY step] DO ... END_FOR;. The whole loop runs\ninside ONE PLC scan, so keep counts sane -- a huge loop lengthens scan time.\n\nArray indexing is Data[i]. In Studio 5000 arrays are 0-based (a DINT[8] has\nindices 0..7), which is what we use here.",
+  "ab_note": "Studio 5000: arrays are 0-based, e.g. Data : DINT[8] -> Data[0]..Data[7]. FOR\nloops are common for packing/unpacking status bits or scaling I/O banks. Watch\nscan time on large iteration counts.",
+  "siemens_note": "SCL arrays can have arbitrary bounds, e.g. ARRAY[1..8] OF INT, so you'd write\nFOR i := 1 TO 8. Same FOR ... END_FOR structure; just mind the index base. For\nthis exercise use 0..7 to match the data given.",
+  "task": "Given Data : an array of 8 integers (indices 0..7), compute two outputs with a\nsingle FOR loop over i := 0 TO 7:\n\n    - Total       : the sum of all Data[i]\n    - Alarm_Count : how many Data[i] are greater than 100\n\nInitialise Total and Alarm_Count to 0 before the loop.",
+  "starter": "(* Lesson 07 -- FOR Loops & Arrays: Scanning an I/O Bank *)\n\nVAR\n    Data        : ARRAY[0..7] OF INT;  (* 8-channel input bank, indices 0..7 *)\n    i           : INT;                 (* loop index                         *)\n    Total       : DINT;                (* output: running sum                *)\n    Alarm_Count : DINT;                (* output: count of channels > 100    *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: FOR i := 0 TO 7 -- sum Data[i] into Total and count Data[i] > 100 into Alarm_Count. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "\\bfor\\b\\s+\\w+\\s*:=",
+      "message": "Uses a FOR loop with a counter",
+      "hint": "FOR i := 0 TO 7 DO"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bto\\b",
+      "message": "Has a TO range",
+      "hint": "FOR i := 0 TO 7"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_for\\b",
+      "message": "Closes with END_FOR",
+      "hint": "End the loop with END_FOR;"
+    },
+    {
+      "type": "contains",
+      "pattern": "data\\s*\\[",
+      "message": "Indexes the array Data[i]",
+      "hint": "Read elements as Data[i]."
+    },
+    {
+      "type": "contains",
+      "pattern": "total\\s*:=",
+      "message": "Accumulates into Total",
+      "hint": "Total := Total + Data[i];"
+    },
+    {
+      "type": "contains",
+      "pattern": "alarm_count\\s*:=",
+      "message": "Counts into Alarm_Count",
+      "hint": "Alarm_Count := Alarm_Count + 1; inside an IF."
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: Total and Alarm_Count are correct for a test array",
+      "steps": [
+        {
+          "set": {
+            "Data": [
+              50,
+              150,
+              0,
+              200,
+              100,
+              101,
+              10,
+              20
+            ]
+          },
+          "expect": {
+            "Total": 631,
+            "Alarm_Count": 3
+          }
+        },
+        {
+          "set": {
+            "Data": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "expect": {
+            "Total": 0,
+            "Alarm_Count": 0
+          }
+        },
+        {
+          "set": {
+            "Data": [
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200
+            ]
+          },
+          "expect": {
+            "Total": 1600,
+            "Alarm_Count": 8
+          }
+        }
+      ],
+      "hint": "Sum every element; count only those strictly greater than 100. Reset both to 0 first."
+    }
+  ],
+  "solution": "(* Lesson 07 -- FOR Loops & Arrays: Scanning an I/O Bank *)\n\nVAR\n    Data        : ARRAY[0..7] OF INT;  (* 8-channel input bank, indices 0..7 *)\n    i           : INT;                 (* loop index                         *)\n    Total       : DINT;                (* output: running sum                *)\n    Alarm_Count : DINT;                (* output: count of channels > 100    *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nTotal := 0;\nAlarm_Count := 0;\nFOR i := 0 TO 7 DO\n    Total := Total + Data[i];\n    IF Data[i] > 100 THEN\n        Alarm_Count := Alarm_Count + 1;\n    END_IF;\nEND_FOR;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Studio 5000 ST loops (FOR/WHILE): https://onlineplcsupport.com/structured-text-rslogix-5000-constructs/",
+    "Siemens SCL FOR loop & arrays: https://plcblog.in/plc/siemens-tia-portal/scl-programming-siemens-tia-portal-guide.php"
+  ]
+}

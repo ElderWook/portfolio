@@ -1,0 +1,132 @@
+{
+  "id": "15",
+  "slug": "sfc",
+  "title": "Sequential Function Chart (SFC) -- a Batch Sequencer",
+  "concept": "An SFC is steps + transitions: each STEP runs actions, and you advance to the\nnext step ONLY when its TRANSITION condition becomes TRUE. (Lesson 5 advanced\nevery scan; a real sequencer gates each move.) In ST you hand-code an SFC as a\nguarded CASE state machine:\n\n    CASE Step OF\n        1: Valve := TRUE;\n           IF Level_Full THEN Valve := FALSE; Step := 2; END_IF;  (* transition *)\n        ...\n    END_CASE;\n\nEach step energizes its own output and moves on only when its condition is met.",
+  "ab_note": "Studio 5000 has native SFC as a language; when you write it in ST, the guarded-CASE pattern is the standard hand-coded equivalent.",
+  "siemens_note": "Siemens GRAPH is their SFC editor; in SCL you use the same CASE + IF-transition pattern shown here.",
+  "task": "Batch sequencer with Step : INT (0=Idle,1=Fill,2=Heat,3=Drain).\nInputs: Start, Level_Full, Temp_OK, Level_Empty : BOOL.\nOutputs: Fill_Valve, Heater, Drain_Valve : BOOL.\n\n  0 Idle : all outputs OFF; go to 1 when Start\n  1 Fill : Fill_Valve ON; go to 2 when Level_Full (turn Fill_Valve off)\n  2 Heat : Heater ON; go to 3 when Temp_OK (turn Heater off)\n  3 Drain: Drain_Valve ON; go to 0 when Level_Empty (turn Drain_Valve off)\n\nUse CASE Step OF ... END_CASE; with an IF transition in each step.",
+  "starter": "(* Lesson 15 -- Sequential Function Chart (SFC): a Batch Sequencer *)\n\nVAR\n    Step        : INT;   (* current SFC step, 0..3                    *)\n    Start       : BOOL;  (* N.O. start PB -> XIC (as-is)              *)\n    Level_Full  : BOOL;  (* hi-level float -> XIC (as-is): TRUE=full  *)\n    Temp_OK     : BOOL;  (* thermostat    -> XIC (as-is): TRUE=at temp*)\n    Level_Empty : BOOL;  (* lo-level float -> XIC (as-is): TRUE=empty *)\n    Fill_Valve  : BOOL;  (* output *)\n    Heater      : BOOL;  (* output *)\n    Drain_Valve : BOOL;  (* output *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: CASE Step OF 0..3 -- each step drives its outputs and has ONE guarded transition. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "case\\s+step\\s+of",
+      "message": "Opens with CASE Step OF",
+      "hint": "CASE Step OF"
+    },
+    {
+      "type": "contains",
+      "pattern": "fill_valve\\s*:=\\s*true",
+      "message": "Fill step energizes Fill_Valve",
+      "hint": "Fill_Valve := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "heater\\s*:=\\s*true",
+      "message": "Heat step energizes Heater",
+      "hint": "Heater := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "drain_valve\\s*:=\\s*true",
+      "message": "Drain step energizes Drain_Valve",
+      "hint": "Drain_Valve := TRUE;"
+    },
+    {
+      "type": "contains",
+      "pattern": "if\\s+level_full",
+      "message": "Fill->Heat transition guarded by Level_Full",
+      "hint": "IF Level_Full THEN ... Step := 2; END_IF;"
+    },
+    {
+      "type": "contains",
+      "pattern": "if\\s+temp_ok",
+      "message": "Heat->Drain transition guarded by Temp_OK",
+      "hint": "IF Temp_OK THEN ... Step := 3; END_IF;"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_case\\b",
+      "message": "Closes with END_CASE",
+      "hint": "END_CASE;"
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: advances only when each transition condition is TRUE",
+      "steps": [
+        {
+          "set": {},
+          "expect": {
+            "Step": 0,
+            "Fill_Valve": false,
+            "Heater": false,
+            "Drain_Valve": false
+          }
+        },
+        {
+          "set": {
+            "Start": true
+          },
+          "expect": {
+            "Step": 1,
+            "Fill_Valve": false
+          }
+        },
+        {
+          "set": {},
+          "expect": {
+            "Step": 1,
+            "Fill_Valve": true
+          }
+        },
+        {
+          "set": {
+            "Level_Full": true
+          },
+          "expect": {
+            "Step": 2,
+            "Fill_Valve": false
+          }
+        },
+        {
+          "set": {},
+          "expect": {
+            "Step": 2,
+            "Heater": true
+          }
+        },
+        {
+          "set": {
+            "Temp_OK": true
+          },
+          "expect": {
+            "Step": 3,
+            "Heater": false
+          }
+        },
+        {
+          "set": {},
+          "expect": {
+            "Step": 3,
+            "Drain_Valve": true
+          }
+        },
+        {
+          "set": {
+            "Level_Empty": true
+          },
+          "expect": {
+            "Step": 0,
+            "Drain_Valve": false
+          }
+        }
+      ],
+      "hint": "A transition fires the scan its condition is TRUE; the new step's action runs the NEXT scan (one-scan entry lag)."
+    }
+  ],
+  "solution": "(* Lesson 15 -- Sequential Function Chart (SFC): a Batch Sequencer *)\n\nVAR\n    Step        : INT;   (* current SFC step, 0..3                    *)\n    Start       : BOOL;  (* N.O. start PB -> XIC (as-is)              *)\n    Level_Full  : BOOL;  (* hi-level float -> XIC (as-is): TRUE=full  *)\n    Temp_OK     : BOOL;  (* thermostat    -> XIC (as-is): TRUE=at temp*)\n    Level_Empty : BOOL;  (* lo-level float -> XIC (as-is): TRUE=empty *)\n    Fill_Valve  : BOOL;  (* output *)\n    Heater      : BOOL;  (* output *)\n    Drain_Valve : BOOL;  (* output *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nCASE Step OF\n    0:\n        Fill_Valve := FALSE; Heater := FALSE; Drain_Valve := FALSE;\n        IF Start THEN Step := 1; END_IF;\n    1:\n        Fill_Valve := TRUE;\n        IF Level_Full THEN Fill_Valve := FALSE; Step := 2; END_IF;\n    2:\n        Heater := TRUE;\n        IF Temp_OK THEN Heater := FALSE; Step := 3; END_IF;\n    3:\n        Drain_Valve := TRUE;\n        IF Level_Empty THEN Drain_Valve := FALSE; Step := 0; END_IF;\nEND_CASE;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Studio 5000 ST CASE / state machines: https://onlineplcsupport.com/structured-text-rslogix-5000-constructs/",
+    "IEC 61131-3 SFC overview: https://plcblog.in/plc/sequential-function-chart-sfc.php"
+  ]
+}

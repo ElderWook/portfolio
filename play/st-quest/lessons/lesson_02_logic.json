@@ -1,0 +1,117 @@
+{
+  "id": "02",
+  "title": "The Motor Seal-In (Real Field Wiring)",
+  "concept": "## Assign vs compare\n\nTwo symbols people mix up: `:=` **assigns** a value; `=` **compares** two values. Boolean operators are `AND`, `OR`, `NOT`, `XOR`.\n\n## Reading the field devices (XIC / XIO)\n\nA standard 3-wire motor starter wires its devices a specific way, and that wiring drives your code:\n\n    DEVICE       CONTACT   INPUT BIT READS...\n    Start_PB     N.O.      TRUE only while pressed\n    Stop_PB      N.C.      TRUE when NOT pressed, FALSE when pressed\n    Motor_OL     N.C.      TRUE when healthy, FALSE when tripped\n\nRead each device the right way — **XIC** means \"use the tag as-is\"; **XIO** means \"use `NOT tag`\":\n\n- **Start_PB** is **(N.O.)** → **XIC** (as-is). TRUE only while pressed — perfect to start.\n- **Stop_PB** is **(N.C.)**, wired fail-safe → **XIC** (as-is). It is TRUE while NOT pressed, so ANDing it in permits running.\n- **Motor_OL** is **(N.C.)** → **XIC** (as-is). TRUE while the overload is healthy.\n\nBecause Stop and the overload are **normally closed**, their bits are already TRUE while running normally. You AND them in **exactly as they are — never inverted**:\n\n    Motor_Run := (Start_PB OR Motor_Run) AND Stop_PB AND Motor_OL;\n\n## Why no NOT on Stop?\n\nPressing the N.C. stop **opens** the circuit → `Stop_PB` goes FALSE → the whole expression goes FALSE → the motor drops out. Break the wire and the same thing happens. That is the **fail-safe**: the hardware provides the inversion so your logic does not. Writing `NOT Stop_PB` defeats it — the #1 rookie mistake. In ladder terms you examine a N.C. stop with an **XIC** contact, not XIO.\n\n## The seal-in\n\nThe `(Start_PB OR Motor_Run)` part is the **seal-in**: once running, `Motor_Run` holds itself on, so you can release the momentary start button and the motor keeps running until Stop (or the overload) breaks the rung.",
+  "ab_note": "This is the ST version of a seal-in rung. In Studio 5000 ladder you'd examine\nStop_PB and Motor_OL with NORMAL (XIC) contacts -- NOT XIO -- precisely because\nthe N.C. field wiring makes the bit TRUE when safe. Using XIO (or NOT in ST) on\na N.C. stop is the classic mistake that defeats the fail-safe.",
+  "siemens_note": "Identical in SCL: :=, AND, OR are standard IEC operators, and a N.C. stop is\nANDed straight in. Siemens field points live in the PLC tag table with the same\nN.O./N.C. wiring reality behind them.",
+  "task": "Given BOOL tags Start_PB (N.O.), Stop_PB (N.C.), Motor_OL (N.C.), and output\nMotor_Run, write ONE assignment implementing a real 3-wire seal-in:\n\n    - Motor_Run latches on when Start_PB is pressed and holds itself on\n    - Pressing Stop_PB (N.C.) drops it out\n    - An overload trip (Motor_OL goes FALSE) also drops it out\n\nStop_PB and Motor_OL are normally-closed -- AND them in as-is, do NOT use NOT.",
+  "starter": "(* Lesson 02 -- The Motor Seal-In (real field wiring) *)\n(* Wiring key:  N.O. contact -> read AS-IS (XIC)   |   N.C. contact -> AS-IS, fail-safe (XIC)   |   NOT x = XIO *)\n\nVAR\n    Start_PB  : BOOL;   (* N.O. start PB   -> XIC (as-is): TRUE when pressed             *)\n    Stop_PB   : BOOL;   (* N.C. stop PB    -> XIC (as-is): TRUE when NOT pressed (fail-safe) *)\n    Motor_OL  : BOOL;   (* N.C. overload   -> XIC (as-is): TRUE when healthy             *)\n    Motor_Run : BOOL;   (* motor contactor coil (output)                                *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: seal-in so Motor_Run holds itself on; AND the N.C. devices in AS-IS (XIC), never inverted. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "motor_run\\s*:=",
+      "message": "Assigns Motor_Run using := ",
+      "hint": "Start with  Motor_Run :=  (assignment, not = )."
+    },
+    {
+      "type": "contains",
+      "pattern": "(start_pb\\s+or\\s+motor_run|motor_run\\s+or\\s+start_pb)",
+      "message": "Seals in with (Start_PB OR Motor_Run)",
+      "hint": "You need (Start_PB OR Motor_Run) so the motor holds itself on."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bstop_pb\\b",
+      "message": "Includes Stop_PB in the rung",
+      "hint": "AND the N.C. stop in:  ... AND Stop_PB ..."
+    },
+    {
+      "type": "not_contains",
+      "pattern": "not\\s+stop_pb",
+      "message": "Does NOT invert the N.C. stop (no NOT Stop_PB)",
+      "hint": "Stop_PB is normally-closed and already TRUE when safe -- remove the NOT."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bmotor_ol\\b",
+      "message": "Includes the overload Motor_OL in the rung",
+      "hint": "AND the N.C. overload aux in:  ... AND Motor_OL"
+    },
+    {
+      "type": "not_contains",
+      "pattern": "not\\s+motor_ol",
+      "message": "Does NOT invert the N.C. overload (no NOT Motor_OL)",
+      "hint": "Motor_OL is normally-closed (TRUE when healthy) -- AND it in as-is."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\band\\b[\\s\\S]*\\band\\b",
+      "message": "Puts Stop_PB and Motor_OL in series with AND",
+      "hint": "Two ANDs: ... AND Stop_PB AND Motor_OL"
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: latches on Start, holds, and drops on Stop or overload",
+      "steps": [
+        {
+          "set": {
+            "Start_PB": true,
+            "Stop_PB": true,
+            "Motor_OL": true
+          },
+          "expect": {
+            "Motor_Run": true
+          }
+        },
+        {
+          "set": {
+            "Start_PB": false
+          },
+          "expect": {
+            "Motor_Run": true
+          }
+        },
+        {
+          "set": {
+            "Stop_PB": false
+          },
+          "expect": {
+            "Motor_Run": false
+          }
+        },
+        {
+          "set": {
+            "Stop_PB": true
+          },
+          "expect": {
+            "Motor_Run": false
+          }
+        },
+        {
+          "set": {
+            "Start_PB": true
+          },
+          "expect": {
+            "Motor_Run": true
+          }
+        },
+        {
+          "set": {
+            "Start_PB": false,
+            "Motor_OL": false
+          },
+          "expect": {
+            "Motor_Run": false
+          }
+        }
+      ],
+      "hint": "Must latch on Start, hold when Start releases, and drop when Stop_PB or Motor_OL go FALSE (and stay off until restarted)."
+    }
+  ],
+  "solution": "(* Lesson 02 -- The Motor Seal-In (real field wiring) *)\n(* Wiring key:  N.O. contact -> read AS-IS (XIC)   |   N.C. contact -> AS-IS, fail-safe (XIC)   |   NOT x = XIO *)\n\nVAR\n    Start_PB  : BOOL;   (* N.O. start PB   -> XIC (as-is): TRUE when pressed             *)\n    Stop_PB   : BOOL;   (* N.C. stop PB    -> XIC (as-is): TRUE when NOT pressed (fail-safe) *)\n    Motor_OL  : BOOL;   (* N.C. overload   -> XIC (as-is): TRUE when healthy             *)\n    Motor_Run : BOOL;   (* motor contactor coil (output)                                *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nMotor_Run := (Start_PB OR Motor_Run) AND Stop_PB AND Motor_OL;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "PLC motor starter seal circuit, hardwired vs programmed: https://industrialmonitordirect.com/blogs/knowledgebase/plc-motor-starter-seal-circuit-hardwired-vs-programmed",
+    "Basic PLC program for a 3-phase motor (N.O. start / N.C. stop): https://electrical-engineering-portal.com/basic-plc-program-for-control-of-a-three-phase-ac-motor",
+    "Motor start/stop ladder logic tutorial: https://plcprogramming.io/blog/motor-start-stop-ladder-logic-tutorial"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "08",
+  "title": "Functions & Function Blocks (Reusable Logic)",
+  "concept": "Reusable logic keeps programs clean. IEC / Siemens SCL text uses two forms:\n\n    FUNCTION (FC)        -- stateless; returns a value; no memory between calls\n    FUNCTION_BLOCK (FB)  -- has memory (an instance); e.g. a timer, a motor FB\n\nA FUNCTION assigns its result to its own name and closes with END_FUNCTION:\n\n    FUNCTION ClampHigh : REAL\n    VAR_INPUT\n        IN : REAL;\n        HI : REAL;\n    END_VAR\n        IF IN > HI THEN\n            ClampHigh := HI;\n        ELSE\n            ClampHigh := IN;\n        END_IF;\n    END_FUNCTION",
+  "ab_note": "Studio 5000 does NOT type FUNCTION/END_FUNCTION as text. Rockwell packages\nreusable logic as an Add-On Instruction (AOI), built in the IDE with defined\nparameters and local tags, then called like MyAOI(params). Mapping: an AB AOI\nis roughly a Siemens FB (it stores state in its own tag); a plain subroutine is\nlike a Siemens FC. So the text below is the Siemens/IEC form -- learn it, and\nknow AB's equivalent is the AOI.",
+  "siemens_note": "TIA Portal SCL uses exactly this: FUNCTION (FC) for stateless returns, and\nFUNCTION_BLOCK (FB) which needs an instance data block and retains static data\nacross scans. One FB can be instantiated many times (one DB per motor/axis).",
+  "task": "Write an IEC/SCL-style FUNCTION named ClampHigh that returns a REAL. It takes\ntwo REAL inputs, IN and HI, and returns IN limited to a maximum of HI:\n\n    - if IN > HI, the result is HI\n    - otherwise the result is IN\n\nDeclare the inputs in a VAR_INPUT ... END_VAR block, assign the result to the\nfunction's own name (ClampHigh := ...), and close with END_FUNCTION.",
+  "starter": "(* Lesson 08 -- Functions & Function Blocks (Reusable Logic) *)\n(* Write a FUNCTION ClampHigh : REAL that limits IN so it never exceeds HI.  *)\n(* (Pure math here -- no field contacts, so no XIC/XIO.)                     *)\n\nFUNCTION ClampHigh : REAL\nVAR_INPUT\n    (* TODO: declare the two REAL inputs, IN and HI *)\nEND_VAR\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: return IN, but limited to a maximum of HI *)\n(* ------------------------------------------------------------------ *)\nEND_FUNCTION\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "\\bfunction\\b\\s+clamphigh",
+      "message": "Declares FUNCTION ClampHigh",
+      "hint": "FUNCTION ClampHigh : REAL"
+    },
+    {
+      "type": "contains",
+      "pattern": "clamphigh\\s*:\\s*real",
+      "message": "Function returns REAL",
+      "hint": "Name the return type: FUNCTION ClampHigh : REAL"
+    },
+    {
+      "type": "contains",
+      "pattern": "var_input",
+      "message": "Declares inputs in VAR_INPUT",
+      "hint": "Put IN and HI in a VAR_INPUT ... END_VAR block."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bin\\s*:\\s*real",
+      "message": "Declares IN : REAL",
+      "hint": "IN : REAL;"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bhi\\s*:\\s*real",
+      "message": "Declares HI : REAL",
+      "hint": "HI : REAL;"
+    },
+    {
+      "type": "contains",
+      "pattern": "clamphigh\\s*:=",
+      "message": "Assigns the result to the function name",
+      "hint": "Return by assigning ClampHigh := ... (e.g. ClampHigh := HI;)."
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_function\\b",
+      "message": "Closes with END_FUNCTION",
+      "hint": "End with END_FUNCTION."
+    },
+    {
+      "type": "call",
+      "message": "Executed: ClampHigh limits IN to HI",
+      "cases": [
+        {
+          "fn": "ClampHigh",
+          "args": [
+            15.0,
+            10.0
+          ],
+          "expect": 10.0
+        },
+        {
+          "fn": "ClampHigh",
+          "args": [
+            5.0,
+            10.0
+          ],
+          "expect": 5.0
+        },
+        {
+          "fn": "ClampHigh",
+          "args": [
+            10.0,
+            10.0
+          ],
+          "expect": 10.0
+        }
+      ],
+      "hint": "ClampHigh must return HI when IN > HI, otherwise IN."
+    }
+  ],
+  "solution": "(* Lesson 08 -- Functions & Function Blocks (Reusable Logic) *)\n(* Write a FUNCTION ClampHigh : REAL that limits IN so it never exceeds HI.  *)\n(* (Pure math here -- no field contacts, so no XIC/XIO.)                     *)\n\nFUNCTION ClampHigh : REAL\nVAR_INPUT\n    IN : REAL;\n    HI : REAL;\nEND_VAR\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    IF IN > HI THEN\n        ClampHigh := HI;\n    ELSE\n        ClampHigh := IN;\n    END_IF;\n(* ------------------------------------------------------------------ *)\nEND_FUNCTION\n",
+  "sources": [
+    "Siemens vs Allen-Bradley function blocks (AOI vs FB/FC): https://www.dmcinfo.com/blog/29940/siemens-vs-allen-bradley-function-blocks/",
+    "Structuring PLC apps: Rockwell vs Siemens TIA Portal: https://www.plcskilltree.com/blog/structuring-plc-applications-rockwell-studio-5000-vs-siemens-tia-portal",
+    "Siemens SCL FC/FB reusable code: https://industrialmonitordirect.com/blogs/knowledgebase/siemens-step-7-fb-fc-functions-reusable-conveyor-control-code"
+  ]
+}

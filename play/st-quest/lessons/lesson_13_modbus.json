@@ -1,0 +1,66 @@
+{
+  "id": "13",
+  "slug": "modbus",
+  "title": "Modbus Mapping -- Expose Data to an HMI / App",
+  "concept": "To let an HMI, SCADA, or app read/write your PLC over Modbus TCP, you MAP tags\nonto Modbus objects. Four object types:\n\n    Coils            (0xxxx) - read/write bits   (commands)\n    Discrete Inputs  (1xxxx) - read-only bits    (status)\n    Holding Registers(4xxxx) - read/write 16-bit (setpoints)\n    Input Registers  (3xxxx) - read-only 16-bit  (measurements)\n\nYou stage internal tags into the mapped tags each scan:\n\n    MB_Cmd_Run   := System_Run;   (* coil            *)\n    MB_Sts_Fault := Fault;        (* discrete input  *)\n    MB_HR_Setpt  := Setpoint;     (* holding register*)",
+  "ab_note": "Micro800/Logix expose Modbus TCP via the Ethernet port config or MSG instructions; you assign tags to Modbus addresses in the mapping.",
+  "siemens_note": "S7-1200/1500 use the MB_SERVER (slave) / MB_CLIENT FBs; the HMI reads the mapped holding registers. Same idea: internal tag -> Modbus address.",
+  "task": "Stage three internal tags onto their Modbus-mapped tags so an app can see them:\n  - MB_Cmd_Run   := System_Run   (coil / command)\n  - MB_Sts_Fault := Fault        (discrete input / status)\n  - MB_HR_Setpt  := Setpoint     (holding register / setpoint)",
+  "starter": "(* Lesson 13 -- Modbus Mapping: Expose Data to an HMI / App *)\n\nVAR\n    (* --- internal application tags --- *)\n    System_Run   : BOOL;   (* running flag        *)\n    Fault        : BOOL;   (* fault flag          *)\n    Setpoint     : INT;    (* internal setpoint   *)\n    (* --- Modbus image the HMI / app reads & writes --- *)\n    MB_Cmd_Run   : BOOL;   (* coil             (0x) *)\n    MB_Sts_Fault : BOOL;   (* discrete input   (1x) *)\n    MB_HR_Setpt  : INT;    (* holding register (4x) *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: stage the three internal tags onto their matching Modbus image tags. *)\n(* ------------------------------------------------------------------ *)\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "mb_cmd_run\\s*:=\\s*system_run",
+      "message": "Maps System_Run to the command coil",
+      "hint": "MB_Cmd_Run := System_Run;"
+    },
+    {
+      "type": "contains",
+      "pattern": "mb_sts_fault\\s*:=\\s*fault",
+      "message": "Maps Fault to the status bit",
+      "hint": "MB_Sts_Fault := Fault;"
+    },
+    {
+      "type": "contains",
+      "pattern": "mb_hr_setpt\\s*:=\\s*setpoint",
+      "message": "Maps Setpoint to a holding register",
+      "hint": "MB_HR_Setpt := Setpoint;"
+    },
+    {
+      "type": "simulate",
+      "message": "Executed: internal tags appear on the Modbus map",
+      "steps": [
+        {
+          "set": {
+            "System_Run": true,
+            "Fault": false,
+            "Setpoint": 75
+          },
+          "expect": {
+            "MB_Cmd_Run": true,
+            "MB_Sts_Fault": false,
+            "MB_HR_Setpt": 75
+          }
+        },
+        {
+          "set": {
+            "System_Run": false,
+            "Fault": true,
+            "Setpoint": 40
+          },
+          "expect": {
+            "MB_Cmd_Run": false,
+            "MB_Sts_Fault": true,
+            "MB_HR_Setpt": 40
+          }
+        }
+      ],
+      "hint": "Copy each internal tag into its MB_ tag every scan."
+    }
+  ],
+  "solution": "(* Lesson 13 -- Modbus Mapping: Expose Data to an HMI / App *)\n\nVAR\n    (* --- internal application tags --- *)\n    System_Run   : BOOL;   (* running flag        *)\n    Fault        : BOOL;   (* fault flag          *)\n    Setpoint     : INT;    (* internal setpoint   *)\n    (* --- Modbus image the HMI / app reads & writes --- *)\n    MB_Cmd_Run   : BOOL;   (* coil             (0x) *)\n    MB_Sts_Fault : BOOL;   (* discrete input   (1x) *)\n    MB_HR_Setpt  : INT;    (* holding register (4x) *)\nEND_VAR\n\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\nMB_Cmd_Run   := System_Run;\nMB_Sts_Fault := Fault;\nMB_HR_Setpt  := Setpoint;\n(* ------------------------------------------------------------------ *)\n",
+  "sources": [
+    "Siemens MB_SERVER / MB_CLIENT (Modbus TCP): https://plcblog.in/plc/siemens-tia-portal/modbus-tcp-communication-in-siemens-tia-portal.php",
+    "Modbus object model (coils/registers) overview: https://plcprogramming.io/blog/modbus-protocol"
+  ]
+}

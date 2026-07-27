@@ -1,0 +1,106 @@
+{
+  "id": "14",
+  "slug": "fblock",
+  "title": "Function Blocks with Memory -- a Reusable Motor Starter",
+  "concept": "A FUNCTION returns a value and forgets everything. A FUNCTION_BLOCK keeps its\nown MEMORY between scans (an instance) -- so you can write control logic ONCE\nand drop an instance on every motor. The seal-in is the perfect example,\nbecause it reads its own previous output:\n\n    FUNCTION_BLOCK MotorStarter\n    VAR_INPUT  Start : BOOL; Stop : BOOL; OL : BOOL; END_VAR\n    VAR_OUTPUT Run : BOOL; END_VAR\n        Run := (Start OR Run) AND Stop AND OL;   (* Run is the FB's memory *)\n    END_FUNCTION_BLOCK\n\nYou then declare an instance and call it:  M1(Start:=..., Stop:=..., OL:=...);\nand read M1.Run. Each instance remembers its own Run.",
+  "ab_note": "Studio 5000 packages reusable logic as an Add-On Instruction (AOI); its state lives in the AOI's own tag -- exactly like an FB instance.",
+  "siemens_note": "TIA Portal FB needs an instance data block (one per motor); the DB holds Run across scans. That instance memory is what makes the seal-in work.",
+  "task": "Write a FUNCTION_BLOCK named MotorStarter with:\n  VAR_INPUT  Start, Stop, OL : BOOL\n  VAR_OUTPUT Run : BOOL\nIts body implements the 3-wire seal-in:  Run := (Start OR Run) AND Stop AND OL;\n(Stop and OL are N.C. -- TRUE when safe -- so AND them in as-is.)",
+  "starter": "(* Lesson 14 -- Function Blocks with Memory: a Reusable Motor Starter *)\n(* Wiring key:  N.O. contact -> read AS-IS (XIC)   |   N.C. contact -> AS-IS, fail-safe (XIC)   |   NOT x = XIO *)\n\nFUNCTION_BLOCK MotorStarter\nVAR_INPUT\n    Start : BOOL;   (* N.O. start    -> XIC (as-is)            *)\n    Stop  : BOOL;   (* N.C. stop     -> XIC (as-is, fail-safe) *)\n    OL    : BOOL;   (* N.C. overload -> XIC (as-is)            *)\nEND_VAR\nVAR_OUTPUT\n    Run : BOOL;     (* sealed-in run output (keeps its state)  *)\nEND_VAR\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    (* TODO: seal-in so Run holds itself on; AND Stop and OL in AS-IS (XIC). *)\n(* ------------------------------------------------------------------ *)\nEND_FUNCTION_BLOCK\n",
+  "checks": [
+    {
+      "type": "contains",
+      "pattern": "function_block\\s+motorstarter",
+      "message": "Declares FUNCTION_BLOCK MotorStarter",
+      "hint": "FUNCTION_BLOCK MotorStarter"
+    },
+    {
+      "type": "contains",
+      "pattern": "var_input",
+      "message": "Has a VAR_INPUT section",
+      "hint": "VAR_INPUT Start, Stop, OL : BOOL; END_VAR"
+    },
+    {
+      "type": "contains",
+      "pattern": "var_output",
+      "message": "Has a VAR_OUTPUT section",
+      "hint": "VAR_OUTPUT Run : BOOL; END_VAR"
+    },
+    {
+      "type": "contains",
+      "pattern": "(start\\s+or\\s+run|run\\s+or\\s+start)",
+      "message": "Seals in with (Start OR Run)",
+      "hint": "Run := (Start OR Run) AND Stop AND OL;"
+    },
+    {
+      "type": "contains",
+      "pattern": "\\bend_function_block\\b",
+      "message": "Closes with END_FUNCTION_BLOCK",
+      "hint": "End with END_FUNCTION_BLOCK"
+    },
+    {
+      "type": "simulate_fb",
+      "fb": "MotorStarter",
+      "message": "Executed as a stateful instance: latches, holds, drops",
+      "steps": [
+        {
+          "set": {
+            "Start": true,
+            "Stop": true,
+            "OL": true
+          },
+          "expect": {
+            "Run": true
+          }
+        },
+        {
+          "set": {
+            "Start": false
+          },
+          "expect": {
+            "Run": true
+          }
+        },
+        {
+          "set": {
+            "Stop": false
+          },
+          "expect": {
+            "Run": false
+          }
+        },
+        {
+          "set": {
+            "Stop": true
+          },
+          "expect": {
+            "Run": false
+          }
+        },
+        {
+          "set": {
+            "Start": true
+          },
+          "expect": {
+            "Run": true
+          }
+        },
+        {
+          "set": {
+            "Start": false,
+            "OL": false
+          },
+          "expect": {
+            "Run": false
+          }
+        }
+      ],
+      "hint": "The FB's Run output must persist between calls (that's the instance memory)."
+    }
+  ],
+  "solution": "(* Lesson 14 -- Function Blocks with Memory: a Reusable Motor Starter *)\n(* Wiring key:  N.O. contact -> read AS-IS (XIC)   |   N.C. contact -> AS-IS, fail-safe (XIC)   |   NOT x = XIO *)\n\nFUNCTION_BLOCK MotorStarter\nVAR_INPUT\n    Start : BOOL;   (* N.O. start    -> XIC (as-is)            *)\n    Stop  : BOOL;   (* N.C. stop     -> XIC (as-is, fail-safe) *)\n    OL    : BOOL;   (* N.C. overload -> XIC (as-is)            *)\nEND_VAR\nVAR_OUTPUT\n    Run : BOOL;     (* sealed-in run output (keeps its state)  *)\nEND_VAR\n(* ----- YOUR LOGIC : write your answer between these two lines ----- *)\n    Run := (Start OR Run) AND Stop AND OL;\n(* ------------------------------------------------------------------ *)\nEND_FUNCTION_BLOCK\n",
+  "sources": [
+    "Siemens vs Allen-Bradley function blocks (AOI vs FB/FC): https://www.dmcinfo.com/blog/29940/siemens-vs-allen-bradley-function-blocks/",
+    "Siemens SCL FB with instance DB: https://plcblog.in/plc/siemens-tia-portal/scl-programming-siemens-tia-portal-guide.php"
+  ]
+}
