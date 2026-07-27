@@ -112,6 +112,22 @@ html,body{margin:0}
 /* ▶ Play CTA on an interactive sub-page (the in-browser demos) — a filled accent button that pops */
 .pf .clinks a.play{color:var(--bg);background:var(--acc);border-color:var(--acc);font-weight:700;letter-spacing:.03em;padding:9px 18px;font-size:13px}
 .pf .clinks a.play:hover{background:color-mix(in srgb,var(--acc) 82%,#fff)}
+/* ── archetype blocks: engine spec-table, game hero + feature grid ── */
+.pf .metrics{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;margin:8px 0 4px}
+.pf .metrics td{padding:9px 12px;border-bottom:1px solid var(--line)}
+.pf .metrics tr:last-child td{border-bottom:none}
+.pf .metrics td:first-child{color:var(--ink3);letter-spacing:.04em}
+.pf .metrics td:last-child{color:var(--ink);text-align:right;font-weight:600}
+.pf .hero{position:relative;border-radius:10px;padding:26px 26px;margin-top:18px;overflow:hidden;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 15%,transparent),color-mix(in srgb,var(--acc3) 9%,transparent)),color-mix(in srgb,var(--panel) 62%,transparent);
+  border:1px solid color-mix(in srgb,var(--acc) 26%,var(--line))}
+.pf .hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 26px,color-mix(in srgb,var(--acc3) 6%,transparent) 26px 27px)}
+.pf .hero p{position:relative;margin:0;color:var(--ink);font-size:16.5px;line-height:1.6;max-width:70ch}
+.pf .feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:6px}
+.pf .feature-grid .feat-card{position:relative;border:1px solid var(--line);border-radius:8px;padding:14px 16px 14px 20px;
+  background:color-mix(in srgb,var(--panel) 42%,transparent);font-family:var(--mono);font-size:13px;color:var(--ink2);line-height:1.5}
+.pf .feature-grid .feat-card::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2.5px;border-radius:2px;background:var(--acc)}
 /* SEAL-IN nav: clicking a card LATCHES its rung energized (a ladder-logic seal-in) — the frame + corner
    marks brighten (--glow), the rail-green glow ramps up (--energize), the pin-1 dot seals like a closed
    contact, and it holds for a beat before the page transitions. A satisfying, snappy circuit latch. */
