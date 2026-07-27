@@ -95,7 +95,10 @@
   .card h3{font-family:var(--mono); font-size:13px; margin:0 0 6px; letter-spacing:.02em; color:var(--ink)}
   .card p{margin:0; font-size:13.5px; color:var(--ink-dim)}
   .card .tag{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint)}
-  .card.conn{border-left:2px solid var(--line)}
+  /* IC pin-1 dot (portfolio style) instead of a left accent tab — coloured per card via --dot */
+  .card.conn{position:relative; padding-left:28px}
+  .card.conn::before{content:""; position:absolute; left:13px; top:16px; width:7px; height:7px; border-radius:50%;
+        background:var(--dot,var(--ink-faint)); box-shadow:0 0 8px color-mix(in srgb, var(--dot,var(--ink-faint)) 55%, transparent)}
   .card.conn p{font-size:13px; line-height:1.5}
   .card.conn b{color:var(--ink)}
   .cite{font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-faint)}
@@ -223,21 +226,21 @@
       two conductors, the ground spine is the reference, and <b class="em-diff">Comms is the signal the pair carries</b>.
       Muscle · mind · nerves.</p>
     <div class="grid cols-3">
-      <div class="card conn" style="border-left-color:var(--elec)">
+      <div class="card conn" style="--dot:var(--elec)">
         <span class="tag" style="color:var(--elec)">left wing · muscle</span>
         <h3 class="em-elec">AC Power Distribution</h3>
         <p><b>Connections:</b> service entrance → panelboard / busbar → feeder → breaker → Δ-Y transformer → branch → load; grounding electrode + bonding jumper.<br>
         <b>Standard:</b> phase-ID by voltage class — <em>mandated</em> neutral white/grey · EGC green · high-leg orange; phases by convention (208 V blk·red·blu / 480 V brn·org·yel); MV by stripe-count. <span class="cite">phase-identification.md · conductor-sizing.md</span><br>
         <b>Teaches:</b> get energy source→load safely — ampacity, grounding &amp; bonding, Δ-Y.</p>
       </div>
-      <div class="card conn" style="border-left-color:var(--gold)">
+      <div class="card conn" style="--dot:var(--gold)">
         <span class="tag" style="color:var(--gold)">right wing · mind</span>
         <h3 class="em-gold">PCB Logic</h3>
         <p><b>Connections:</b> power rail (+3V3 / +5V) · GND pour / plane · signal trace · bus · clock · decoupling · via · header.<br>
         <b>Standard:</b> Okabe-Ito net-role colours (colourblind-safe) · controlled impedance · the stackup. <span class="cite">ART-BIBLE.md · skin.py</span><br>
         <b>Teaches:</b> the brain that decides — routing, planes, decoupling, net roles.</p>
       </div>
-      <div class="card conn" style="border-left-color:var(--diff)">
+      <div class="card conn" style="--dot:var(--diff)">
         <span class="tag" style="color:var(--diff)">the axis · nerves</span>
         <h3 class="em-diff">Comms — the signal on the pair</h3>
         <p><b>Connections:</b> differential buses — USB 90 Ω (board controlled-Z) · RS-485/Modbus &amp; CAN 120 Ω (terminate both ends + bias) · Ethernet 100 Ω; PLC I/O, −48 VDC telecom; the <b>card-edge cluster bus (CBUS_H/L · SYNC_CLK)</b> = the co-op link.<br>
@@ -385,7 +388,7 @@
   // super-keystone on the spine at Master: card-edge cluster connector
   add({id:'cardedge',ring:3,th:244,wing:'C',type:'keystone',label:'card-edge cluster bus',desc:'The co-op terminus of the comms axis — carries CBUS_H/L + SYNC_CLK + power/GND fingers. P3 + the multiplayer bus + board-menu identity: a super-keystone.',grade:'both'});
   // shared router node on the spine (bottom, between sources and center)
-  add({id:'router',ring:2,th:296,wing:'S',type:'notable',label:'45° routing head',desc:'The octilinear discipline shared by pcbcore AND the facility routing-editor.',grade:'shared'});
+  add({id:'router',ring:3,th:296,wing:'S',type:'notable',label:'45° routing head',desc:'The octilinear discipline shared by pcbcore AND the facility routing-editor.',grade:'shared'});
   // comms — the differential-pair PROGRESSION climbing the axis (USB → RS-485/CAN → Ethernet), per differential-pairs.md
   add({id:'commsUSB',ring:1,th:270,wing:'C',type:'notable',label:'USB · 90Ω',desc:'The first differential pair: board-level controlled-Z, keep the pair together, ±150 mil skew. The Apprentice diff-pair skill.',grade:'controlled-Z'});
   add({id:'comms485',ring:2,th:270,wing:'C',type:'notable',label:'RS-485/CAN · 120Ω',desc:'A terminated industrial bus — 120Ω at both physical ends + fail-safe bias. Same core skill as USB, longer reach.',grade:'terminate'});
@@ -554,6 +557,7 @@
           ly=n.type==='capstone'? n.p.y+50 : (below? n.p.y+22 : n.p.y-16);
       if(commsV){ anchor="end"; lx=n.p.x-13; ly=n.p.y+3.5; }        // sit left of the differential bus, not on it
       else if(n.id==='cardedge'){ anchor="end"; lx=n.p.x+34; }      // keep this wide label clear of the vertical bus
+      else if(n.id==='router'){ anchor="start"; lx=n.p.x-34; }      // mirror of cardedge: sit right of the bus, symmetric
       else if(n.type==='crown'){ if(n.p.x<cx-5) lx-=38; else if(n.p.x>cx+5) lx+=38; } // fan the (longer) crown trio apart
       const t=el("text",{x:lx,y:ly,"text-anchor":anchor,"font-size":n.type==='capstone'?12.5:11.5,
         class:"lbl"+(['small','travel'].includes(n.type)?" dim":"")});
