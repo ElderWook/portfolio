@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ST-Quest — Structured Text Playground</title>
+<title>ST-Quest · Structured Text Playground</title>
 <meta name="description" content="A field-accurate IEC 61131-3 Structured Text playground: write real ST and a built-in interpreter runs your code and checks the outputs.">
 <style>
   :root{
@@ -182,7 +182,7 @@
 
     <div>
       <div class="panel">
-        <div class="dim">Structured Text — write your logic, then Run</div>
+        <div class="dim">Structured Text: write your logic, then Run</div>
         <textarea id="code" spellcheck="false" disabled></textarea>
         <div class="btns">
           <button class="run" id="run" disabled>▶ Run</button>
@@ -224,7 +224,7 @@
   </div>
 
   <footer>
-    ST-Quest by ElderWook · a from-scratch IEC 61131-3 Structured Text interpreter (stdlib-only Python), running in the browser via Pyodide (WASM). Educational — validate against real controller firmware before use.
+    ST-Quest by ElderWook · a from-scratch IEC 61131-3 Structured Text interpreter (stdlib-only Python), running in the browser via Pyodide (WASM). Educational, so validate against real controller firmware before use.
   </footer>
 </div>
 
@@ -354,7 +354,7 @@
     var sel = $("lesson");
     for (var i = 0; i < sel.options.length; i++){
       var L = LESSONS[i]; if (!L) continue;
-      sel.options[i].textContent = (DONE.has(L.id) ? "✓ " : "") + ((i+1<10?"0":"") + (i+1)) + " — " + L.title;
+      sel.options[i].textContent = (DONE.has(L.id) ? "✓ " : "") + ((i+1<10?"0":"") + (i+1)) + " · " + L.title;
     }
   }
   function go(idx){ if (idx < 0 || idx >= LESSONS.length) return; $("lesson").value = idx; renderLesson(idx); }
@@ -384,11 +384,11 @@
     if (r.win){
       var L = LESSONS[cur], fresh = !DONE.has(L.id);
       if (fresh){ DONE.add(L.id); saveProg(); refreshProgress(); }
-      html += '<div class="verdict win">✓ All checks pass — lesson complete. Your ST executed and the outputs are correct.'
+      html += '<div class="verdict win">✓ All checks pass. Lesson complete. Your ST executed and the outputs are correct.'
             + (fresh ? ' <span class="xpgain">+10 XP</span>' : '') + '</div>';
       if (cur < LESSONS.length - 1) html += '<button class="nextbtn" id="nextlesson">Next lesson →</button>';
     } else {
-      html += '<div class="verdict more">Not yet — fix the failing checks above and Run again.</div>';
+      html += '<div class="verdict more">Not yet. Fix the failing checks above and Run again.</div>';
     }
     $("results").innerHTML = html;
     var nl = $("nextlesson"); if (nl) nl.addEventListener("click", function(){ go(cur + 1); });
@@ -541,7 +541,7 @@
       var sel = $("lesson"); sel.innerHTML = "";
       LESSONS.forEach(function(L, i){
         var o = document.createElement("option");
-        o.value = i; o.textContent = (i+1<10?"0":"")+(i+1)+" — "+L.title; sel.appendChild(o);
+        o.value = i; o.textContent = (i+1<10?"0":"")+(i+1)+" · "+L.title; sel.appendChild(o);
       });
       sel.disabled = false;
       sel.addEventListener("change", function(){ renderLesson(+sel.value); });
@@ -556,7 +556,7 @@
       $("resetprog").addEventListener("click", function(){ if(confirm("Reset lesson progress and XP to zero?")){ DONE.clear(); saveProg(); refreshProgress(); } });
       refreshProgress();
       renderLesson(0);
-      $("status").textContent = LESSONS.length + " lessons — write ST, then Run";
+      $("status").textContent = LESSONS.length + " lessons · write ST, then Run";
     }catch(e){
       $("concept").innerHTML = '<div class="loading">Failed to load the interpreter: '+esc(String(e))+'<br><br>This playground needs to be served over HTTP (it is, on the live site) and to reach the Pyodide CDN.</div>';
       $("status").textContent = "load failed";

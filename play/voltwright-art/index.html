@@ -1,4 +1,5 @@
-<title>VoltWright · Art Bible — Visual System</title>
+<meta charset="utf-8">
+<title>VoltWright · Art Bible · Visual System</title>
 <style>
   :root{
     /* --- the real system, from skin.py + emblems + phase-identification.md --- */
@@ -110,7 +111,10 @@
 
   /* semantic cards */
   .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px}
-  .card{border:1px solid var(--line); border-left-width:3px; border-radius:10px; padding:14px 16px; background:var(--panel-2)}
+  /* IC pin-1 dot (portfolio + Rose convention) carries the semantic color, not a left-accent strip */
+  .card{position:relative; border:1px solid var(--line); border-radius:10px; padding:14px 16px 14px 30px; background:var(--panel-2)}
+  .card::before{content:""; position:absolute; left:13px; top:17px; width:7px; height:7px; border-radius:50%;
+    background:var(--dot,var(--muted)); box-shadow:0 0 8px color-mix(in srgb, var(--dot,var(--muted)) 55%, transparent)}
   .card h3{font-size:14px; margin-bottom:5px}
   .card p{font-size:13px; color:var(--muted); margin:0}
 
@@ -156,7 +160,7 @@
     <svg class="mark" viewBox="0 0 200 200" aria-hidden="true"><path d="M 162.16 100 L 179.29 90.99 L 177.04 79.18 L 157.79 77.12 L 150.29 63.46 L 158.85 46.11 L 150.09 37.88 L 133.31 47.52 L 119.21 40.88 L 115.94 21.81 L 104.01 20.3 L 96.1 37.96 L 80.79 40.88 L 66.93 27.37 L 56.4 33.17 L 60.38 52.1 L 49.71 63.46 L 30.56 60.68 L 25.44 71.56 L 39.79 84.54 L 37.84 100 L 20.71 109.01 L 22.96 120.82 L 42.21 122.88 L 49.71 136.54 L 41.15 153.89 L 49.91 162.12 L 66.69 152.48 L 80.79 159.12 L 84.06 178.19 L 95.99 179.7 L 103.9 162.04 L 119.21 159.12 L 133.07 172.63 L 143.6 166.83 L 139.62 147.9 L 150.29 136.54 L 169.44 139.32 L 174.56 128.44 L 160.21 115.46 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><circle cx="100" cy="100" r="42" fill="none" stroke="#2ad0ca" stroke-width="3.6"/><circle cx="100" cy="100" r="25.2" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="7.14" fill="#f8c448"/></svg>
     <div class="title">
       <h1>VoltWright · Art Bible</h1>
-      <div class="sub mono">Visual system — anchored on real-world research, tuned for teachability</div>
+      <div class="sub mono">Visual system, anchored on real-world research, tuned for teachability</div>
     </div>
     <div class="cvd" role="group" aria-label="Color-vision simulation">
       <span class="lbl">Sim CVD</span>
@@ -174,10 +178,10 @@
   <div class="hero">
     <div class="eyebrow">The one idea</div>
     <h1 class="big">VoltWright looks like <span class="gold">a real circuit board, lit.</span></h1>
-    <p class="lede">Every functional color traces to a standard a player can carry to a bench — never a mood
+    <p class="lede">Every functional color traces to a standard a player can carry to a bench, never a mood
       board. Two research anchors: the PCB net-roles are the <strong style="color:var(--silk)">Okabe-Ito
-      colorblind-safe</strong> palette; the power phases are the real <strong style="color:var(--silk)">NEC/IEC
-      wire code</strong>. Toggle a color-vision simulation up top — the palettes are engineered to survive it.</p>
+      colorblind-safe</strong> palette, and the power phases are the real <strong style="color:var(--silk)">NEC/IEC
+      wire code</strong>. Toggle a color-vision simulation up top. The palettes are engineered to survive it.</p>
     <hr class="rule">
   </div>
 
@@ -186,24 +190,24 @@
     <!-- 1 · invariants -->
     <section>
       <div class="sec-h"><span class="idx mono">01</span><h2>The golden thread &amp; ground</h2></div>
-      <p class="sec-note">Shared by every surface — 2D skin, 3D board, UI, emblems. ENIG gold <span class="mono">#f8c448</span>
-        appears <em>identically</em> in the skin and the emblems already; it is the one accent that never changes.</p>
+      <p class="sec-note">Shared by every surface: 2D skin, 3D board, UI, emblems. ENIG gold <span class="mono">#f8c448</span>
+        appears <em>identically</em> in the skin and the emblems already. It is the one accent that never changes.</p>
       <div class="grid g-invar">
         <div class="sw"><div class="chip" style="background:#0d1618"></div><div class="body"><div class="name">FR4 ground</div><div class="hex">#0d1618</div><div class="use">dark teal-black board substrate</div></div></div>
         <div class="sw"><div class="chip" style="background:#f8c448"></div><div class="body"><div class="name">ENIG gold</div><div class="hex">#f8c448</div><div class="use">pads · card-edge fingers · emblem centers · promotion</div></div></div>
         <div class="sw"><div class="chip" style="background:#d09a52"></div><div class="body"><div class="name">Copper</div><div class="hex">#d09a52</div><div class="use">exposed / finished copper</div></div></div>
         <div class="sw"><div class="chip" style="background:#deeaea"></div><div class="body"><div class="name">Silk</div><div class="hex">#deeaea</div><div class="use">legend text + designators</div></div></div>
-        <div class="sw"><div class="chip" style="background:#2ad0ca"></div><div class="body"><div class="name">Brand teal</div><div class="hex">#2ad0ca</div><div class="use">identity only — chrome / logo, never a net · retires #00D2FF (A1)</div></div></div>
+        <div class="sw"><div class="chip" style="background:#2ad0ca"></div><div class="body"><div class="name">Brand teal</div><div class="hex">#2ad0ca</div><div class="use">identity only: chrome / logo, never a net · retires #00D2FF (A1)</div></div></div>
       </div>
     </section>
 
     <!-- 2 · net-role -->
     <section>
       <div class="sec-h"><span class="idx mono">02</span><h2>Net-role palette · the PCB domain</h2></div>
-      <span class="anchor mono">RESEARCH ANCHOR ① — Okabe-Ito Color Universal Design (2008)</span>
+      <span class="anchor mono">RESEARCH ANCHOR ① · Okabe-Ito Color Universal Design (2008)</span>
       <p class="sec-note">There is no industry net-role color standard, so the most-teachable choice is the most
         <em>distinguishable</em>: an 8-color set engineered to survive color-vision deficiency (~8% of men).
-        <strong style="color:var(--silk)">skin.py already <em>is</em> Okabe-Ito.</strong> Hit “Deutan” above — the roles stay apart.</p>
+        <strong style="color:var(--silk)">skin.py already <em>is</em> Okabe-Ito.</strong> Hit “Deutan” above and the roles stay apart.</p>
       <div class="grid g-role">
         <div class="sw"><div class="chip" style="background:#e69f00"></div><div class="body"><div class="name">power</div><div class="hex">#e69f00</div><div class="use">+3V3 / +5V / VIN / VDDA</div></div></div>
         <div class="sw"><div class="chip" style="background:#aab4bd"></div><div class="body"><div class="name">gnd</div><div class="hex">#aab4bd</div><div class="use">GND / return</div></div></div>
@@ -218,13 +222,13 @@
     <!-- 3 · phase -->
     <section>
       <div class="sec-h"><span class="idx mono">03</span><h2>Phase palette · the power domain</h2></div>
-      <span class="anchor mono">RESEARCH ANCHOR ② — NEC/IEC wire code · core/standards/phase-identification.md</span>
+      <span class="anchor mono">RESEARCH ANCHOR ② · NEC/IEC wire code · core/standards/phase-identification.md</span>
       <p class="sec-note">The teachable subtlety that makes it authentic: <strong style="color:var(--silk)">the NEC
-        mandates only a few colors — the rest is convention.</strong> Neutral (white/grey), EGC/ground (green),
-        and the 4-wire-delta high-leg (orange) are fixed; the phase colors are employer/AHJ convention. Above
-        600&nbsp;V there is no code at all — you identify by <em>stripe-count</em>.</p>
+        mandates only a few colors, and the rest is convention.</strong> Neutral (white/grey), EGC/ground (green),
+        and the 4-wire-delta high-leg (orange) are fixed. The phase colors are employer/AHJ convention. Above
+        600&nbsp;V there is no code at all, so you identify by <em>stripe-count</em>.</p>
 
-      <div class="eyebrow" style="margin:2px 0 8px">Learning palette · shipped teaching default — exact <span class="mono" style="text-transform:none">PhasePalette.h</span> values (FLinearColor → sRGB)</div>
+      <div class="eyebrow" style="margin:2px 0 8px">Learning palette · shipped teaching default · exact <span class="mono" style="text-transform:none">PhasePalette.h</span> values (FLinearColor → sRGB)</div>
       <div class="grid g-role" style="margin-bottom:20px">
         <div class="sw"><div class="chip" style="background:#B18255"></div><div class="body"><div class="name">Phase A</div><div class="hex">#B18255</div><div class="use">dark brown</div></div></div>
         <div class="sw"><div class="chip" style="background:#FBB338"></div><div class="body"><div class="name">Phase B</div><div class="hex">#FBB338</div><div class="use">orange (red-heavy)</div></div></div>
@@ -274,31 +278,31 @@
         </tbody>
       </table></div>
       <p class="sec-note" style="margin-top:14px">Shipped in two data-driven modes: a <strong style="color:var(--silk)">learning
-        palette</strong> (one vivid color per phase — max distinguishable) as the teaching default, and
+        palette</strong> (one vivid color per phase, max distinguishable) as the teaching default, and
         <strong style="color:var(--silk)">standards-strict per-class</strong> (the table) for authenticity.
-        Per AGENTS #7 we model the framework and label the designation — never reproduce NEC table text.</p>
+        Per AGENTS #7 we model the framework and label the designation, never reproducing NEC table text.</p>
     </section>
 
     <!-- 4 · status + semantics -->
     <section>
       <div class="sec-h"><span class="idx mono">04</span><h2>Status &amp; semantic rules</h2></div>
-      <p class="sec-note">The colors don’t just look real — they <em>mean</em> what they mean in the field, so the game never trains a wrong reflex.</p>
+      <p class="sec-note">The colors don’t just look real, they <em>mean</em> what they mean in the field, so the game never trains a wrong reflex.</p>
       <div class="grid g-invar" style="margin-bottom:16px">
         <div class="sw"><div class="chip" style="background:#3ee484"></div><div class="body"><div class="name">energized / ok</div><div class="hex">#3ee484</div><div class="use">correct · closed breaker · trace-energize sweep</div></div></div>
         <div class="sw"><div class="chip" style="background:#ff9500"></div><div class="body"><div class="name">warning</div><div class="hex">#ff9500</div><div class="use">caution · fault-pending</div></div></div>
         <div class="sw"><div class="chip" style="background:#ff3b30"></div><div class="body"><div class="name">fault</div><div class="hex">#ff3b30</div><div class="use">short · violation · ground-current alarm</div></div></div>
       </div>
       <div class="cards">
-        <div class="card" style="border-left-color:#59c46c"><h3>Green = ground / safe</h3><p>On any conductor, green always means EGC/bonded — never a generic “success” that could mislead at a live panel.</p></div>
-        <div class="card" style="border-left-color:#ff3b30"><h3>Red = hazard</h3><p>Fault, energized-danger, and the facility rule: current in a ground conductor is <em>always</em> alarm-red.</p></div>
-        <div class="card" style="border-left-color:#2ad0ca"><h3>Two codes, separated</h3><p>Net-role in the PCB view; phase in the wiring view. Where they meet, the safety-semantic (phase/ground) code wins.</p></div>
-        <div class="card" style="border-left-color:#f8c448"><h3>CVD-safe → gated</h3><p>Both anchors are distinguishable, so a colorblind-check joins the art gate. Verify it with the toggle above.</p></div>
+        <div class="card" style="--dot:#59c46c"><h3>Green = ground / safe</h3><p>On any conductor, green always means EGC/bonded, never a generic “success” that could mislead at a live panel.</p></div>
+        <div class="card" style="--dot:#ff3b30"><h3>Red = hazard</h3><p>Fault, energized-danger, and the facility rule: current in a ground conductor is <em>always</em> alarm-red.</p></div>
+        <div class="card" style="--dot:#2ad0ca"><h3>Two codes, separated</h3><p>Net-role in the PCB view, phase in the wiring view. Where they meet, the safety-semantic (phase/ground) code wins.</p></div>
+        <div class="card" style="--dot:#f8c448"><h3>CVD-safe → gated</h3><p>Both anchors are distinguishable, so a colorblind-check joins the art gate. Verify it with the toggle above.</p></div>
       </div>
     </section>
 
     <!-- 5 · emblems -->
     <section>
-      <div class="sec-h"><span class="idx mono">05</span><h2>Emblems — the identity spine</h2></div>
+      <div class="sec-h"><span class="idx mono">05</span><h2>Emblems: the identity spine</h2></div>
       <p class="sec-note">The near-final art (48 SVGs). Drawing rules, extracted so every future emblem matches:
         200×200 canvas · line-art only (round caps/joins) · primary stroke <span class="mono">5.5</span>,
         secondary <span class="mono">3.6</span> · brand-teal linework + gold focal node · green for live/energized.
@@ -318,7 +322,7 @@
         <div class="emb"><svg viewBox="0 0 200 200"><path d="M 24.4 100 L 73.12 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 126.88 100 L 175.6 100" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linecap="round"/><path d="M 73.12 62.2 L 73.12 137.8 L 126.88 100 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><path d="M 126.88 62.2 L 126.88 137.8" fill="none" stroke="#3ee484" stroke-width="7.5" stroke-linecap="round"/><circle cx="24.4" cy="100" r="4.2" fill="#f8c448"/><circle cx="175.6" cy="100" r="4.2" fill="#f8c448"/></svg><div class="cap">diode</div></div>
       </div>
 
-      <h3 style="font-size:15px; margin:26px 0 2px">Prestige ladder — the card-customization unlock spine</h3>
+      <h3 style="font-size:15px; margin:26px 0 2px">Prestige ladder: the card-customization unlock spine</h3>
       <p class="sec-note">Rank gates the “design-your-card” unlocks (soldermask · silk · shape · loadout). Complexity + gold accrue with rank.</p>
       <div class="ladder">
         <div class="rank"><svg viewBox="0 0 200 200"><path d="M 155.44 100 L 171.52 89.82 L 168.35 76.6 L 149.4 74.83 L 139.2 60.8 L 143.37 42.23 L 131.78 35.13 L 117.13 47.27 L 100 44.56 L 89.82 28.48 L 76.6 31.65 L 74.83 50.6 L 60.8 60.8 L 42.23 56.63 L 35.13 68.22 L 47.27 82.87 L 44.56 100 L 28.48 110.18 L 31.65 123.4 L 50.6 125.17 L 60.8 139.2 L 56.63 157.77 L 68.22 164.87 L 82.87 152.73 L 100 155.44 L 110.18 171.52 L 123.4 168.35 L 125.17 149.4 L 139.2 139.2 L 157.77 143.37 L 164.87 131.78 L 152.73 117.13 Z" fill="none" stroke="#2ad0ca" stroke-width="5.5" stroke-linejoin="round"/><circle cx="100" cy="100" r="16.8" fill="none" stroke="#2ad0ca" stroke-width="5.5"/><circle cx="100" cy="100" r="5.04" fill="#2ad0ca"/></svg><div class="r-n">Apprentice</div><div class="r-t">I</div></div>
@@ -331,19 +335,19 @@
     <section>
       <div class="sec-h"><span class="idx mono">06</span><h2>Typography</h2></div>
       <p class="sec-note">Display <span class="mono">Outfit</span> · body <span class="mono">Inter</span> · data/terminal
-        <span class="mono">IBM Plex Mono</span> (the diegetic console + tabular V/I readouts). All OFL / self-hostable — no CDN.</p>
-      <div class="type-row"><div class="k">Display — Outfit SemiBold</div><div class="disp">Energize the Facility</div></div>
-      <div class="type-row"><div class="k">Body — Inter</div><div class="bodyspec">Aim at a device and press E. The breaker closes, the network re-solves, and the load downstream comes alive — or a loose lug heats up.</div></div>
-      <div class="type-row"><div class="k">Mono — terminal &amp; data</div><div class="monospec">vw&gt; drc --card &nbsp;·&nbsp; PASS 0/0 &nbsp;·&nbsp; L1 277.0V∠0° &nbsp; 12.4A &nbsp; 3.4kW</div></div>
+        <span class="mono">IBM Plex Mono</span> (the diegetic console + tabular V/I readouts). All OFL / self-hostable, no CDN.</p>
+      <div class="type-row"><div class="k">Display · Outfit SemiBold</div><div class="disp">Energize the Facility</div></div>
+      <div class="type-row"><div class="k">Body · Inter</div><div class="bodyspec">Aim at a device and press E. The breaker closes, the network re-solves, and the load downstream comes alive, or a loose lug heats up.</div></div>
+      <div class="type-row"><div class="k">Mono · terminal &amp; data</div><div class="monospec">vw&gt; drc --card &nbsp;·&nbsp; PASS 0/0 &nbsp;·&nbsp; L1 277.0V∠0° &nbsp; 12.4A &nbsp; 3.4kW</div></div>
     </section>
 
   </main>
 
   <footer>
-    <div style="margin-bottom:10px">This specimen is the spec the in-editor UMG styles and the 3D board materials match. Deliberately single-theme — it is a lit circuit board.</div>
+    <div style="margin-bottom:10px">This specimen is the spec the in-editor UMG styles and the 3D board materials match. Deliberately single-theme: it is a lit circuit board.</div>
     <div class="src">
       ANCHOR ① &nbsp;Okabe &amp; Ito, “Color Universal Design” (2008) · Wong, <em>Nature Methods</em> 8, 441 (2011)<br>
-      ANCHOR ② &nbsp;NEC / IEC wire color code — VoltWright <span style="color:var(--brand)">docs/core/standards/phase-identification.md</span> (sourced)<br>
+      ANCHOR ② &nbsp;NEC / IEC wire color code · VoltWright <span style="color:var(--brand)">docs/core/standards/phase-identification.md</span> (sourced)<br>
       SYSTEM &nbsp;&nbsp;&nbsp;pcbcore <span style="color:var(--brand)">tools/art-gen/skin/skin.py</span> · emblems <span style="color:var(--brand)">docs/design/emblems/</span> · bible <span style="color:var(--brand)">docs/design/ART-BIBLE.md</span>
     </div>
     <div style="margin-top:14px;opacity:.55;letter-spacing:.08em">&copy; 2026 Oasis Games LLC</div>
