@@ -83,19 +83,24 @@ function visibleTopics(topics, progress, isOshaUnlocked) {
   return topics.filter((t) => t.book !== 'osha' || isOshaUnlocked(progress));
 }
 
-function renderPicker(root, { topics, progress, isOshaUnlocked, onSelect }) {
+function renderPicker(root, { topics, progress, isOshaUnlocked, onSelect, onReplayGuide }) {
   const cards = visibleTopics(topics, progress, isOshaUnlocked)
     .map((t) => renderTopicCard(t, progress))
     .join('');
   root.innerHTML = `
     <section class="walkthrough-screen">
-      <h2>Walkthroughs</h2>
+      <div class="screen-headrow">
+        <h2>Walkthroughs</h2>
+        ${onReplayGuide ? '<button type="button" class="replay-guide" id="wt-replay">↻ Replay guide</button>' : ''}
+      </div>
       <p class="wt-lede">Step-by-step drills that teach the SEARCH SEQUENCE: noun, tab, table/column, footnote. No sizes or table values live here. Open your book and verify everything.</p>
       <div class="wt-topic-grid">${cards}</div>
     </section>`;
   root.querySelectorAll('[data-topic]').forEach((btn) => {
     btn.addEventListener('click', () => onSelect(btn.dataset.topic));
   });
+  const rb = root.querySelector('#wt-replay');
+  if (rb && onReplayGuide) rb.addEventListener('click', onReplayGuide);
 }
 
 function renderChips(steps, currentIndex) {
@@ -107,7 +112,7 @@ function renderChips(steps, currentIndex) {
     .join('');
 }
 
-function renderPlayer(root, { topic, tabsByBook, stepIndex, wrong, onPick, onExit }) {
+function renderPlayer(root, { topic, tabsByBook, stepIndex, wrong, onPick, onExit, onReplayGuide }) {
   // Codebook MODE follows the topic's own `book` field — never hardcoded to
   // 'nec' — so an OSHA topic mounts the OSHA parts/subparts tree instead of
   // the NEC tab strip (Task 6's mountCodebook contract).
@@ -125,7 +130,10 @@ function renderPlayer(root, { topic, tabsByBook, stepIndex, wrong, onPick, onExi
     <section class="walkthrough-screen">
       <div class="wt-headrow">
         <h2>${topic.title}</h2>
-        <button type="button" class="nav ghost" id="wt-exit">All topics</button>
+        <div class="headrow-btns">
+          ${onReplayGuide ? '<button type="button" class="replay-guide" id="wt-replay">↻ Replay guide</button>' : ''}
+          <button type="button" class="nav ghost" id="wt-exit">All topics</button>
+        </div>
       </div>
       <div class="wt-chips" aria-label="Step ${stepIndex + 1} of ${topic.steps.length}">${renderChips(topic.steps, stepIndex)}</div>
       <div class="wt-prompt-card" id="wt-prompt-card">
@@ -138,6 +146,8 @@ function renderPlayer(root, { topic, tabsByBook, stepIndex, wrong, onPick, onExi
     </section>`;
 
   root.querySelector('#wt-exit').addEventListener('click', onExit);
+  const wtReplay = root.querySelector('#wt-replay');
+  if (wtReplay && onReplayGuide) wtReplay.addEventListener('click', onReplayGuide);
 
   if (isNoun) {
     root.querySelectorAll('[data-choice]').forEach((btn) => {
@@ -208,11 +218,21 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
   let stepIndex = 0;
   let wrong = false;
   let demo = false; // the first walkthrough ever plays as a guided DEMO (auto-picks correct)
+  let forceDemo = false; // set by the "Replay guide" button to re-run the demo on demand
 
   function showPicker() {
     closeCoachmark();
     activeTopic = null;
-    renderPicker(root, { topics, progress: getProgress(), isOshaUnlocked, onSelect: startTopic });
+    renderPicker(root, { topics, progress: getProgress(), isOshaUnlocked, onSelect: startTopic, onReplayGuide: replayGuide });
+  }
+
+  // "Replay guide": re-run the guided demo on the active topic, or (from the
+  // picker) on the first available topic.
+  function replayGuide() {
+    const t = activeTopic || visibleTopics(topics, getProgress(), isOshaUnlocked)[0];
+    if (!t) return;
+    forceDemo = true;
+    startTopic(t.id);
   }
 
   function startTopic(topicId) {
@@ -227,12 +247,13 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
     activeTopic = topic;
     stepIndex = 0;
     wrong = false;
-    demo = !coachSeen('walkthrough-tour'); // demo the FIRST topic the visitor opens
+    demo = forceDemo || !coachSeen('walkthrough-tour'); // demo the FIRST topic, or on Replay guide
+    forceDemo = false;
     playStep();
   }
 
   function playStep() {
-    renderPlayer(root, { topic: activeTopic, tabsByBook, stepIndex, wrong, onPick: handlePick, onExit: showPicker });
+    renderPlayer(root, { topic: activeTopic, tabsByBook, stepIndex, wrong, onPick: handlePick, onExit: showPicker, onReplayGuide: replayGuide });
     if (demo) showStepCoach();
   }
 

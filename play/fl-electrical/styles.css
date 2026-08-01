@@ -1319,6 +1319,18 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
 /* the correct choice, flagged green during a walkthrough DEMO step */
 .wt-choice.wt-demo-pick { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 16%, transparent); color: var(--ink); font-weight: 600; }
 
+/* screen header row: title on the left, a "Replay guide" button on the right */
+.screen-headrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 6px; }
+.screen-headrow h2 { margin: 0; }
+.headrow-btns { display: flex; align-items: center; gap: 8px; }
+.replay-guide {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .03em; white-space: nowrap;
+  color: var(--acc3); background: transparent;
+  border: 1px solid color-mix(in srgb, var(--acc3) 40%, var(--line)); border-radius: 5px;
+  padding: 5px 10px; cursor: pointer;
+}
+.replay-guide:hover, .replay-guide:focus-visible { background: color-mix(in srgb, var(--acc3) 12%, transparent); color: var(--ink); }
+
 /* ---------- settings overlay ---------- */
 .settings-backdrop {
   position: fixed; inset: 0; z-index: 150;

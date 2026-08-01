@@ -76,11 +76,14 @@ function renderFlyer(root, book, data) {
   });
 }
 
-export function renderBookMap(root, { books, progress, onToggleSkimmed, openBookId }) {
+export function renderBookMap(root, { books, progress, onToggleSkimmed, openBookId, onReplayGuide }) {
   const skimmed = progress.checklist['e-map'] === true;
   root.innerHTML = `
     <section class="bookmap-screen">
-      <h2>Book Map</h2>
+      <div class="screen-headrow">
+        <h2>Book Map</h2>
+        ${onReplayGuide ? '<button type="button" class="replay-guide" id="bookmap-replay">↻ Replay guide</button>' : ''}
+      </div>
       <p class="bookmap-lede">All 14 UE reference books. "Need now" is what to order first. The rest can wait until closer to exam day. Click a card for its high-yield topics.</p>
       <label class="bookmap-skim">
         <input type="checkbox" id="bookmap-skimmed" ${skimmed ? 'checked' : ''}>
@@ -93,6 +96,9 @@ export function renderBookMap(root, { books, progress, onToggleSkimmed, openBook
   root.querySelector('#bookmap-skimmed').addEventListener('change', (e) => {
     onToggleSkimmed(e.target.checked);
   });
+
+  const bmReplay = root.querySelector('#bookmap-replay');
+  if (bmReplay && onReplayGuide) bmReplay.addEventListener('click', onReplayGuide);
 
   const flyerRoot = root.querySelector('#bookmap-flyer');
 

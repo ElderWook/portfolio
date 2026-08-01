@@ -102,7 +102,7 @@ function visibleTopicsMeta(topicsMeta, progress) {
   return topicsMeta.filter((t) => t.book !== 'osha' || isOshaLaneUnlocked(progress));
 }
 
-function renderPicker(root, { topicsMeta, drillsByTopic, progress, oshaUnlockTarget, onSelect }) {
+function renderPicker(root, { topicsMeta, drillsByTopic, progress, oshaUnlockTarget, onSelect, onReplayGuide }) {
   const nec250Clears = (progress.trainerTopicClears || []).filter((t) => t.startsWith('nec-250')).length;
   const oshaUnlocked = isOshaLaneUnlocked(progress);
   const oshaComplete = isOshaLaneComplete(progress);
@@ -140,7 +140,10 @@ function renderPicker(root, { topicsMeta, drillsByTopic, progress, oshaUnlockTar
 
   root.innerHTML = `
     <section class="trainer-screen">
-      <h2>Trainer</h2>
+      <div class="screen-headrow">
+        <h2>Trainer</h2>
+        ${onReplayGuide ? '<button type="button" class="replay-guide" id="tr-replay">↻ Replay guide</button>' : ''}
+      </div>
       <p class="tr-lede">Answer on the left, look it up on the right. Hard drills won't accept a right answer until you've opened the cited tab. That's the exam habit. No sizes or table values live here, so verify everything in your book.</p>
       <p class="tr-osha-track">${oshaLine}</p>
       <div class="tr-topic-grid">${cards}</div>
@@ -150,6 +153,8 @@ function renderPicker(root, { topicsMeta, drillsByTopic, progress, oshaUnlockTar
     if (btn.disabled) return;
     btn.addEventListener('click', () => onSelect(btn.dataset.topic));
   });
+  const rb = root.querySelector('#tr-replay');
+  if (rb && onReplayGuide) rb.addEventListener('click', onReplayGuide);
 }
 
 function renderResult(root, ctx) {
@@ -193,7 +198,7 @@ function renderResult(root, ctx) {
 }
 
 function renderDrill(root, ctx) {
-  const { drill, topicTitle, book, index, total, cleared, tabsByBook, editionPins, getProgress, onResult, onNext, onExit } = ctx;
+  const { drill, topicTitle, book, index, total, cleared, tabsByBook, editionPins, getProgress, onResult, onNext, onExit, forceDemo, onReplayGuide } = ctx;
   // Book-derived mode/tabs/edition pin — never hardcoded to 'nec' (Task 9):
   // an OSHA topic's drills mount the OSHA codebook mode and show the OSHA
   // edition pin instead of the NEC one.
@@ -216,7 +221,10 @@ function renderDrill(root, ctx) {
     <section class="trainer-screen">
       <div class="tr-headrow">
         <h2>${topicTitle} &middot; Trainer</h2>
-        <button type="button" class="nav ghost" id="tr-exit">All topics</button>
+        <div class="headrow-btns">
+          ${onReplayGuide ? '<button type="button" class="replay-guide" id="tr-replay">↻ Replay guide</button>' : ''}
+          <button type="button" class="nav ghost" id="tr-exit">All topics</button>
+        </div>
       </div>
       <p class="tr-progress">Drill ${index + 1} of ${total} · ${cleared ? 'topic already cleared' : `${CLEAR_THRESHOLD} correct clears this topic`}</p>
       <div class="tr-panes">
@@ -299,6 +307,8 @@ function renderDrill(root, ctx) {
   });
 
   root.querySelector('#tr-exit').addEventListener('click', onExit);
+  const trReplay = root.querySelector('#tr-replay');
+  if (trReplay && onReplayGuide) trReplay.addEventListener('click', onReplayGuide);
 
   // ---- timer ring (JS-stepped once per second; no CSS transition on the
   // stroke, so prefers-reduced-motion is honored — it just ticks in whole
@@ -406,7 +416,7 @@ function renderDrill(root, ctx) {
   // (re-renders it fresh via onNext(index)) so you still work this first example
   // for real. Show-once; the re-render skips the tour since it's now seen.
   // (Settings > Replay tips brings it back.)
-  if (!coachSeen('trainer-tour')) {
+  if (forceDemo || !coachSeen('trainer-tour')) {
     const answerText = drill.choices[drill.answerKey];
     const demoTarget = (drill.lookupPath && drill.lookupPath[0]) || null;
     runTour([
@@ -464,10 +474,27 @@ function renderDrill(root, ctx) {
 //                  updated progress so this screen can show clear/unlock banners.
 export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, oshaUnlockTarget, getProgress, onResult }) {
   stopTimer(); // clear any interval a prior mount left running
+  let forceDemo = false; // set by "Replay guide" to re-run the drill demo on demand
+  let current = null; // { topicId, index } while a drill is open, null on the picker
 
   function showPicker() {
     stopTimer();
-    renderPicker(root, { topicsMeta, drillsByTopic, progress: getProgress(), oshaUnlockTarget, onSelect: startTopic });
+    current = null;
+    renderPicker(root, { topicsMeta, drillsByTopic, progress: getProgress(), oshaUnlockTarget, onSelect: startTopic, onReplayGuide: replayGuide });
+  }
+
+  // "Replay guide": re-run the drill demo on the open drill, or (from the
+  // picker) on the first unlocked topic's first drill.
+  function replayGuide() {
+    if (current) {
+      forceDemo = true;
+      playDrill(current.topicId, current.index);
+      return;
+    }
+    const meta = visibleTopicsMeta(topicsMeta, getProgress()).find((t) => isTrainerTopicUnlocked(getProgress(), t.id));
+    if (!meta) return;
+    forceDemo = true;
+    startTopic(meta.id);
   }
 
   function startTopic(topicId) {
@@ -491,6 +518,9 @@ export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, edi
     const safeIndex = Math.max(0, Math.min(index, drills.length - 1));
     const meta = topicsMeta.find((t) => t.id === topicId);
     const progress = getProgress();
+    current = { topicId, index: safeIndex };
+    const demoNow = forceDemo;
+    forceDemo = false;
     renderDrill(root, {
       drill: drills[safeIndex],
       topicTitle: meta ? meta.title : topicId,
@@ -502,6 +532,8 @@ export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, edi
       editionPins,
       getProgress,
       onResult,
+      forceDemo: demoNow,
+      onReplayGuide: replayGuide,
       onNext: (nextIndex) => playDrill(topicId, nextIndex),
       onExit: showPicker,
     });

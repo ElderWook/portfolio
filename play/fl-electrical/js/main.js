@@ -182,6 +182,18 @@ export async function boot() {
     });
   }
 
+  // The Book Map's first-visit pointer, also fired by its "Replay guide" button.
+  function showBookmapPointer() {
+    const firstCard = screenRoot.querySelector('.bookcard');
+    if (!firstCard) return;
+    runTour([{
+      target: firstCard,
+      title: 'Read the key test points',
+      body: 'Click any book card to open its high-yield topics: the questions the exam pulls from that book, why they matter, and the traps to watch.',
+      doneLabel: 'Got it',
+    }]);
+  }
+
   // All five screens are real now (Task 10 finished 'timed'). The fallback
   // at the bottom of this function stays only as a defensive default for an
   // unrecognized screen id — it should never actually be reached.
@@ -204,19 +216,11 @@ export async function boot() {
           });
           renderSidebar();
         },
+        onReplayGuide: showBookmapPointer,
       });
-      // First-visit pointer: aim a coach-mark at a book card so the visitor
-      // knows the cards are clickable (their key test points live inside).
-      // Skipped when we deep-linked straight into a book's flyer.
-      const firstCard = openBookId ? null : screenRoot.querySelector('.bookcard');
-      if (firstCard && !coachSeen('bookmap-cards')) {
-        runTour([{
-          target: firstCard,
-          title: 'Read the key test points',
-          body: 'Click any book card to open its high-yield topics: the questions the exam pulls from that book, why they matter, and the traps to watch.',
-          doneLabel: 'Got it',
-        }]);
-      }
+      // First-visit pointer at a book card (skipped when we deep-linked into a
+      // flyer). The "Replay guide" button re-fires the same pointer any time.
+      if (!openBookId && !coachSeen('bookmap-cards')) showBookmapPointer();
       return;
     }
     if (screen === 'walkthrough') {
