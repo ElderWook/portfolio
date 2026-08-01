@@ -114,6 +114,13 @@ export function toast(message, opts = {}) {
   return { dismiss };
 }
 
+// Clear the whole strip at once, instantly (no exit transition) — called on
+// navigation so banners from the previous screen don't stack onto the next one.
+// Within a screen they still persist until closed; only a tab switch clears them.
+export function clearToasts() {
+  if (host) host.replaceChildren();
+}
+
 // Show-once nudges, backed by their OWN localStorage keys (kept out of the
 // progress store so adding/removing a nudge never churns the progress schema
 // or its migrations). Returns null if it has already fired for this browser.

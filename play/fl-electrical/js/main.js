@@ -1,5 +1,5 @@
 import { loadProgress, saveProgress, mutateProgress, markStarted, resetProgress } from './progress.js';
-import { initToasts, toast, toastOnce, resetToastOnce } from './toast.js';
+import { initToasts, toast, toastOnce, resetToastOnce, clearToasts } from './toast.js';
 import { runTour, coachSeen, coachReset, closeCoachmark } from './coachmark.js';
 import { renderChecklist } from './checklist.js';
 import { openIntro } from './intro.js';
@@ -391,6 +391,7 @@ export async function boot() {
   // it without ever touching Start studying.
   function go(screen) {
     closeCoachmark(); // any open first-run walkthrough ends when we navigate
+    clearToasts(); // wipe the previous screen's banners so they don't stack up
     const p = loadProgress(KEY);
     if (!p.started && screen !== 'path') {
       openIntroNow();
