@@ -20,6 +20,63 @@ function renderMove(move) {
     </li>`;
 }
 
+// The ROI heatmap — subjects sized by their exam weight. Bar widths are derived
+// from each subject's high-end question count relative to the heaviest subject,
+// so the visual ranking always matches the data (no hardcoded widths to drift).
+// Cite-only: these are the public exam-blueprint weightings, not code content.
+function renderRoi(roi) {
+  if (!roi || !(roi.subjects || []).length) return '';
+  const maxHigh = roi.subjects.reduce((m, s) => Math.max(m, s.high || 0), 0) || 1;
+  const bars = roi.subjects.map((s) => {
+    const w = Math.max(8, Math.round(((s.high || 0) / maxHigh) * 100));
+    return `
+      <div class="path-bar">
+        <span class="path-bar-lab">${s.subject}</span>
+        <span class="path-bar-track">
+          <span class="path-bar-fill lane-${s.lane}" style="width:${w}%">${s.tag || ''}</span>
+        </span>
+        <span class="path-bar-q">${s.q}</span>
+      </div>`;
+  }).join('');
+  const legend = (roi.legend || []).map((l) =>
+    `<span><i class="lane-${l.lane}"></i>${l.label}</span>`
+  ).join('');
+  return `
+    <div class="path-block">
+      <p class="path-block-label">${roi.label}</p>
+      ${roi.intro ? `<p class="path-roi-intro">${roi.intro}</p>` : ''}
+      <div class="path-bars">${bars}</div>
+      ${legend ? `<div class="path-legend">${legend}</div>` : ''}
+      ${roi.note ? `<p class="path-roi-note">${roi.note}</p>` : ''}
+    </div>`;
+}
+
+// The reference kit, grouped by how you acquire each book (buy / free-from-state
+// / already inside the Contractors Manual). The authoritative order list is
+// Checklist B in the sidebar; this is the strategic at-a-glance shape of it.
+function renderKitGroups(kg) {
+  if (!kg || !(kg.groups || []).length) return '';
+  const cards = kg.groups.map((g) => {
+    const items = (g.items || []).map((it) => `<li>${it}</li>`).join('');
+    return `
+      <div class="path-acol">
+        <div class="path-acol-head">
+          <span class="path-acol-title">${g.title}</span>
+          <span class="path-acol-badge badge-${g.id}">${g.badge}</span>
+        </div>
+        ${g.intro ? `<p class="path-acol-intro">${g.intro}</p>` : ''}
+        <ul class="path-acol-list">${items}</ul>
+        ${g.excluded ? `<p class="path-acol-excluded">${g.excluded}</p>` : ''}
+      </div>`;
+  }).join('');
+  return `
+    <div class="path-block">
+      <p class="path-block-label">${kg.label}</p>
+      ${kg.intro ? `<p class="path-kit-intro">${kg.intro}</p>` : ''}
+      <div class="path-acq">${cards}</div>
+    </div>`;
+}
+
 function renderStep(step) {
   const links = (step.links || [])
     .map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`)
@@ -35,6 +92,8 @@ function renderStep(step) {
 export function renderPath(root, { path, onShowIntro }) {
   const movesHtml = (path.moves || []).map(renderMove).join('');
   const shapeHtml = (path.examShape || []).map((s) => `<li>${s}</li>`).join('');
+  const roiHtml = renderRoi(path.roi);
+  const kitGroupsHtml = renderKitGroups(path.kitGroups);
   const stepsHtml = (path.steps || []).map(renderStep).join('');
   const cib = path.cib;
   const fp = path.freePractice;
@@ -58,6 +117,8 @@ export function renderPath(root, { path, onShowIntro }) {
         <p class="path-block-label">The exam at a glance</p>
         <ul class="path-shape">${shapeHtml}</ul>
       </div>` : ''}
+      ${roiHtml}
+      ${kitGroupsHtml}
       ${cib ? `<p class="path-cib"><a href="${cib.href}" target="_blank" rel="noopener">${cib.label} &#8599;</a>${cib.note ? ` <span class="path-cib-note">${cib.note}</span>` : ''}</p>` : ''}
       <div class="path-block">
         <p class="path-block-label">The details</p>

@@ -7,19 +7,19 @@
       "n": 1,
       "title": "Get the books",
       "body": "The exact approved reference list, no more and no less. Ordering the wrong edition, or a book that isn't on the list, is a quiet way to fail before you start.",
-      "where": "sidebar kit · compartment B"
+      "where": "Checklist B · Books to order"
     },
     {
       "n": 2,
       "title": "Tab & index them",
       "body": "The biggest lever, and where most people under-invest. Permanent tabs, a marked-up index, and knowing each book cold so your hand goes to the right page without thinking.",
-      "where": "kit · compartment C, then the Book Map"
+      "where": "Checklist C · Tabs & marking, then Book Map"
     },
     {
       "n": 3,
       "title": "Drill the lookup til it's a reflex",
       "body": "Noun, tab, table, footnote, in that order. Fast, every time. Practice the path until finding an answer is muscle memory, not a hunt.",
-      "where": "Walkthrough, Trainer, Timed"
+      "where": "Walkthrough → Trainer → Timed"
     }
   ],
   "mythBuster": "It's not a closed-book memory test. Field experience helps you understand the question, but it won't find the answer for you. Speed in your books will. The people who struggle are almost always the ones whose books aren't tabbed.",
@@ -31,6 +31,70 @@
     "Permanent tabs only. No sticky notes, loose sheets, or formula pages",
     "One original copy of each required reference"
   ],
+  "roi": {
+    "label": "Where the 100 questions live",
+    "intro": "The exam blueprint weights subjects unevenly. Spend your time by ROI — be fastest where the weight is, not everywhere.",
+    "subjects": [
+      { "subject": "General Theory & Principles", "q": "19–21", "high": 21, "lane": "map", "tag": "Map · calc pillars post-beta" },
+      { "subject": "Alarms / Limited Energy", "q": "14–16", "high": 16, "lane": "map", "tag": "NTC Blue Book · NFPA 72" },
+      { "subject": "Wiring & Protection", "q": "13–15", "high": 15, "lane": "beta", "tag": "Beta deep lane · Art. 250" },
+      { "subject": "Special Occupancies", "q": "13–15", "high": 15, "lane": "map", "tag": "Map" },
+      { "subject": "Wiring Methods & Materials", "q": "11–13", "high": 13, "lane": "map", "tag": "Map" },
+      { "subject": "OSHA / Safety / Tools", "q": "8–10", "high": 10, "lane": "easy", "tag": "Beta easy-lane" },
+      { "subject": "Plan & Spec Reading", "q": "7–9", "high": 9, "lane": "map", "tag": "Map" },
+      { "subject": "Life Safety & ADA", "q": "4–6", "high": 6, "lane": "map", "tag": "Map · in the Manual" },
+      { "subject": "Signs / Outline Lighting", "q": "2–4", "high": 4, "lane": "map", "tag": "Map" }
+    ],
+    "legend": [
+      { "lane": "beta", "label": "Beta interactive (Art. 250)" },
+      { "lane": "easy", "label": "Beta easy-lane (OSHA)" },
+      { "lane": "map", "label": "Map + hotspots (trainer post-beta)" }
+    ],
+    "note": "The five heaviest subjects already add up to about 75 — the exact pass mark. That's why the beta drills fast retrieval on the heavy NEC lane and treats OSHA (equal-weight, pure lookup) as high-ROI easy points. You don't have to be perfect everywhere. You have to be fast where the weight is."
+  },
+  "kitGroups": {
+    "label": "The reference kit — grouped by how you get it",
+    "intro": "Your full order list lives in the sidebar (Checklist B). Here's the shape of it: what to buy, what the state emails you for free, and what's already inside a book you own.",
+    "groups": [
+      {
+        "id": "buy",
+        "badge": "Buy",
+        "title": "Books to order",
+        "intro": "The physical references you purchase. Order the need-now ones first.",
+        "items": [
+          "NEC 2023 (RN9) — the beta's deep lane",
+          "Florida Contractors Manual 2021 (RN50)",
+          "MANCOMM OSHA, July 2020 (RN7)",
+          "NFPA 72 · NTC Blue Book (RN39)",
+          "NFPA 101 · 780 · Fire-Alarm Handbook",
+          "Sign Structures · Neon · Concrete · Telecom"
+        ]
+      },
+      {
+        "id": "free",
+        "badge": "Free (state)",
+        "title": "Emailed free by the state",
+        "intro": "No buy link. The state emails these after you're approved for an exam — send one combined request.",
+        "items": [
+          "UL 681 (RN20)",
+          "UL 365 (RN21)",
+          "Request → ElectricalContractors.Reference@myfloridalicense.com"
+        ]
+      },
+      {
+        "id": "in-manual",
+        "badge": "In the Manual",
+        "title": "Inside a book you own",
+        "intro": "Not separate books — chapters of the Contractors Manual (RN50). Study them as hotspot topics, not extra order rows.",
+        "items": [
+          "Fire Marshal (F.S. 633)",
+          "ADA · Recordkeeping",
+          "Liens · Workers' Comp · Tax · FLSA"
+        ],
+        "excluded": "RN33 NESC and RN35 Lineman's are UL-only — not on the UE list."
+      }
+    ]
+  },
   "cib": {
     "label": "Read the Candidate Information Booklet (CIB)",
     "note": "the official source of truth. Confirm your book list, editions, and exam-day rules here before anything else.",

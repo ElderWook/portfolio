@@ -209,6 +209,7 @@ function renderCompartment(compartment, ctx, progress, open) {
   return `
     <details class="compartment" data-compartment="${compartment.id}" ${open ? 'open' : ''}>
       <summary>
+        <span class="cletter" aria-hidden="true">${compartment.id}</span>
         <span class="ctitle">${compartment.title}</span>
         <span class="ccount">${done}/${total}</span>
       </summary>
