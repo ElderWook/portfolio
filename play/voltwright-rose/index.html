@@ -219,7 +219,7 @@
       Symmetry is a macro privilege, but the underlying prerequisite graph stays a true DAG even where locally asymmetric.</p>
     <div class="grid cols-3">
       <div class="card"><span class="tag">center</span><h3 class="em-green">Ground-star + PLC capstone</h3><p>The bridge null/detector node = VOLTWRIGHT rank. A board you designed drives gear you wired, graded by <em>both</em> graders at once.</p></div>
-      <div class="card"><span class="tag">radius</span><h3>Mastery = prestige ring</h3><p>Apprentice (rim) → Journeyman → Foreman → Master → center. Pathing rim→center <em>is</em> current flowing source→ground.</p></div>
+      <div class="card"><span class="tag">radius</span><h3>Mastery = prestige ring</h3><p>Apprentice (rim) > Journeyman > Foreman > Master > center. Pathing rim>center <em>is</em> current flowing source>ground.</p></div>
       <div class="card"><span class="tag">vertical axis</span><h3>The two tracks, a diff-pair</h3><p><span class="em-elec">Left = ElectricalCore</span> (dashed, provisional) · <span class="em-gold">right = pcbcore</span> (solid gold). They converge on the reference plane, so pcbcore-is-king in geometry.</p></div>
       <div class="card"><span class="tag">rings inward</span><h3>Distill-from-flagship spiral</h3><p>Each inner ring re-renders the <em>same</em> subcircuit at higher realism (Bruner). No bespoke tutorial levels.</p></div>
       <div class="card"><span class="tag">top vertex</span><h3 style="color:var(--pb)">3-phase career crown</h3><p>Factory L1 · Comms L2 · Data-center L3, the only place 3-fold is primary. Tappable at Master: breadth-after-competency.</p></div>
@@ -237,9 +237,9 @@
       <div class="card conn" style="--dot:var(--elec)">
         <span class="tag" style="color:var(--elec)">left wing · muscle</span>
         <h3 class="em-elec">AC Power Distribution</h3>
-        <p><b>Connections:</b> service entrance → panelboard / busbar → feeder → breaker → Δ-Y transformer → branch → load, plus grounding electrode + bonding jumper.<br>
+        <p><b>Connections:</b> service entrance > panelboard / busbar > feeder > breaker > Δ-Y transformer > branch > load, plus grounding electrode + bonding jumper.<br>
         <b>Standard:</b> phase-ID by voltage class. <em>Mandated</em> neutral white/grey · EGC green · high-leg orange. Phases by convention (208 V blk·red·blu / 480 V brn·org·yel). MV by stripe-count. <span class="cite">phase-identification.md · conductor-sizing.md</span><br>
-        <b>Teaches:</b> get energy source→load safely: ampacity, grounding &amp; bonding, Δ-Y.</p>
+        <b>Teaches:</b> get energy source>load safely: ampacity, grounding &amp; bonding, Δ-Y.</p>
       </div>
       <div class="card conn" style="--dot:var(--gold)">
         <span class="tag" style="color:var(--gold)">right wing · mind</span>
@@ -253,7 +253,7 @@
         <h3 class="em-diff">Comms · the signal on the pair</h3>
         <p><b>Connections:</b> differential buses: USB 90 Ω (board controlled-Z) · RS-485/Modbus &amp; CAN 120 Ω (terminate both ends + bias) · Ethernet 100 Ω. Then PLC I/O and −48 VDC telecom. The <b>card-edge cluster bus (CBUS_H/L · SYNC_CLK)</b> = the co-op link.<br>
         <b>Standard:</b> Zdiff + terminate + length-match + continuous reference plane + symmetric vias. <span class="cite">differential-pairs.md</span><br>
-        <b>Teaches:</b> common-mode rejection: the signature "you actually learned this," recurring USB → RS-485/CAN → Ethernet.</p>
+        <b>Teaches:</b> common-mode rejection: the signature "you actually learned this," recurring USB > RS-485/CAN > Ethernet.</p>
       </div>
     </div>
     <div class="callout">
@@ -262,7 +262,7 @@
       PLC capstone: a board (logic) that talks to gear (power) over a bus. Every diff-pair law is a statement about
       <em>that</em> relationship: <em>continuous reference plane</em> = keep the spine solid under the pair ·
       <em>symmetry</em> = the two wings mirror · <em>terminate both physical ends</em> = the two source benches and the
-      crown. And the diff-pair difficulty gradient (keep-together → match + terminate → control-Z) <em>is</em> the
+      crown. And the diff-pair difficulty gradient (keep-together > match + terminate > control-Z) <em>is</em> the
       mastery rings.</p>
     </div>
   </section>
@@ -283,7 +283,7 @@
       </table>
     </div>
     <p class="lede" style="margin-top:14px">Four laws: <b>current flow</b> = directed prerequisite gating (an unpowered node
-      carries no current → unreachable → out-of-order learning impossible <em>by KVL</em>) · <b>ground</b> = the center + the
+      carries no current > unreachable > out-of-order learning impossible <em>by KVL</em>) · <b>ground</b> = the center + the
       return every path closes to · <b>a phase</b> = one career spoke · <b>a voltage domain</b> = a bounded ring at one potential.</p>
   </section>
 
@@ -375,7 +375,7 @@
   add({id:'E0',ring:0,th:232,wing:'L',type:'source',label:'Service · Power Bench',
        desc:'E0 · the split-phase service terminal. Ohm / V·I·P. A breaker toggles a load.',grade:'continuity'});
   add({id:'P0',ring:0,th:308,wing:'R',type:'source',label:'Supply · Signal Bench',
-       desc:'P0 · the board supply pad. schematic→netlist, one trace, DRC.',grade:'pcbcore'});
+       desc:'P0 · the board supply pad. schematic>netlist, one trace, DRC.',grade:'pcbcore'});
 
   // right column (pcbcore) notables climbing inward
   add({id:'P1',ring:1,th:0,wing:'R',type:'notable',label:'Trace + GND pour',desc:'P1 · a signal trace referenced to a ground pour: F.Cu+B.Cu, vias, 45° routing, the Okabe-Ito net-role colour code.',grade:'pcbcore'});
@@ -385,7 +385,7 @@
   // left column (electrical) notables
   add({id:'E1',ring:1,th:180,wing:'L',type:'notable',label:'Panelboard · split-φ',desc:'E1 · a 120/240 center-tap panel: two hots + neutral + the main bonding jumper. Also hardens the electrical model.',grade:'continuity'});
   add({id:'E2',ring:2,th:180,wing:'L',type:'notable',label:'Feeder + Δ-Y',desc:'E2 · a 208/480 feeder into a wye/delta transformer: phasors, rotation, balance.',grade:'provisional'});
-  add({id:'E3',ring:3,th:180,wing:'L',type:'notable',label:'Switchgear + MV',desc:'E3 · MV service → switchgear: the service transformer, LOTO, grounding, ampacity/fault.',grade:'provisional'});
+  add({id:'E3',ring:3,th:180,wing:'L',type:'notable',label:'Switchgear + MV',desc:'E3 · MV service > switchgear: the service transformer, LOTO, grounding, ampacity/fault.',grade:'provisional'});
 
   // keystones (rank gates on the wings — voltage-domain crossings)
   add({id:'kR12',ring:1,th:330,wing:'R',type:'keystone',label:'stackup jump',desc:'Add a plane layer (+isolation / −cost). A voltage-domain crossing.',grade:'—'});
@@ -590,8 +590,8 @@
   anno(cx, -14, "▲ 3-PHASE CAREER CROWN · TAPPABLE AT MASTER", "var(--pb)","middle");
   anno(cx-RINGS[0].r-4, cy, "◀ AC POWER DISTRIBUTION · EC (prov.)", "var(--elec)","end",{fs:10,ls:".03em"});
   anno(cx+RINGS[0].r+4, cy, "PCB LOGIC · pcbcore (KING) ▶", "var(--gold)","start",{fs:10,ls:".03em"});
-  anno(cx+20, cy-150, "COMMS ▸ diff-pair bus · USB→RS-485→ETH", "var(--diff)","start",{fs:10,ls:".07em"});
-  anno(cx, botSpine.y+64, "SOURCES ▾  path inward = current → ground", "var(--ink-faint)","middle");
+  anno(cx+20, cy-150, "COMMS ▸ diff-pair bus · USB>RS-485>ETH", "var(--diff)","start",{fs:10,ls:".07em"});
+  anno(cx, botSpine.y+64, "SOURCES ▾  path inward = current > ground", "var(--ink-faint)","middle");
 
   // ---- golden thread / energize: the recommended spine path ----
   const threadIds=['E0','E1','router','cardedge','cap','P1','P2','P3'];

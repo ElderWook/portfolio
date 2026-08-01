@@ -228,7 +228,7 @@
         and the 4-wire-delta high-leg (orange) are fixed. The phase colors are employer/AHJ convention. Above
         600&nbsp;V there is no code at all, so you identify by <em>stripe-count</em>.</p>
 
-      <div class="eyebrow" style="margin:2px 0 8px">Learning palette · shipped teaching default · exact <span class="mono" style="text-transform:none">PhasePalette.h</span> values (FLinearColor → sRGB)</div>
+      <div class="eyebrow" style="margin:2px 0 8px">Learning palette · shipped teaching default · exact <span class="mono" style="text-transform:none">PhasePalette.h</span> values (FLinearColor > sRGB)</div>
       <div class="grid g-role" style="margin-bottom:20px">
         <div class="sw"><div class="chip" style="background:#B18255"></div><div class="body"><div class="name">Phase A</div><div class="hex">#B18255</div><div class="use">dark brown</div></div></div>
         <div class="sw"><div class="chip" style="background:#FBB338"></div><div class="body"><div class="name">Phase B</div><div class="hex">#FBB338</div><div class="use">orange (red-heavy)</div></div></div>
@@ -271,7 +271,7 @@
           </tr>
           <tr>
             <td>MV 12.47 kV</td>
-            <td colspan="3"><span class="wire">no color code → <span class="bands"><i></i></span>A · <span class="bands"><i></i><i></i></span>B · <span class="bands"><i></i><i></i><i></i></span>C &nbsp;stripe-count + utility palette</span></td>
+            <td colspan="3"><span class="wire">no color code > <span class="bands"><i></i></span>A · <span class="bands"><i></i><i></i></span>B · <span class="bands"><i></i><i></i><i></i></span>C &nbsp;stripe-count + utility palette</span></td>
             <td>—</td><td>—</td>
             <td><span class="tag conv">practice</span></td>
           </tr>
@@ -296,7 +296,7 @@
         <div class="card" style="--dot:#59c46c"><h3>Green = ground / safe</h3><p>On any conductor, green always means EGC/bonded, never a generic “success” that could mislead at a live panel.</p></div>
         <div class="card" style="--dot:#ff3b30"><h3>Red = hazard</h3><p>Fault, energized-danger, and the facility rule: current in a ground conductor is <em>always</em> alarm-red.</p></div>
         <div class="card" style="--dot:#2ad0ca"><h3>Two codes, separated</h3><p>Net-role in the PCB view, phase in the wiring view. Where they meet, the safety-semantic (phase/ground) code wins.</p></div>
-        <div class="card" style="--dot:#f8c448"><h3>CVD-safe → gated</h3><p>Both anchors are distinguishable, so a colorblind-check joins the art gate. Verify it with the toggle above.</p></div>
+        <div class="card" style="--dot:#f8c448"><h3>CVD-safe > gated</h3><p>Both anchors are distinguishable, so a colorblind-check joins the art gate. Verify it with the toggle above.</p></div>
       </div>
     </section>
 

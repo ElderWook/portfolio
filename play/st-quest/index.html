@@ -193,9 +193,9 @@
         <div class="scan" id="scan" hidden>
           <div class="scan-head">
             <span class="stage" data-s="read">① Read inputs</span>
-            <span class="flow">→</span>
+            <span class="flow">></span>
             <span class="stage" data-s="solve">② Solve logic</span>
-            <span class="flow">→</span>
+            <span class="flow">></span>
             <span class="stage" data-s="write">③ Write outputs</span>
             <span class="scanpos" id="scanpos"></span>
             <button id="replay" title="Replay the scan">↻ replay</button>
@@ -386,7 +386,7 @@
       if (fresh){ DONE.add(L.id); saveProg(); refreshProgress(); }
       html += '<div class="verdict win">✓ All checks pass. Lesson complete. Your ST executed and the outputs are correct.'
             + (fresh ? ' <span class="xpgain">+10 XP</span>' : '') + '</div>';
-      if (cur < LESSONS.length - 1) html += '<button class="nextbtn" id="nextlesson">Next lesson →</button>';
+      if (cur < LESSONS.length - 1) html += '<button class="nextbtn" id="nextlesson">Next lesson ></button>';
     } else {
       html += '<div class="verdict more">Not yet. Fix the failing checks above and Run again.</div>';
     }
