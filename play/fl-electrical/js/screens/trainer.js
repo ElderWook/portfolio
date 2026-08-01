@@ -402,8 +402,10 @@ function renderDrill(root, ctx) {
 
   // First-ever drill: a guided DEMO. It performs the correct procedure as you
   // click through the pop-ups — opens the right tab, shows the green
-  // confirmation, and selects the correct answer — so you watch one full lookup
-  // done right, then take over. Show-once (Settings > Replay tips brings it back).
+  // confirmation, and highlights the correct answer — then RESETS the drill
+  // (re-renders it fresh via onNext(index)) so you still work this first example
+  // for real. Show-once; the re-render skips the tour since it's now seen.
+  // (Settings > Replay tips brings it back.)
   if (!coachSeen('trainer-tour')) {
     const answerText = drill.choices[drill.answerKey];
     const demoTarget = (drill.lookupPath && drill.lookupPath[0]) || null;
@@ -417,7 +419,7 @@ function renderDrill(root, ctx) {
         target: () => root.querySelector('#tr-codebook'),
         onEnter: () => { if (demoTarget) mountCb(demoTarget); },
         title: 'Flip to the right tab',
-        body: 'Here is the tab and section for those key words, opened for you. On your own drills you flip to it yourself. These are the same tabs your real book has.',
+        body: 'Here is the tab and section for those key words, opened for you. On your own you flip to it yourself. These are the same tabs your real book has.',
       },
       {
         target: () => root.querySelector('#tr-lookup'),
@@ -431,11 +433,11 @@ function renderDrill(root, ctx) {
           const btn = root.querySelector(`.tr-choice[data-choice="${drill.answerKey}"]`);
           if (btn) btn.click();
         },
-        title: 'The right answer, picked for you',
-        body: `The method here: "${answerText}". It is already selected. Hit Submit to see the full search ladder and the reminder to confirm every value in your book.`,
-        doneLabel: 'Got it, my turn',
+        title: 'The right answer',
+        body: `The method here: "${answerText}". That is the one to choose. Now you drive it yourself: flip to the tab, open the cited section, then pick it and Submit.`,
+        doneLabel: 'Now you try it',
       },
-    ]);
+    ], { onDone: () => onNext(index) }); // reset the drill fresh so you do it for real
   }
 }
 
