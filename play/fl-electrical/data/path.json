@@ -112,8 +112,7 @@
       "heading": "Where the rules actually come from",
       "body": "Florida's DBPR Electrical Contractors page and the Candidate Information Booklet (CIB) are the source of truth for the approved reference list, editions, and exam-day rules. Confirm you're tracking the Unlimited Electrical (UE) license, and treat the CIB as final, not this app and not a forum.",
       "links": [
-        { "label": "DBPR Electrical Contractors", "href": "https://www2.myfloridalicense.com/electrical-contractors/" },
-        { "label": "Candidate Information Booklet (CIB)", "href": "https://www2.myfloridalicense.com/servop/testing/documents/eleccib.pdf" }
+        { "label": "DBPR Electrical Contractors", "href": "https://www2.myfloridalicense.com/electrical-contractors/" }
       ]
     },
     {
@@ -126,9 +125,7 @@
       "id": "bring-rules",
       "heading": "Exam-day bring rules",
       "body": "One original copy of each required reference, with permanently attached tabs only. No sticky notes, no removable flags, no loose notes or formula sheets in the room. Confirm the exact list against your CIB before exam day (sidebar compartment D).",
-      "links": [
-        { "label": "Candidate Information Booklet (CIB)", "href": "https://www2.myfloridalicense.com/servop/testing/documents/eleccib.pdf" }
-      ]
+      "links": []
     },
     {
       "id": "editions",

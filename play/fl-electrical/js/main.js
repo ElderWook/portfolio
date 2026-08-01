@@ -42,6 +42,21 @@ export async function boot() {
   const manifest = await loadJSON('data/manifest.json');
   const KEY = manifest.storageKey;
 
+  // Clean slate on a new release. The guided flow changed substantially, so a
+  // returning visitor's old saved state (started=true, tour already seen) would
+  // skip the refreshed intro + first-visit site tour. This clears prior progress
+  // and the show-once guide flags ONCE per release per browser, so everyone hits
+  // the same fresh starting point here. Bump RELEASE to re-trigger.
+  const RELEASE = '2026-08-01-guided-tour';
+  try {
+    if (localStorage.getItem('fl-electrical-release') !== RELEASE) {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith('fl-electrical') || k.startsWith('fl-coach-once:') || k.startsWith('fl-toast-once:'))
+        .forEach((k) => localStorage.removeItem(k));
+      localStorage.setItem('fl-electrical-release', RELEASE);
+    }
+  } catch (_) { /* storage blocked — nothing to reset */ }
+
   // The four Art. 250 topic ids are shared by contract across the walkthrough
   // AND trainer screens (a walkthrough's id doubles as its trainer topic id).
   // Task 9 adds the OSHA topic ids to the SAME generic id-driven loader below
@@ -224,7 +239,9 @@ export async function boot() {
         body: 'Guided reps of the search path: noun, tab, table, footnote. The same moves every time, until they’re automatic.' },
       { target: railBtn('trainer'), title: 'Trainer',
         body: 'Answer on the left, look it up on the right. Being fast at finding is the whole game. Clear topics here to open the OSHA and Timed lanes.' },
-      { target: () => (mobile ? document.getElementById('btn-checklist') : document.getElementById('sidebar')),
+      { target: () => (mobile
+          ? document.getElementById('btn-checklist')
+          : (document.querySelector('#sidebar .checklist') || document.getElementById('sidebar'))),
         title: 'Your prep checklist',
         body: mobile
           ? 'Tap Checklist to open your prep list: books to order, tabs, exam-day rules, and your live study progress. It ticks itself as you go.'
