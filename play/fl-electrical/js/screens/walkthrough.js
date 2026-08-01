@@ -132,6 +132,11 @@ function renderPlayer(root, { topic, tabs, stepIndex, wrong, onPick, onExit }) {
     });
   }
 
+  // No remove/reflow/re-add dance is needed here (unlike intro.js's shake,
+  // which reuses one persistent modal node across repeated Skip clicks):
+  // `root.innerHTML` above just built a brand-new `.wt-prompt-card` element,
+  // so the `shake` class is present from its first paint and the CSS
+  // animation always fires fresh.
   if (wrong) {
     root.querySelector('#wt-prompt-card').classList.add('shake');
   }
@@ -165,29 +170,31 @@ function renderDone(root, topic, onExit) {
 //                 mutateProgress call (push id, award XP, unlock trainer
 //                 topic) and any sidebar re-render.
 export function renderWalkthrough(root, { topics, tabs, getProgress, onComplete }) {
-  let activeTopicId = null;
+  // Resolved once per startTopic() call rather than re-searched from
+  // `topics` on every playStep()/handlePick() — a topic is picked once per
+  // play-through, so there is exactly one lookup to do, not one per click.
+  let activeTopic = null;
   let stepIndex = 0;
   let wrong = false;
 
   function showPicker() {
-    activeTopicId = null;
+    activeTopic = null;
     renderPicker(root, { topics, progress: getProgress(), onSelect: startTopic });
   }
 
   function startTopic(topicId) {
-    activeTopicId = topicId;
+    activeTopic = topics.find((t) => t.id === topicId);
     stepIndex = 0;
     wrong = false;
     playStep();
   }
 
   function playStep() {
-    const topic = topics.find((t) => t.id === activeTopicId);
-    renderPlayer(root, { topic, tabs, stepIndex, wrong, onPick: handlePick, onExit: showPicker });
+    renderPlayer(root, { topic: activeTopic, tabs, stepIndex, wrong, onPick: handlePick, onExit: showPicker });
   }
 
   function handlePick(value) {
-    const topic = topics.find((t) => t.id === activeTopicId);
+    const topic = activeTopic;
     const step = topic.steps[stepIndex];
     if (value !== step.correctTarget) {
       wrong = true;
