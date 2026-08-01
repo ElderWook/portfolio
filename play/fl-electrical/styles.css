@@ -614,6 +614,20 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
 
 .intro-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
+.intro-footer { margin-top: 14px; text-align: center; }
+.intro-reset-link {
+  background: none;
+  border: none;
+  padding: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink2);
+  opacity: .6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.intro-reset-link:hover, .intro-reset-link:focus-visible { opacity: 1; color: var(--ink); }
+
 @keyframes intro-shake {
   10%, 90% { transform: translateX(-1px); }
   20%, 80% { transform: translateX(2px); }

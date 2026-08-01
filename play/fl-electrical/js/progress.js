@@ -29,7 +29,15 @@ export function loadProgress(storageKey) {
 }
 
 export function saveProgress(storageKey, p) {
-  localStorage.setItem(storageKey, JSON.stringify(p));
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(p));
+  } catch (err) {
+    // Safari Private Mode / QuotaExceededError / any storage failure: don't
+    // let a tick throw into the DOM event handler that triggered it. The
+    // in-memory `p` the caller already has is still correct for this
+    // session; it just won't survive a reload.
+    console.warn('fl-electrical: failed to save progress', err);
+  }
 }
 
 export function mutateProgress(storageKey, fn) {

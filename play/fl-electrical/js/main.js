@@ -1,4 +1,4 @@
-import { loadProgress, saveProgress, mutateProgress, markStarted } from './progress.js';
+import { loadProgress, saveProgress, mutateProgress, markStarted, resetProgress } from './progress.js';
 import { renderChecklist } from './checklist.js';
 import { openIntro } from './intro.js';
 import { renderPath } from './screens/path.js';
@@ -214,6 +214,7 @@ export async function boot() {
         drillsByTopic,
         tabsByBook,
         editionPins: manifest.editionPins,
+        oshaUnlockTarget: manifest.unlock.trainerTopicsForOsha,
         getProgress: () => loadProgress(KEY),
         onResult: onTrainerResult,
       });
@@ -372,7 +373,21 @@ export async function boot() {
         });
         updateRailLocks(loadProgress(KEY));
       },
+      onReset: onResetProgress,
     });
+  }
+
+  // Hidden/advanced reset (design §3.1) — "Reset progress" under Show intro,
+  // confirm-gated, for testing / starting a new exam cycle. Reuses the same
+  // boot/render path the app already has (renderSidebar + go + openIntroNow)
+  // instead of duplicating boot() — since none of the loaded JSON depends on
+  // progress, re-rendering the progress-dependent DOM is all a "reboot" needs.
+  function onResetProgress() {
+    if (!confirm('Reset all exam-prep progress? This clears your checklist, XP, and unlocks.')) return;
+    resetProgress(KEY);
+    renderSidebar();
+    go('path');
+    openIntroNow();
   }
 
   rail.addEventListener('click', (e) => {

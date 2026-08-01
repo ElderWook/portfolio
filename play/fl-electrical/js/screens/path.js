@@ -1,7 +1,7 @@
 // js/screens/path.js — the Path screen: a full-page rendering of the same
-// data/path.json primer shown in the intro overlay. This is the only *real*
-// screen this task builds; bookmap/walkthrough/trainer/timed land in Tasks
-// 5-10 — main.js renders a "coming soon" placeholder for those meanwhile.
+// data/path.json primer shown in the intro overlay. This was the first real
+// screen built; bookmap/walkthrough/trainer/timed followed in later tasks and
+// are all real screens too now (see main.js's renderScreen router).
 //
 // `path` is never locked (the router guard in main.js lets `screen==='path'`
 // through even while `!started`), so a visitor can read this page before

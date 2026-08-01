@@ -38,7 +38,7 @@ function renderStep(step) {
     </li>`;
 }
 
-export function openIntro(root, { path, progress, onStart, onSkip }) {
+export function openIntro(root, { path, progress, onStart, onSkip, onReset }) {
   const getProgress = typeof progress === 'function' ? progress : () => progress;
   const stepsHtml = (path.steps || []).map(renderStep).join('');
 
@@ -53,6 +53,7 @@ export function openIntro(root, { path, progress, onStart, onSkip }) {
           <button type="button" class="nav ghost" id="intro-skip">${(path.cta && path.cta.skip) || 'Skip for now'}</button>
           <button type="button" class="nav" id="intro-start">${(path.cta && path.cta.start) || 'Start studying'}</button>
         </div>
+        ${onReset ? '<div class="intro-footer"><button type="button" class="intro-reset-link" id="intro-reset">Reset progress</button></div>' : ''}
       </div>
     </div>`;
   root.hidden = false;
@@ -82,4 +83,14 @@ export function openIntro(root, { path, progress, onStart, onSkip }) {
     void card.offsetWidth; // restart the animation even if already mid-shake
     card.classList.add('shake');
   });
+
+  // Hidden/advanced reset (design §3.1): "Reset progress" under Show intro →
+  // confirm — for testing / starting a new exam cycle. This module never
+  // touches storage itself (same pattern as every other screen); the confirm
+  // dialog + resetProgress() call + UI reboot all live in main.js's onReset,
+  // which reuses the app's existing render path rather than duplicating it.
+  const resetBtn = root.querySelector('#intro-reset');
+  if (resetBtn && onReset) {
+    resetBtn.addEventListener('click', () => onReset());
+  }
 }

@@ -41,10 +41,6 @@ function isAutoDone(auto, progress) {
     const topic = auto.slice('trainer:'.length);
     return (progress.trainerTopicClears || []).some((id) => id === topic || id.startsWith(`${topic}-`));
   }
-  if (auto.startsWith('lane:')) {
-    const lane = auto.slice('lane:'.length);
-    return (progress.unlocked || []).includes(`lane:${lane}`);
-  }
   return false;
 }
 

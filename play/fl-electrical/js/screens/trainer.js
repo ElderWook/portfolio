@@ -101,9 +101,8 @@ function visibleTopicsMeta(topicsMeta, progress) {
   return topicsMeta.filter((t) => t.book !== 'osha' || isOshaLaneUnlocked(progress));
 }
 
-function renderPicker(root, { topicsMeta, drillsByTopic, progress, onSelect }) {
+function renderPicker(root, { topicsMeta, drillsByTopic, progress, oshaUnlockTarget, onSelect }) {
   const nec250Clears = (progress.trainerTopicClears || []).filter((t) => t.startsWith('nec-250')).length;
-  const oshaUnlockTarget = 3;
   const oshaUnlocked = isOshaLaneUnlocked(progress);
   const oshaComplete = isOshaLaneComplete(progress);
 
@@ -153,7 +152,7 @@ function renderPicker(root, { topicsMeta, drillsByTopic, progress, onSelect }) {
 }
 
 function renderResult(root, ctx) {
-  const { drill, topicTitle, index, total, correct, lookupHit, elapsed, after, justCleared, justUnlockedOsha, justCompletedOsha, editionPin, onNext, onExit } = ctx;
+  const { drill, topicTitle, index, total, correct, lookupHit, justCleared, justUnlockedOsha, justCompletedOsha, editionPin, onNext, onExit } = ctx;
   const isLast = index + 1 >= total;
   const answerText = drill.choices[drill.answerKey];
   const bonus = correct && lookupHit;
@@ -396,7 +395,7 @@ function renderDrill(root, ctx) {
   });
 }
 
-// renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, getProgress, onResult })
+// renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, oshaUnlockTarget, getProgress, onResult })
 //   topicsMeta   — [{ id, title, book }] for ALL topics, nec-250 + (Task 9)
 //                  osha (main.js reuses the already-loaded walkthrough
 //                  titles/book — the ids match by contract, so there is no
@@ -409,16 +408,20 @@ function renderDrill(root, ctx) {
 //   editionPins  — manifest.editionPins ({ nec, osha }); the drill shown picks
 //                  the pin matching its own book so it visibly carries its
 //                  edition + "verify in your book".
+//   oshaUnlockTarget — manifest.unlock.trainerTopicsForOsha, threaded through
+//                  purely for the picker's "x/3" DISPLAY text — the real gate
+//                  (main.js's onTrainerResult) reads the same manifest field
+//                  directly, so this can never drift from it.
 //   getProgress  — live getter (() => loadProgress(KEY)); the picker re-reads
 //                  fresh state on every return trip (same reason as intro.js).
 //   onResult(payload) — main.js owns the storage mutation and RETURNS the
 //                  updated progress so this screen can show clear/unlock banners.
-export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, getProgress, onResult }) {
+export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, oshaUnlockTarget, getProgress, onResult }) {
   stopTimer(); // clear any interval a prior mount left running
 
   function showPicker() {
     stopTimer();
-    renderPicker(root, { topicsMeta, drillsByTopic, progress: getProgress(), onSelect: startTopic });
+    renderPicker(root, { topicsMeta, drillsByTopic, progress: getProgress(), oshaUnlockTarget, onSelect: startTopic });
   }
 
   function startTopic(topicId) {
