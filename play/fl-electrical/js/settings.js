@@ -25,8 +25,8 @@ export function openSettings(root, { onReset, onReplayTips, onShowIntro }) {
           </li>
           <li class="settings-row">
             <div class="settings-row-text">
-              <span class="settings-row-title">Replay screen tips</span>
-              <span class="settings-row-note">Bring back the first-visit coaching toasts on each screen.</span>
+              <span class="settings-row-title">Replay guided tour</span>
+              <span class="settings-row-note">Run the first-visit walkthrough of the tabs, checklist, and settings again, plus the per-screen guides.</span>
             </div>
             <button type="button" class="nav ghost" id="settings-tips">Replay</button>
           </li>

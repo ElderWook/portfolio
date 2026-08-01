@@ -46,6 +46,11 @@ function renderMove(move) {
 
 export function openIntro(root, { path, progress, onStart, onSkip, onReset }) {
   const getProgress = typeof progress === 'function' ? progress : () => progress;
+  // First run (!started): the ONLY action is Start studying — the single funnel
+  // into the study rail + the first-visit site walkthrough. Re-opened later via
+  // "Show intro" (already started): a plain Close. The old "Skip for now" (and
+  // its kit-tick-gated shake) is gone — Start is the one way forward on run one.
+  const started = getProgress().started === true;
   const movesHtml = (path.moves || []).map(renderMove).join('');
   const shapeHtml = (path.examShape || []).map((s) => `<li>${s}</li>`).join('');
   const cib = path.cib;
@@ -71,41 +76,29 @@ export function openIntro(root, { path, progress, onStart, onSkip, onReset }) {
           <ul class="intro-shape">${shapeHtml}</ul>
         </div>` : ''}
         ${cib ? `<p class="intro-cib"><a href="${cib.href}" target="_blank" rel="noopener">${cib.label} &#8599;</a>${cib.note ? ` <span class="intro-cib-note">${cib.note}</span>` : ''}</p>` : ''}
-        <p class="intro-note" id="intro-note" hidden aria-live="polite">Tick a kit item or Start studying to close this.</p>
         <div class="intro-actions">
-          <button type="button" class="nav ghost" id="intro-skip">${(path.cta && path.cta.skip) || 'Skip for now'}</button>
-          <button type="button" class="nav" id="intro-start">${(path.cta && path.cta.start) || 'Start studying'}</button>
+          ${started
+            ? '<button type="button" class="nav" id="intro-close">Close</button>'
+            : `<button type="button" class="nav intro-start-solo" id="intro-start">${(path.cta && path.cta.start) || 'Start studying'}</button>`}
         </div>
         ${onReset ? '<div class="intro-footer"><button type="button" class="intro-reset-link" id="intro-reset">Reset progress</button></div>' : ''}
       </div>
     </div>`;
   root.hidden = false;
 
-  const card = root.querySelector('.intro-card');
-  const note = root.querySelector('#intro-note');
-
   function close() {
     root.hidden = true;
     root.innerHTML = '';
   }
 
-  root.querySelector('#intro-start').addEventListener('click', () => {
-    close();
-    onStart();
-  });
+  // First run: Start studying is the sole CTA (markStarted + launch the site
+  // tour, owned by main.js's onStart). Re-open after started: a plain Close
+  // (onSkip in main.js just records the session-dismiss + refreshes rail locks).
+  const startBtn = root.querySelector('#intro-start');
+  if (startBtn) startBtn.addEventListener('click', () => { close(); onStart(); });
 
-  root.querySelector('#intro-skip').addEventListener('click', () => {
-    if (canDismissIntro(getProgress())) {
-      close();
-      onSkip();
-      return;
-    }
-    // Fresh visitor, zero ticks: keep the overlay open and nudge instead.
-    note.hidden = false;
-    card.classList.remove('shake');
-    void card.offsetWidth; // restart the animation even if already mid-shake
-    card.classList.add('shake');
-  });
+  const closeBtn = root.querySelector('#intro-close');
+  if (closeBtn) closeBtn.addEventListener('click', () => { close(); onSkip(); });
 
   // Hidden/advanced reset (design §3.1): "Reset progress" under Show intro →
   // confirm — for testing / starting a new exam cycle. This module never

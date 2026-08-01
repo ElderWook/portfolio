@@ -61,8 +61,8 @@ function renderKitGroups(kg) {
     return `
       <div class="path-acol">
         <div class="path-acol-head">
-          <span class="path-acol-title">${g.title}</span>
           <span class="path-acol-badge badge-${g.id}">${g.badge}</span>
+          <span class="path-acol-title">${g.title}</span>
         </div>
         ${g.intro ? `<p class="path-acol-intro">${g.intro}</p>` : ''}
         <ul class="path-acol-list">${items}</ul>

@@ -19,7 +19,7 @@
       "n": 3,
       "title": "Drill the lookup til it's a reflex",
       "body": "Noun, tab, table, footnote, in that order. Fast, every time. Practice the path until finding an answer is muscle memory, not a hunt.",
-      "where": "Walkthrough → Trainer → Timed"
+      "where": "Walkthrough, then Trainer, then Timed"
     }
   ],
   "mythBuster": "It's not a closed-book memory test. Field experience helps you understand the question, but it won't find the answer for you. Speed in your books will. The people who struggle are almost always the ones whose books aren't tabbed.",
@@ -33,7 +33,7 @@
   ],
   "roi": {
     "label": "Where the 100 questions live",
-    "intro": "The exam blueprint weights subjects unevenly. Spend your time by ROI — be fastest where the weight is, not everywhere.",
+    "intro": "The exam blueprint weights subjects unevenly. Spend your time by ROI. Be fastest where the weight is, not everywhere.",
     "subjects": [
       { "subject": "General Theory & Principles", "q": "19–21", "high": 21, "lane": "map", "tag": "Map · calc pillars post-beta" },
       { "subject": "Alarms / Limited Energy", "q": "14–16", "high": 16, "lane": "map", "tag": "NTC Blue Book · NFPA 72" },
@@ -50,10 +50,10 @@
       { "lane": "easy", "label": "Beta easy-lane (OSHA)" },
       { "lane": "map", "label": "Map + hotspots (trainer post-beta)" }
     ],
-    "note": "The five heaviest subjects already add up to about 75 — the exact pass mark. That's why the beta drills fast retrieval on the heavy NEC lane and treats OSHA (equal-weight, pure lookup) as high-ROI easy points. You don't have to be perfect everywhere. You have to be fast where the weight is."
+    "note": "The five heaviest subjects already add up to about 75, the exact pass mark. That's why the beta drills fast retrieval on the heavy NEC lane and treats OSHA (equal-weight, pure lookup) as high-ROI easy points. You don't have to be perfect everywhere. You have to be fast where the weight is."
   },
   "kitGroups": {
-    "label": "The reference kit — grouped by how you get it",
+    "label": "The reference kit, grouped by how you get it",
     "intro": "Your full order list lives in the sidebar (Checklist B). Here's the shape of it: what to buy, what the state emails you for free, and what's already inside a book you own.",
     "groups": [
       {
@@ -62,7 +62,7 @@
         "title": "Books to order",
         "intro": "The physical references you purchase. Order the need-now ones first.",
         "items": [
-          "NEC 2023 (RN9) — the beta's deep lane",
+          "NEC 2023 (RN9), the beta's deep lane",
           "Florida Contractors Manual 2021 (RN50)",
           "MANCOMM OSHA, July 2020 (RN7)",
           "NFPA 72 · NTC Blue Book (RN39)",
@@ -74,24 +74,24 @@
         "id": "free",
         "badge": "Free (state)",
         "title": "Emailed free by the state",
-        "intro": "No buy link. The state emails these after you're approved for an exam — send one combined request.",
+        "intro": "No buy link. The state emails these after you're approved for an exam, so send one combined request.",
         "items": [
           "UL 681 (RN20)",
           "UL 365 (RN21)",
-          "Request → ElectricalContractors.Reference@myfloridalicense.com"
+          "Email ElectricalContractors.Reference@myfloridalicense.com"
         ]
       },
       {
         "id": "in-manual",
         "badge": "In the Manual",
         "title": "Inside a book you own",
-        "intro": "Not separate books — chapters of the Contractors Manual (RN50). Study them as hotspot topics, not extra order rows.",
+        "intro": "Not separate books. They're chapters of the Contractors Manual (RN50). Study them as hotspot topics, not extra order rows.",
         "items": [
           "Fire Marshal (F.S. 633)",
           "ADA · Recordkeeping",
           "Liens · Workers' Comp · Tax · FLSA"
         ],
-        "excluded": "RN33 NESC and RN35 Lineman's are UL-only — not on the UE list."
+        "excluded": "RN33 NESC and RN35 Lineman's are UL-only, not on the UE list."
       }
     ]
   },

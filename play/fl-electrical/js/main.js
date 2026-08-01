@@ -1,5 +1,5 @@
 import { loadProgress, saveProgress, mutateProgress, markStarted, resetProgress } from './progress.js';
-import { initToasts, toast, toastOnce, resetToastOnce, clearToasts } from './toast.js';
+import { initToasts, toast, resetToastOnce, clearToasts } from './toast.js';
 import { runTour, coachSeen, coachReset, closeCoachmark } from './coachmark.js';
 import { renderChecklist } from './checklist.js';
 import { openIntro } from './intro.js';
@@ -16,8 +16,6 @@ async function loadJSON(path) {
   if (!r.ok) throw new Error(path);
   return r.json();
 }
-
-const SCREENS = ['path', 'bookmap', 'walkthrough', 'trainer', 'timed'];
 
 // Mobile sidebar sheet: created here (not in index.html) so Task 3 stays
 // inside its file list. `#btn-checklist` (mobile-only, Task 1) toggles it;
@@ -43,9 +41,6 @@ function mountMobileSidebarToggle() {
 export async function boot() {
   const manifest = await loadJSON('data/manifest.json');
   const KEY = manifest.storageKey;
-  document.getElementById('rail').innerHTML = SCREENS.map((s) =>
-    `<button type="button" data-screen="${s}" class="rail-btn">${s}</button>`
-  ).join('');
 
   // The four Art. 250 topic ids are shared by contract across the walkthrough
   // AND trainer screens (a walkthrough's id doubles as its trainer topic id).
@@ -100,6 +95,10 @@ export async function boot() {
   const introRoot = document.getElementById('intro-root');
   const settingsRoot = document.getElementById('settings-root');
 
+  // Tracks which screen is showing so renderRail() can re-mark the active tab
+  // after it rebuilds the rail (e.g. when Timed appears mid-session).
+  let currentScreen = loadProgress(KEY).lastScreen || 'path';
+
   // Consumed by renderScreen('bookmap') the next time it runs, then cleared —
   // set by the sidebar's per-book info button (onOpenBook below) so that
   // flow can jump straight to a book's flyer instead of just the bare grid.
@@ -147,8 +146,30 @@ export async function boot() {
   function railLockReason(p, screen) {
     if (screen === 'path') return null;
     if (!p.started) return 'notStarted';
-    if (screen === 'timed' && !isTimedUnlocked(p, manifest.unlock.trainerClearsForTimed)) return 'timedLocked';
     return null;
+  }
+
+  // The rail shows the four core screens always; Timed is HIDDEN until it
+  // unlocks (its own second gate: trainerTopicClears reaches the manifest's
+  // combined-clears target). Hiding the locked tab — rather than showing a
+  // greyed lock button — is the owner's call (constraints.md gates on clears).
+  function visibleScreens() {
+    const p = loadProgress(KEY);
+    const screens = ['path', 'bookmap', 'walkthrough', 'trainer'];
+    if (isTimedUnlocked(p, manifest.unlock.trainerClearsForTimed)) screens.push('timed');
+    return screens;
+  }
+
+  // Rebuilds the rail from the currently-visible screens. Safe to call any time:
+  // the click handler is delegated on #rail (not per-button), so replacing its
+  // innerHTML keeps navigation working. Called on boot and whenever a Timed
+  // unlock crosses the threshold, so the new tab appears immediately.
+  function renderRail() {
+    rail.innerHTML = visibleScreens().map((s) =>
+      `<button type="button" data-screen="${s}" class="rail-btn">${s}</button>`
+    ).join('');
+    updateRailLocks(loadProgress(KEY));
+    updateRailActive(currentScreen);
   }
 
   // Locked rail buttons stay genuinely ENABLED (not `disabled`, not
@@ -167,15 +188,6 @@ export async function boot() {
     });
   }
 
-  // First-visit, show-once nudges — the ONE thing each screen is really for
-  // (distinct from its descriptive lede). Capped to the three screens where a
-  // reframe helps; Path is the intro itself and Timed has its own intro page.
-  const SCREEN_NUDGE = {
-    bookmap: "Skim each book once. You're learning WHERE things live, not memorizing them. That map is what makes lookups fast.",
-    walkthrough: 'This drills the search path: noun, tab, table, footnote, in that order. Same moves every time, until they’re automatic.',
-    trainer: 'Answer on the left, look it up on the right. Being fast at finding is the whole game, not recall.',
-  };
-
   function updateRailActive(screen) {
     rail.querySelectorAll('[data-screen]').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.screen === screen);
@@ -192,6 +204,35 @@ export async function boot() {
       body: 'Click any book card to open its high-yield topics: the questions the exam pulls from that book, why they matter, and the traps to watch.',
       doneLabel: 'Got it',
     }]);
+  }
+
+  // First-visit SITE tour — fires once, right after Start studying, to orient
+  // the whole app: the four core rail tabs, then the prep checklist, then
+  // Settings. Distinct from the per-screen tours (the Book Map card pointer and
+  // the Trainer lookup tour), which still fire on their own screens. Shown once
+  // via coachSeen('site-tour'); Settings → Replay tips clears the flag to replay.
+  function startSiteTour() {
+    if (coachSeen('site-tour')) return;
+    const railBtn = (s) => () => rail.querySelector(`[data-screen="${s}"]`);
+    const mobile = window.matchMedia('(max-width: 900px)').matches;
+    runTour([
+      { target: railBtn('path'), title: 'Path (start here)',
+        body: 'The exam is open-book, so your score is really how fast you find answers. This tab holds the plan, the ROI map of where the questions live, and your book list.' },
+      { target: railBtn('bookmap'), title: 'Book Map',
+        body: 'Every reference book, and the high-yield topics inside each one: what the exam pulls from each book, and the traps to watch.' },
+      { target: railBtn('walkthrough'), title: 'Walkthrough',
+        body: 'Guided reps of the search path: noun, tab, table, footnote. The same moves every time, until they’re automatic.' },
+      { target: railBtn('trainer'), title: 'Trainer',
+        body: 'Answer on the left, look it up on the right. Being fast at finding is the whole game. Clear topics here to open the OSHA and Timed lanes.' },
+      { target: () => (mobile ? document.getElementById('btn-checklist') : document.getElementById('sidebar')),
+        title: 'Your prep checklist',
+        body: mobile
+          ? 'Tap Checklist to open your prep list: books to order, tabs, exam-day rules, and your live study progress. It ticks itself as you go.'
+          : 'Your prep checklist: books to order, tabs, exam-day rules, and your live study progress. It ticks itself as you go.' },
+      { target: () => document.getElementById('btn-settings'), title: 'Settings',
+        body: 'Replay this tour, re-open the intro, or reset your progress any time.',
+        doneLabel: 'Got it' },
+    ]);
   }
 
   // All five screens are real now (Task 10 finished 'timed'). The fallback
@@ -326,10 +367,10 @@ export async function boot() {
       return p;
     });
     renderSidebar();
-    // A trainer clear can be the 5th COMBINED clear that unlocks Timed —
-    // refresh the rail's disabled state live (not just on next navigation)
-    // so the 'timed' button lights up the instant that threshold is crossed.
-    updateRailLocks(next);
+    // A trainer clear can be the 5th COMBINED clear that unlocks Timed — it is
+    // HIDDEN until then, so re-render the rail to make the new tab appear the
+    // instant that threshold is crossed, not only on the next navigation.
+    renderRail();
 
     // Milestone toasts — the trainer's result card already shows an inline
     // banner for a clear / OSHA-unlock; these add the cross-screen
@@ -401,14 +442,12 @@ export async function boot() {
       openIntroNow();
       return;
     }
+    currentScreen = screen;
     p.lastScreen = screen;
     saveProgress(KEY, p);
     renderScreen(screen);
     updateRailLocks(p);
     updateRailActive(screen);
-    if (p.started && SCREEN_NUDGE[screen]) {
-      toastOnce(`screen:${screen}`, SCREEN_NUDGE[screen], { type: 'info' });
-    }
   }
 
   function openIntroNow() {
@@ -427,6 +466,9 @@ export async function boot() {
         });
         renderSidebar();
         go(loadProgress(KEY).lastScreen);
+        // First-visit orientation: highlight the rail, checklist, and settings.
+        // Runs once (coachSeen); go() already rendered the screen + rail beneath.
+        startSiteTour();
       },
       onSkip() {
         // "Session dismiss" — closing the modal here never unlocks the rail,
@@ -450,9 +492,13 @@ export async function boot() {
     openSettings(settingsRoot, {
       onReset: onResetProgress,
       onReplayTips() {
-        resetToastOnce();
         coachReset();
-        toast('Tips reset. The screen banners and the first-run walkthroughs will show again.', { type: 'info' });
+        resetToastOnce();
+        // Relaunch the site tour now; the per-screen guides re-fire on their own
+        // screens as you navigate. If somehow not started yet, it runs right
+        // after Start studying instead.
+        if (loadProgress(KEY).started) startSiteTour();
+        else toast('Guided tour reset. It will run when you start studying.', { type: 'info' });
       },
       onShowIntro: openIntroNow,
     });
@@ -484,15 +530,6 @@ export async function boot() {
       openIntroNow();
       return;
     }
-    if (reason === 'timedLocked') {
-      const target = manifest.unlock.trainerClearsForTimed;
-      const clears = (p.trainerTopicClears || []).length;
-      toast(
-        `Timed unlocks after ${target} topic clears in the Trainer. You're at ${clears}/${target}. Clear ${target - clears} more and this lights up.`,
-        { type: 'lock', action: { label: 'Go to Trainer', onClick: () => go('trainer') } }
-      );
-      return;
-    }
     go(screen);
   });
 
@@ -500,6 +537,7 @@ export async function boot() {
 
   initToasts();
   renderSidebar();
+  renderRail();
   mountMobileSidebarToggle();
 
   // Boot: `go(lastScreen)` alone covers both cases — when `!started`,
