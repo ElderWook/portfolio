@@ -8,8 +8,9 @@ const DEFAULT = () => ({
   xp: 0,
   unlocked: [],           // screen or topic ids
   completedWalkthroughs: [],
-  trainerTopicClears: [], // e.g. 'nec-250-gec'
-  trainerCorrectCount: 0,
+  trainerTopicClears: [], // e.g. 'nec-250-gec' — a topic with >=2 distinct correct drills
+  trainerCorrectCount: 0, // lifetime tally (may double-count re-answers); NEVER gate unlocks on this
+  trainerCorrectDrills: [], // distinct drill ids answered correctly — reload-safe source of topic clears
   missLog: [],
   introDismissedSession: false,
   kitTouched: false,

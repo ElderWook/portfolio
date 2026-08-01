@@ -1,0 +1,71 @@
+{
+  "topic": "nec-250-122",
+  "drills": [
+    {
+      "id": "drill-250-122-1",
+      "topic": "nec-250-122",
+      "stem": "A copper branch circuit is protected by a 60A OCPD. Describe the correct METHOD to find the minimum EGC.",
+      "choices": [
+        "Enter Table 250.122 at the 60A OCPD row and read the copper column",
+        "Enter Table 250.66 at the 60A row and read the copper column",
+        "Read Table 310.16 at the conductor's ampacity",
+        "Match the EGC to the ungrounded conductor size"
+      ],
+      "answerKey": 0,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: the EGC row is chosen by the OCPD rating, not the conductor",
+        "Tab family: 250.122 EGC",
+        "Cite: Table 250.122, OCPD row, copper column — read the size in your book"
+      ],
+      "lookupPath": ["250.122 EGC", "250.122"],
+      "timeTargetSec": 150,
+      "tags": ["250", "EGC", "table"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-250-122-2",
+      "topic": "nec-250-122",
+      "stem": "The same circuit is wired with aluminum conductors. Which COLUMN of Table 250.122 applies?",
+      "choices": [
+        "The copper column",
+        "The aluminum or copper-clad aluminum column",
+        "The OCPD-rating column",
+        "Either column — the material does not change the EGC"
+      ],
+      "answerKey": 1,
+      "hard": true,
+      "hintLadder": [
+        "Primary noun: conductor MATERIAL selects the column — aluminum here",
+        "Tab family: 250.122 EGC",
+        "Cite: Table 250.122 has separate copper vs aluminum/copper-clad-aluminum columns — read the aluminum column value in your book"
+      ],
+      "lookupPath": ["250.122 EGC", "250.122"],
+      "timeTargetSec": 150,
+      "tags": ["250", "EGC", "material", "hard"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-250-122-3",
+      "topic": "nec-250-122",
+      "stem": "Is the Table 250.122 EGC sized from the conductor's ampacity or from something else? Pick the correct METHOD.",
+      "choices": [
+        "From the ampacity of the ungrounded conductor in Table 310.16",
+        "From the rating of the OCPD ahead of the circuit, via Table 250.122",
+        "From the service-entrance conductor, via 250.66",
+        "From the load calculation in Article 220"
+      ],
+      "answerKey": 1,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: the sizing INPUT — the overcurrent device rating, not the wire's ampacity",
+        "Tab family: 250.122 EGC (then check the notes below the table)",
+        "Cite: Table 250.122 keyed to the OCPD rating; read the table notes for parallel-conductor cases — verify in your book"
+      ],
+      "lookupPath": ["250.122 EGC", "250.122", "footnote-zone"],
+      "timeTargetSec": 150,
+      "tags": ["250", "EGC", "trap"],
+      "verifyAgainst": "your book"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "topic": "nec-250-traps",
+  "drills": [
+    {
+      "id": "drill-250-traps-1",
+      "topic": "nec-250-traps",
+      "stem": "A question asks where the main bonding jumper connecting the neutral to the enclosure is permitted at service equipment. Which tab family covers that placement rule?",
+      "choices": [
+        "250.122 EGC (EGC sizing)",
+        "250 Bonding (250.28 / 250.92 / 250.97)",
+        "250.50 Electrodes (electrode identification)",
+        "250 Grounding (GEC sizing at 250.66)"
+      ],
+      "answerKey": 1,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: bonding jumper — not the neutral it lands on or the enclosure it lands in",
+        "Tab family: 250 Bonding",
+        "Cite: 250.28 governs the main bonding jumper — read the placement rule in your book"
+      ],
+      "lookupPath": ["250 Bonding", "250.28"],
+      "timeTargetSec": 150,
+      "tags": ["250", "bonding", "trap"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-250-traps-2",
+      "topic": "nec-250-traps",
+      "stem": "The reduced-size grounding electrode conductor (GEC) allowance applies when the electrode being connected is only of which type?",
+      "choices": [
+        "A concrete-encased electrode",
+        "A metal underground water-pipe electrode",
+        "A rod, pipe, or plate electrode",
+        "Any electrode present at the building"
+      ],
+      "answerKey": 2,
+      "hard": true,
+      "hintLadder": [
+        "Primary noun: the electrode TYPE that scopes the reduced-size allowance",
+        "Tab families: 250 Grounding (the 250.66 allowance) and 250.50 Electrodes (electrode types at 250.52)",
+        "Cite: the reduced-size GEC allowance at 250.66 is scoped to rod/pipe/plate electrodes — reread the exact wording in your book"
+      ],
+      "lookupPath": ["250 Grounding", "250.66", "250.50 Electrodes", "250.52"],
+      "timeTargetSec": 150,
+      "tags": ["250", "GEC", "electrode", "trap", "hard"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-250-traps-3",
+      "topic": "nec-250-traps",
+      "stem": "A building has a concrete-encased electrode present in addition to a ground rod. What does Article 250 require you to do with it?",
+      "choices": [
+        "Ignore it because a ground rod is already installed",
+        "Bond every electrode that is present into one grounding electrode system, per 250.50",
+        "Use only the electrode with the lowest resistance and abandon the rest",
+        "Choose whichever single electrode is easiest to reach"
+      ],
+      "answerKey": 1,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: 'all electrodes present' — the bond-them-together rule",
+        "Tab family: 250.50 Electrodes",
+        "Cite: 250.50 requires bonding all present electrodes; 250.52 lists what qualifies — confirm in your book"
+      ],
+      "lookupPath": ["250.50 Electrodes", "250.50", "250.52"],
+      "timeTargetSec": 150,
+      "tags": ["250", "electrode", "bonding"],
+      "verifyAgainst": "your book"
+    }
+  ]
+}

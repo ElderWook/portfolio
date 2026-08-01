@@ -1,0 +1,71 @@
+{
+  "topic": "nec-250-122b",
+  "drills": [
+    {
+      "id": "drill-250-122b-1",
+      "topic": "nec-250-122b",
+      "stem": "Ungrounded conductors are upsized from #12 to #8 Cu for voltage drop on a 20A circuit. What must you do for the EGC?",
+      "choices": [
+        "Keep the Table 250.122 size for 20A",
+        "Increase the EGC proportionally per 250.122(B) using Chapter 9 Table 8",
+        "Always jump to the same size as the ungrounded conductor",
+        "The EGC is never increased for voltage drop"
+      ],
+      "answerKey": 1,
+      "hard": true,
+      "hintLadder": [
+        "Primary noun: equipment grounding conductor + the trigger phrase 'increased in size'",
+        "Tab family: 250.122 EGC / 250.122(B)",
+        "Cite: 250.122(B); the increase is a circular-mils ratio from Chapter 9 Table 8 — read your book"
+      ],
+      "lookupPath": ["250.122 EGC", "250.122(B)", "Chapter 9 Table 8"],
+      "timeTargetSec": 150,
+      "tags": ["250", "EGC", "trap", "hard"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-250-122b-2",
+      "topic": "nec-250-122b",
+      "stem": "Does 250.122(B) trigger only when the ungrounded conductors were upsized for voltage drop, or for any reason?",
+      "choices": [
+        "Only for a voltage-drop upsize",
+        "For any increase in ungrounded conductor size, regardless of the reason",
+        "Only when the upsize is two trade sizes or more",
+        "Never — 250.122(B) applies to feeders only"
+      ],
+      "answerKey": 1,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: the TRIGGER is the size increase itself, not the reason for it",
+        "Tab family: 250.122 EGC / 250.122(B)",
+        "Cite: 250.122(B) — read the trigger wording in your book"
+      ],
+      "lookupPath": ["250.122 EGC", "250.122(B)"],
+      "timeTargetSec": 150,
+      "tags": ["250", "EGC", "trigger"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-250-122b-3",
+      "topic": "nec-250-122b",
+      "stem": "After you compute the proportional EGC increase under 250.122(B), how do you land on a real conductor size?",
+      "choices": [
+        "Round DOWN to the previous standard size",
+        "Round UP to the next standard EGC size per Table 250.122 / 250.122(B)",
+        "Use the exact computed circular-mil area with no rounding",
+        "Drop back to the base Table 250.122 size"
+      ],
+      "answerKey": 1,
+      "hard": true,
+      "hintLadder": [
+        "Primary noun: rounding rule after the proportional calculation",
+        "Tab family: 250.122 EGC / 250.122(B)",
+        "Cite: 250.122(B) — read the exact rounding language in your book before you commit"
+      ],
+      "lookupPath": ["250.122 EGC", "250.122(B)"],
+      "timeTargetSec": 150,
+      "tags": ["250", "EGC", "rounding", "hard"],
+      "verifyAgainst": "your book"
+    }
+  ]
+}
