@@ -501,6 +501,110 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
 }
 .intro-card.shake { animation: intro-shake .5s; }
 
+/* ---------- codebook mock (Walkthrough/Trainer right pane) ---------- */
+
+.codebook {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px clamp(14px, 2.5vw, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.codebook-empty { color: var(--ink3); font-size: 13px; }
+.codebook-lede { margin: 0; font-size: 11.5px; color: var(--ink3); }
+
+.codebook-tabs { display: flex; flex-direction: column; gap: 10px; }
+.cb-pillar-group { display: flex; flex-direction: column; gap: 6px; }
+.cb-pillar-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink3);
+}
+.cb-pillar-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.cb-tab {
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink2);
+  transition: background .15s, border-color .15s;
+}
+.cb-tab:hover { border-color: color-mix(in srgb, var(--acc3) 45%, var(--line)); }
+.cb-tab.active {
+  background: color-mix(in srgb, var(--acc3) 16%, transparent);
+  border-color: var(--acc3);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.codebook-tree { border-top: 1px solid var(--line); padding-top: 12px; }
+.cb-tree-heading {
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--acc3);
+}
+.cb-tree-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.cb-node {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  color: var(--ink);
+}
+.cb-node:hover { border-color: color-mix(in srgb, var(--acc) 45%, var(--line)); }
+
+.codebook-footnote { border-top: 1px solid var(--line); padding-top: 12px; }
+.cb-footnote-btn {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: inherit;
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cb-footnote-btn:hover { border-color: color-mix(in srgb, var(--acc2) 55%, var(--line)); }
+.cb-footnote-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--acc2);
+}
+.cb-footnote-text { font-size: 12.5px; color: var(--ink2); }
+
+/* Highlight: the static outline is a plain (non-animated) style, so it
+   survives prefers-reduced-motion; the pulse is a separate `animation` on
+   `.cb-hi-pulse`, which the blanket reduced-motion rule below kills,
+   leaving only the static outline as required. */
+.cb-hi {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+  border-color: var(--acc) !important;
+}
+@keyframes cb-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--acc) 55%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--acc) 0%, transparent); }
+}
+.cb-hi-pulse { animation: cb-pulse 1.1s ease-in-out 3; }
+
 /* ---------- motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {

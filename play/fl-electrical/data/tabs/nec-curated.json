@@ -1,0 +1,15 @@
+{
+  "tabs": [
+    { "label": "250 Grounding", "targets": ["250", "250.66", "250.122"], "pillar": "250" },
+    { "label": "250.122 EGC", "targets": ["250.122", "250.122(B)"], "pillar": "250" },
+    { "label": "250.50 Electrodes", "targets": ["250.50", "250.52", "250.53"], "pillar": "250" },
+    { "label": "250 Bonding", "targets": ["250.28", "250.92", "250.97"], "pillar": "250" },
+    { "label": "Ch9 T8 Properties", "targets": ["Chapter 9 Table 8"], "pillar": "250" },
+    { "label": "220 Branch Loads", "targets": ["220.12", "220.14"], "pillar": "220" },
+    { "label": "220 Demand Factors", "targets": ["220.40", "220.45"], "pillar": "220" },
+    { "label": "310 Ampacity", "targets": ["310.15", "310.16"], "pillar": "310" },
+    { "label": "430 Motor Conductors", "targets": ["430.6", "430.22", "430.24"], "pillar": "430" },
+    { "label": "430 Motor Protection", "targets": ["430.32", "430.52"], "pillar": "430" },
+    { "label": "Ch9 Raceway Tables", "targets": ["Chapter 9 Table 1", "Chapter 9 Table 4", "Chapter 9 Table 5"], "pillar": "ch9" }
+  ]
+}
