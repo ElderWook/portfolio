@@ -295,6 +295,99 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
   .sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
 }
 
+/* ---------- screen placeholder (Tasks 5-10 not built yet) ---------- */
+
+.screen-soon {
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 28px 20px;
+  color: var(--ink3);
+}
+.screen-soon h2 { font-family: var(--mono); color: var(--ink2); margin: 0 0 6px; }
+.screen-soon p { margin: 0; font-size: 13px; }
+
+/* ---------- Path screen ---------- */
+
+.path-screen { max-width: 720px; }
+.path-screen h2 {
+  font-family: var(--mono);
+  font-size: clamp(18px, 2.4vw, 22px);
+  color: var(--acc);
+  margin: 0 0 6px;
+}
+.path-lede { color: var(--ink2); margin: 0 0 18px; }
+
+.path-steps { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.path-step {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.path-step:first-child { border-top: none; padding-top: 0; }
+.path-step h3 {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--acc3);
+  margin: 0 0 6px;
+}
+.path-step p { margin: 0; font-size: 13.5px; color: var(--ink); }
+.path-links { margin-top: 6px; font-size: 12px; font-family: var(--mono); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+
+/* ---------- intro overlay ---------- */
+
+.intro-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(4, 7, 16, .72);
+  /* Only the card captures clicks — the sidebar checklist (and everything
+     else underneath) stays live behind the dim, so a visitor can tick a
+     kit item without first closing this overlay. See intro.js. */
+  pointer-events: none;
+}
+
+.intro-card {
+  pointer-events: auto;
+  width: min(560px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px clamp(18px, 3vw, 28px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+}
+
+.intro-card h2 {
+  font-family: var(--mono);
+  font-size: clamp(18px, 2.4vw, 22px);
+  color: var(--acc);
+  margin: 0 0 6px;
+}
+.intro-lede { color: var(--ink2); margin: 0 0 16px; }
+
+.intro-steps { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.intro-step { border-top: 1px solid var(--line); padding-top: 12px; }
+.intro-step:first-child { border-top: none; padding-top: 0; }
+.intro-step h3 { font-family: var(--mono); font-size: 12.5px; color: var(--acc3); margin: 0 0 5px; }
+.intro-step p { margin: 0; font-size: 13px; color: var(--ink); }
+.intro-links { margin-top: 5px; font-size: 11.5px; font-family: var(--mono); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+
+.intro-note { color: var(--bad); font-size: 12.5px; margin: 0 0 12px; }
+
+.intro-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+@keyframes intro-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+.intro-card.shake { animation: intro-shake .5s; }
+
 /* ---------- motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {

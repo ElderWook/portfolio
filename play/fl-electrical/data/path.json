@@ -1,0 +1,40 @@
+{
+  "title": "Before you start",
+  "lede": "Five minutes to orient, then work the checklist in the sidebar.",
+  "steps": [
+    {
+      "id": "dbpr",
+      "heading": "Start at DBPR",
+      "body": "The Florida DBPR Electrical Contractors page is the source of truth for licensing requirements, the Candidate Information Booklet (CIB), and exam scheduling. Open it first and confirm you're tracking the Unlimited Electrical (UE) license.",
+      "links": [
+        { "label": "DBPR — Electrical Contractors", "href": "https://www2.myfloridalicense.com/electrical-contractors/" }
+      ]
+    },
+    {
+      "id": "exam-parts",
+      "heading": "Two exam parts",
+      "body": "The UE exam has a Technical part (100 questions, 5 hours) and a separate Business part (50 questions, 2.5 hours). This app is Technical-first — the Business kit is a post-beta stub in the sidebar (compartment F, unlocked once your study progress passes the halfway mark)."
+    },
+    {
+      "id": "trade-first",
+      "heading": "Why Technical-first",
+      "body": "Field experience carries directly into the Technical exam — wiring and protection, OSHA/safety, and alarms/limited-energy content is closer to daily trade work than the Business exam's contracting and legal material. Clearing Technical first builds momentum and proves out your reference-book setup before tackling Business."
+    },
+    {
+      "id": "kit",
+      "heading": "Your kit",
+      "body": "Check off books as you order them (sidebar compartment B) and tabs/marking supplies as you prep them (compartment C). Ticking anything in either compartment marks your kit as touched — that alone is enough to dismiss this intro, even before you commit to Start studying."
+    },
+    {
+      "id": "bring-rules",
+      "heading": "Exam-day bring rules",
+      "body": "One original copy of each required reference, with permanently attached tabs only — no sticky notes, no removable flags, and no loose notes or formula sheets in the room. Confirm the exact list against your Candidate Information Booklet before exam day (sidebar compartment D)."
+    },
+    {
+      "id": "editions",
+      "heading": "Edition pins",
+      "body": "This beta is pinned to NFPA 70 (NEC) 2023 edition and OSHA Title 29 Parts 1926/1910/1904, July 2020 edition — both are scheduled to flip on 2027-08-21. Always verify the current CIB-approved edition before you buy; this app never substitutes for your book."
+    }
+  ],
+  "cta": { "start": "Start studying", "skip": "Skip for now" }
+}
