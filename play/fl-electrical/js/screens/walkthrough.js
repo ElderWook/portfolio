@@ -244,9 +244,20 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
     if (el) mountCodebook(el, { mode, tabs: tabsByBook[mode] || [], highlightTarget, onPick: handlePick });
   }
 
+  // End the demo WITHOUT completing the topic — reset to step 1 in normal mode
+  // so the visitor still works the walkthrough for real (the demo only shows the
+  // path once, it doesn't finish it for you).
+  function restartForReal() {
+    demo = false;
+    stepIndex = 0;
+    wrong = false;
+    playStep();
+  }
+
   // The DEMO coach-mark for the current step: highlight the correct answer (the
   // noun choice, or the right tab / notes opened in the codebook) and, on Next,
-  // auto-pick it so the walkthrough advances itself. Skip drops into normal play.
+  // auto-pick it so the demo advances itself. The last step (or Skip) resets the
+  // topic so the visitor completes it themselves.
   function showStepCoach() {
     const step = activeTopic.steps[stepIndex];
     const isLast = stepIndex + 1 >= activeTopic.steps.length;
@@ -272,15 +283,19 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
       body = `Open "${step.correctTarget}", the tab that holds this. It is highlighted for you.`;
     }
     if (!target) return;
+    if (isLast) body += ' That is the whole path. Now you work it yourself.';
 
     coachmark(target, {
       title,
       body,
       step: stepIndex + 1,
       total: activeTopic.steps.length,
-      nextLabel: isLast ? 'Finish' : 'Next',
-      onNext: () => handlePick(step.correctTarget), // auto-pick correct → advance
-      onSkip: () => { demo = false; }, // drop into normal play at this step
+      nextLabel: isLast ? 'Now you try it' : 'Next',
+      // Non-last steps auto-pick the correct answer to advance the demo. The
+      // last step (and Skip) reset the topic instead of completing it, so the
+      // visitor still has to work the walkthrough for real.
+      onNext: isLast ? restartForReal : () => handlePick(step.correctTarget),
+      onSkip: restartForReal,
     });
   }
 
