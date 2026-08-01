@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FL Electrical Exam Prep</title>
+<meta name="description" content="A cut-and-dry Florida Unlimited Technical exam guide: license path, books-to-order checklist, tab-to-text navigation drills, Art. 250 deep lane, and OSHA find-it practice — built to make your codebook faster, not replace it.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230b1020%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2222%22%20text-anchor%3D%22middle%22%20font-family%3D%22ui-monospace%2Cmonospace%22%20font-size%3D%2218%22%20font-weight%3D%22700%22%20fill%3D%22%2333d17a%22%3EO%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="../../style.css">
+</head><body class="pf"><div class="sheet detail">
+  <a class="back" href="../voltwright.html">◀ VoltWright</a>
+  <header class="titleblock">
+    <h1 class="tb-brand" style="view-transition-name:vt-voltwright-exam-prep"><span class="gnd">⏚</span> FL Electrical Exam Prep</h1>
+    <div class="tb-role">Trade exam study beta</div>
+    <div class="tb-meta"><b>MODULE</b><a href="https://github.com/ElderWook">GitHub ↗</a></div>
+    <p class="tb-blurb">A cut-and-dry Florida Unlimited Technical exam guide: license path, books-to-order checklist, tab-to-text navigation drills, Art. 250 deep lane, and OSHA find-it practice — built to make your codebook faster, not replace it.</p>
+  </header>
+  <div class="clinks"><a class="play" href="../../play/fl-electrical/index.html">▶ Play in your browser</a></div>
+  <div class="spec"><div class="dim">Stack &middot; pins</div><div class="pins"><span>Interactive</span><span>NEC navigation</span><span>OSHA</span><span>Checklist</span></div><div class="dim">Notes</div><ul class="hl"><li>First-run kit checklist with books, permanent tabs, and highlighters</li><li>Walkthrough → dual-pane trainer with citation paths (no copyrighted code text)</li><li>Art. 250 heavyweights + OSHA easy-points lane + timed mini-set</li></ul></div>
+  <footer class="foot"><span>Oasis Games · Systems &amp; Software Design</span><span class="flinks"><a href="https://github.com/ElderWook">GitHub</a></span><span class="mark">&copy; 2026 Oasis Games LLC</span></footer>
+</div><script>
+(function(){
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest ? e.target.closest('a.part, a.rung') : null;
+    if (!a || !a.getAttribute('href') || a.dataset.sealing) return;
+    if (rm || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    a.dataset.sealing = '1';
+    a.classList.add('sealing');
+    // grid cards get a chasing border light; ladder rungs energise the whole rung (contact → coil).
+    if (a.classList.contains('part')) a.insertAdjacentHTML('afterbegin', '<i class="seal-loop" aria-hidden="true"></i>');
+    setTimeout(function(){ window.location.href = a.href; }, 440);
+  });
+  // Reset the seal-in on pageshow — the back/forward CACHE restores this page in its exact state, so a
+  // card left mid-seal (class + injected loop) would come back stuck in the animation. Clear it every
+  // time the page is shown (covers bfcache restore and normal load).
+  window.addEventListener('pageshow', function(){
+    var s = document.querySelectorAll('.sealing');
+    for (var i=0;i<s.length;i++){ s[i].classList.remove('sealing'); if (s[i].dataset) delete s[i].dataset.sealing; }
+    var l = document.querySelectorAll('.seal-loop');
+    for (var j=0;j<l.length;j++){ if (l[j].parentNode) l[j].parentNode.removeChild(l[j]); }
+  });
+})();
+</script></body></html>
