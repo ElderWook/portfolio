@@ -32,9 +32,9 @@
     {
       "topic": "Reporting severe injuries to OSHA",
       "whyItMatters": "The short reporting clocks (fatality vs. hospitalization/amputation/eye loss) are a favorite 'which number is it' question.",
-      "searchNouns": ["fatality reporting", "8 hours", "24 hours", "hospitalization report", "amputation report"],
+      "searchNouns": ["reporting", "fatality", "hospitalization", "amputation", "loss of an eye"],
       "cite": "29 CFR 1904.39",
-      "trap": "Mixing up the 8-hour fatality/inpatient-hospitalization clock with the 24-hour amputation/eye-loss-report clock."
+      "trap": "Assuming a single reporting deadline covers everything — a fatality and an in-patient hospitalization/amputation/eye-loss report are on two different clocks keyed to severity, so look up which one applies before you assume the timing."
     },
     {
       "topic": "Personal protective equipment",
@@ -48,7 +48,7 @@
       "whyItMatters": "Ladder setup and use rules show up under the tools/testing side of this exam subject.",
       "searchNouns": ["ladder angle", "extension above landing", "ladder inspection", "three points of contact"],
       "cite": "29 CFR 1926.1053",
-      "trap": "Remembering the general 4-to-1 angle rule but forgetting the required extension of the ladder's side rails above the landing point."
+      "trap": "Setting a portable ladder by feel instead of the required setup angle, and forgetting the separate rule that the side rails must extend above the landing point — verify both against the standard."
     },
     {
       "topic": "Battery charging and storage",

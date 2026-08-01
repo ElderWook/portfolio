@@ -34,7 +34,7 @@
       "whyItMatters": "The 'round up to the next standard size' allowance plus the ampacity tables are the backbone of nearly every sizing question in this subject.",
       "searchNouns": ["standard ampere ratings", "next size up rule", "conductor ampacity", "Table 310.16"],
       "cite": "240.4, 240.6, 310.15, Table 310.16",
-      "trap": "Applying the 'next standard size up' allowance where it doesn't apply — it does not cover 10 AWG and smaller branch-circuit conductors supplying multiple outlets."
+      "trap": "Applying the 'next standard size up' allowance where it doesn't apply — it is barred for the smaller branch-circuit conductors supplying multiple receptacle outlets, so check the exception before you round up."
     },
     {
       "topic": "Branch-circuit and feeder load calculations",
@@ -48,7 +48,7 @@
       "whyItMatters": "The 2023 emergency-disconnect requirement for one- and two-family dwellings is new material and a good exam wedge between old and new code.",
       "searchNouns": ["service disconnect", "emergency disconnect", "outside disconnect", "number of disconnects", "surge protection"],
       "cite": "230.70, 230.71, 230.85, 230.67",
-      "trap": "Forgetting the emergency disconnect at one- and two-family dwellings must be outside (or at the nearest point of entry) and confusing its count/location rule with the normal up-to-six-disconnects rule."
+      "trap": "Forgetting the emergency disconnect at one- and two-family dwellings must be outside (or at the nearest point of entry) and confusing its count/location rule with the separate rule that limits how many service disconnects may be grouped — check both sections rather than assuming one number covers both."
     },
     {
       "topic": "GFCI and AFCI protection locations",
