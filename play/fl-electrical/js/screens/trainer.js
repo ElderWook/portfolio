@@ -329,22 +329,27 @@ function renderDrill(root, ctx) {
   paintTimer();
   activeTimerId = setInterval(paintTimer, 1000);
 
-  // ---- right pane: codebook. Mounted once; onPick records the visitor's
-  // navigation and flags a lookup hit when they open a cited node/tab. ----
-  mountCodebook(root.querySelector('#tr-codebook'), {
-    mode,
-    tabs,
-    highlightTarget: null,
-    onPick: (id) => {
-      if (resolved) return;
-      pickedPath.push(id);
-      if ((drill.lookupPath || []).includes(id)) {
-        lookupHit = true;
-        lookupEl.hidden = false;
-        hideHeld();
-      }
-    },
-  });
+  // ---- right pane: codebook. onPick records the visitor's navigation and
+  // flags a lookup hit when they open a cited node/tab. Wrapped in mountCb so
+  // the first-drill demo tour can re-mount it with the correct tab pre-opened
+  // (highlightTarget) to SHOW which tab to flip to. ----
+  function mountCb(highlightTarget) {
+    mountCodebook(root.querySelector('#tr-codebook'), {
+      mode,
+      tabs,
+      highlightTarget,
+      onPick: (id) => {
+        if (resolved) return;
+        pickedPath.push(id);
+        if ((drill.lookupPath || []).includes(id)) {
+          lookupHit = true;
+          lookupEl.hidden = false;
+          hideHeld();
+        }
+      },
+    });
+  }
+  mountCb(null);
 
   submitBtn.addEventListener('click', () => {
     if (resolved || selected == null) return;
@@ -395,10 +400,13 @@ function renderDrill(root, ctx) {
     });
   });
 
-  // First-ever drill: a 4-step guided walkthrough anchored to each part of the
-  // lookup flow (question, tab, the green confirmation, the answer). Show-once.
+  // First-ever drill: a guided DEMO. It performs the correct procedure as you
+  // click through the pop-ups — opens the right tab, shows the green
+  // confirmation, and selects the correct answer — so you watch one full lookup
+  // done right, then take over. Show-once (Settings > Replay tips brings it back).
   if (!coachSeen('trainer-tour')) {
     const answerText = drill.choices[drill.answerKey];
+    const demoTarget = (drill.lookupPath && drill.lookupPath[0]) || null;
     runTour([
       {
         target: () => root.querySelector('#tr-stem-card'),
@@ -406,21 +414,25 @@ function renderDrill(root, ctx) {
         body: 'Pick out the key words: the noun, plus any conditions like sizes or ratings. Those are exactly what you go looking for.',
       },
       {
-        target: () => root.querySelector('#tr-codebook .codebook-tabs'),
+        target: () => root.querySelector('#tr-codebook'),
+        onEnter: () => { if (demoTarget) mountCb(demoTarget); },
         title: 'Flip to the right tab',
-        body: 'Open the tab family that covers those key words, then the section under it. These are the same tabs your real book will have.',
+        body: 'Here is the tab and section for those key words, opened for you. On your own drills you flip to it yourself. These are the same tabs your real book has.',
       },
       {
         target: () => root.querySelector('#tr-lookup'),
-        onEnter: () => { lookupEl.hidden = false; },
-        onExit: () => { if (!lookupHit) lookupEl.hidden = true; },
+        onEnter: () => { lookupHit = true; lookupEl.hidden = false; },
         title: 'Green means you found it',
-        body: 'Open a cited section and you get this confirmation you are in the right place. Hard drills will not take an answer until you have opened it. That is the exam habit.',
+        body: 'Opening a cited section gives you this green confirmation you are in the right place. Hard drills will not take an answer until you have opened it. That is the exam habit.',
       },
       {
         target: () => root.querySelector('.tr-choices'),
-        title: 'Answer, then see why',
-        body: `The method for this one: "${answerText}". Submit, and the result lays out the search ladder and reminds you to confirm every value in your book.`,
+        onEnter: () => {
+          const btn = root.querySelector(`.tr-choice[data-choice="${drill.answerKey}"]`);
+          if (btn) btn.click();
+        },
+        title: 'The right answer, picked for you',
+        body: `The method here: "${answerText}". It is already selected. Hit Submit to see the full search ladder and the reminder to confirm every value in your book.`,
         doneLabel: 'Got it, my turn',
       },
     ]);

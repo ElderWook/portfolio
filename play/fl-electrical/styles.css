@@ -1316,6 +1316,8 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
   padding: 6px 14px; cursor: pointer;
 }
 .coach-next:hover { background: color-mix(in srgb, var(--acc) 85%, #fff); }
+/* the correct choice, flagged green during a walkthrough DEMO step */
+.wt-choice.wt-demo-pick { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 16%, transparent); color: var(--ink); font-weight: 600; }
 
 /* ---------- settings overlay ---------- */
 .settings-backdrop {

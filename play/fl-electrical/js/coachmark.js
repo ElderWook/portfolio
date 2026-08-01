@@ -41,7 +41,7 @@ export function closeCoachmark() {
   }
 }
 
-function coachmark(target, opts) {
+export function coachmark(target, opts) {
   const { title = '', body = '', step = 0, total = 0, nextLabel = 'Next', onNext = () => {}, onSkip = () => {} } = opts;
 
   const layer = document.createElement('div');
@@ -95,6 +95,15 @@ function coachmark(target, opts) {
   layer.appendChild(pop);
   document.body.appendChild(layer);
 
+  // On mobile the panes stack, so a target (e.g. the codebook) can sit below the
+  // fold. Scroll it into view BEFORE locking scroll and pinning the pop-up, so
+  // each pop-up lands on the actual section it explains. Only scroll when the
+  // target isn't already comfortably in view (avoids a needless jump on desktop).
+  const r0 = target.getBoundingClientRect();
+  if (r0.top < 64 || r0.bottom > window.innerHeight - 64) {
+    try { target.scrollIntoView({ block: 'center', inline: 'nearest' }); } catch (_) {}
+  }
+
   const prevOverflow = document.body.style.overflow;
   document.body.style.overflow = 'hidden'; // lock scroll while the mark is up
 
@@ -124,6 +133,10 @@ function coachmark(target, opts) {
   }
 
   position();
+  // Re-measure on the next frame: a banner appearing later in the same tick (or
+  // any late reflow) can shift the target after we first positioned, which would
+  // leave the spotlight floating off the element. rAF catches that.
+  requestAnimationFrame(position);
   const reposition = () => position();
   window.addEventListener('resize', reposition);
   window.addEventListener('scroll', reposition, true);
@@ -159,10 +172,12 @@ export function runTour(steps, opts = {}) {
     runExit();
     if (i >= steps.length) { onDone(); return; }
     const s = steps[i];
-    const target = typeof s.target === 'function' ? s.target() : s.target;
-    if (!target || !document.body.contains(target)) { i += 1; show(); return; }
+    // onEnter FIRST — it may reveal a hidden element or re-mount a pane (e.g.
+    // open the correct codebook tab), so the target must be resolved AFTER it.
     if (s.onEnter) { try { s.onEnter(); } catch (_) {} }
     pendingExit = s.onExit || null;
+    const target = typeof s.target === 'function' ? s.target() : s.target;
+    if (!target || !document.body.contains(target)) { i += 1; show(); return; }
     const isLast = i >= steps.length - 1;
     coachmark(target, {
       title: s.title,

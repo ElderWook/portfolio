@@ -100,10 +100,11 @@ function studyHalfDone(ctx, progress) {
 }
 
 function defaultOpenFor(compartment, ctx, progress) {
-  if (compartment.id === 'B' || compartment.id === 'C') return progress.started !== true;
-  if (compartment.id === 'E') return progress.started === true;
-  if (compartment.id === 'F') return studyHalfDone(ctx, progress);
-  return false;
+  // Everything the visitor is actively working (license path, books, tabs,
+  // exam-day rules, business) starts EXPANDED. Study progress (E) is the long
+  // auto-tracked list, so it starts collapsed — drives nicer, especially on
+  // mobile where the whole checklist is a toggled sheet.
+  return compartment.id !== 'E';
 }
 
 function acquisitionLabel(acquisition) {

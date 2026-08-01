@@ -46,6 +46,7 @@
 // this availability flag).
 
 import { mountCodebook } from '../codebook-mock.js';
+import { coachmark, coachSeen, closeCoachmark } from '../coachmark.js';
 
 export function trainerTopicUnlockKey(walkthroughId) {
   return `trainer-topic:${walkthroughId}`;
@@ -206,8 +207,10 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
   let activeTopic = null;
   let stepIndex = 0;
   let wrong = false;
+  let demo = false; // the first walkthrough ever plays as a guided DEMO (auto-picks correct)
 
   function showPicker() {
+    closeCoachmark();
     activeTopic = null;
     renderPicker(root, { topics, progress: getProgress(), isOshaUnlocked, onSelect: startTopic });
   }
@@ -224,11 +227,61 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
     activeTopic = topic;
     stepIndex = 0;
     wrong = false;
+    demo = !coachSeen('walkthrough-tour'); // demo the FIRST topic the visitor opens
     playStep();
   }
 
   function playStep() {
     renderPlayer(root, { topic: activeTopic, tabsByBook, stepIndex, wrong, onPick: handlePick, onExit: showPicker });
+    if (demo) showStepCoach();
+  }
+
+  // Re-mount the walkthrough's codebook with a tab (or the footnote zone)
+  // pre-opened, so a demo step can SHOW the right place to look.
+  function remountWtCodebook(highlightTarget) {
+    const mode = activeTopic.book === 'osha' ? 'osha' : 'nec';
+    const el = root.querySelector('#wt-codebook');
+    if (el) mountCodebook(el, { mode, tabs: tabsByBook[mode] || [], highlightTarget, onPick: handlePick });
+  }
+
+  // The DEMO coach-mark for the current step: highlight the correct answer (the
+  // noun choice, or the right tab / notes opened in the codebook) and, on Next,
+  // auto-pick it so the walkthrough advances itself. Skip drops into normal play.
+  function showStepCoach() {
+    const step = activeTopic.steps[stepIndex];
+    const isLast = stepIndex + 1 >= activeTopic.steps.length;
+    if (step.action === 'pickTab') remountWtCodebook(step.correctTarget);
+    else if (step.action === 'openNotes') remountWtCodebook('footnote-zone');
+
+    let target;
+    let title;
+    let body;
+    if (step.action === 'pickNoun') {
+      const nounBtn = [...root.querySelectorAll('.wt-choice')].find((b) => b.dataset.choice === step.correctTarget);
+      if (nounBtn) nounBtn.classList.add('wt-demo-pick');
+      target = nounBtn || root.querySelector('.wt-choices');
+      title = 'Find the noun';
+      body = `The key word here is "${step.correctTarget}". That is what you go search for.`;
+    } else if (step.action === 'openNotes') {
+      target = root.querySelector('#wt-codebook .codebook-footnote') || root.querySelector('#wt-codebook');
+      title = 'Check the notes';
+      body = 'Before you answer, read the notes and exceptions under the table. The exam pulls its traps from there, not just the table body.';
+    } else {
+      target = root.querySelector('#wt-codebook');
+      title = 'Flip to the right tab';
+      body = `Open "${step.correctTarget}", the tab that holds this. It is highlighted for you.`;
+    }
+    if (!target) return;
+
+    coachmark(target, {
+      title,
+      body,
+      step: stepIndex + 1,
+      total: activeTopic.steps.length,
+      nextLabel: isLast ? 'Finish' : 'Next',
+      onNext: () => handlePick(step.correctTarget), // auto-pick correct → advance
+      onSkip: () => { demo = false; }, // drop into normal play at this step
+    });
   }
 
   function handlePick(value) {
@@ -246,6 +299,7 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
       return;
     }
     onComplete(topic.id);
+    demo = false;
     renderDone(root, topic, showPicker);
   }
 
