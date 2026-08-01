@@ -67,19 +67,21 @@ function compartmentCompletion(compartment, ctx, progress) {
   return { done, total: rows.length, rows };
 }
 
-// F ("Business — later") is never hidden — it's always present, grayed/stubbed
-// (design: "foreshadow the full license path"). studyHalfOrExpand only decides
-// whether it starts pre-opened; the compartment's one item is unconditionally
-// disabled by its own data (checklist.json f-stub.disabled), so it always reads
-// as inert regardless of this threshold.
-function isCompartmentUnlocked(compartment, progress) {
+// F ("Business — later") is gated (design §3.2: "After Tech study compartment
+// ≥50% or manual expand"; "early visitors see kit + license only"). It is
+// ABSENT from the DOM until compartment E is ≥50% done — then it appears,
+// grayed/stubbed (its one item is unconditionally disabled by its own data,
+// checklist.json f-stub.disabled), to foreshadow the full license path. No
+// manual-expand affordance exists in this beta, so studyHalfDone is the gate.
+function isCompartmentUnlocked(compartment, ctx, progress) {
   switch (compartment.unlockWhen) {
     case 'started':
       return progress.started === true;
     case 'anyChecklistOrStarted':
       return progress.started === true || Object.values(progress.checklist).some((v) => v === true);
-    case 'always':
     case 'studyHalfOrExpand':
+      return studyHalfDone(ctx, progress);
+    case 'always':
     default:
       return true;
   }
@@ -221,7 +223,7 @@ export function renderChecklist(root, { checklist, books, kit, progress, onToggl
   const nextVisible = new Set();
   const html = checklist.compartments
     .map((compartment) => {
-      if (!isCompartmentUnlocked(compartment, progress)) return '';
+      if (!isCompartmentUnlocked(compartment, ctx, progress)) return '';
       nextVisible.add(compartment.id);
       const wasVisible = state.visible.has(compartment.id);
       const open = wasVisible && prevOpen.has(compartment.id)
