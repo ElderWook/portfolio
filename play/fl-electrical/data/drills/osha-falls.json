@@ -1,0 +1,71 @@
+{
+  "topic": "osha-falls",
+  "drills": [
+    {
+      "id": "drill-osha-falls-1",
+      "topic": "osha-falls",
+      "stem": "You're assessing whether the fall protection DUTY applies to a task. What actually determines that?",
+      "choices": [
+        "The employee's job title",
+        "The specific work category and its trigger condition in 1926.501",
+        "Whether the employer happens to have fall protection equipment on site",
+        "The length of the shift"
+      ],
+      "answerKey": 1,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: the WORK CATEGORY, not the person or the equipment on hand",
+        "Tab family: Fall Protection (1926.501)",
+        "Cite: 1926.501 lists categories with their own trigger conditions — read the one matching your scenario in your book"
+      ],
+      "lookupPath": ["Fall Protection", "1926.501"],
+      "timeTargetSec": 150,
+      "tags": ["osha", "falls", "duty"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-osha-falls-2",
+      "topic": "osha-falls",
+      "stem": "Once fall protection is required for a task, which section tells you what makes a guardrail, safety net, or personal fall arrest system COMPLIANT?",
+      "choices": [
+        "1926.501, the same section that triggers the duty",
+        "1926.502, criteria and practices for each system type",
+        "1926.503, the training section",
+        "1926.1053, since it covers ladder-related fall equipment"
+      ],
+      "answerKey": 1,
+      "hard": true,
+      "hintLadder": [
+        "Primary noun: SYSTEM criteria — a different question than whether protection is required at all",
+        "Tab family: Fall Protection (1926.502)",
+        "Cite: 1926.502 — read each system's spec in your book before you pick one"
+      ],
+      "lookupPath": ["Fall Protection", "1926.502"],
+      "timeTargetSec": 150,
+      "tags": ["osha", "falls", "systems", "hard"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-osha-falls-3",
+      "topic": "osha-falls",
+      "stem": "An employer assumes verbally reminding employees to 'be careful near the edge' satisfies the fall protection duty. What is actually missing?",
+      "choices": [
+        "Nothing — a verbal reminder satisfies 1926.501 on its own",
+        "A protection SYSTEM under 1926.502 plus the training required by 1926.503",
+        "Only training under 1926.503; a physical system is never required",
+        "Nothing is required until an injury occurs"
+      ],
+      "answerKey": 1,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: 'system' and 'training' are two separate requirements once the duty applies",
+        "Tab family: Fall Protection (1926.502 systems, 1926.503 training)",
+        "Cite: 1926.502 (systems) and 1926.503 (training) both apply once 1926.501 triggers — confirm both in your book"
+      ],
+      "lookupPath": ["Fall Protection", "1926.502", "1926.503"],
+      "timeTargetSec": 150,
+      "tags": ["osha", "falls", "trap"],
+      "verifyAgainst": "your book"
+    }
+  ]
+}

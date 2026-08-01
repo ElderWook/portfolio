@@ -46,7 +46,7 @@
         { "id": "e-map", "label": "Book Map skimmed" },
         { "id": "e-250-w", "label": "Art. 250 walkthroughs done", "auto": "walkthroughs:nec-250" },
         { "id": "e-250-t", "label": "Art. 250 trainer topics cleared", "auto": "trainer:nec-250" },
-        { "id": "e-osha", "label": "OSHA lane complete", "auto": "lane:osha" },
+        { "id": "e-osha", "label": "OSHA lane complete", "auto": "osha-lane-complete" },
         { "id": "e-timed", "label": "Timed mini-set attempted", "auto": "timedAttempted" }
       ]
     },

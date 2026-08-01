@@ -1,0 +1,71 @@
+{
+  "topic": "osha-ladders",
+  "drills": [
+    {
+      "id": "drill-osha-ladders-1",
+      "topic": "osha-ladders",
+      "stem": "A question asks for the correct setup ANGLE for a non-self-supporting portable ladder. Which section and METHOD do you use?",
+      "choices": [
+        "1926.1053 — read the exact ratio directly from your book",
+        "1926.502 — the fall-protection systems section",
+        "1926.1060 — the training section",
+        "Estimate the angle visually; no fixed ratio exists"
+      ],
+      "answerKey": 0,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: setup ANGLE, a portable-ladder-specific rule",
+        "Tab family: Ladders (1926.1053)",
+        "Cite: 1926.1053 states the exact angle ratio — read it from your book, don't estimate"
+      ],
+      "lookupPath": ["Ladders", "1926.1053"],
+      "timeTargetSec": 150,
+      "tags": ["osha", "ladders", "setup"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-osha-ladders-2",
+      "topic": "osha-ladders",
+      "stem": "A ladder is set up to access a roof landing. Besides the setup angle, what SEPARATE requirement applies to the side rails at the landing point?",
+      "choices": [
+        "No separate requirement — the angle rule covers it",
+        "The side rails must extend above the landing point per 1926.1053",
+        "The ladder must be tied off per 1926.502",
+        "The ladder must be inspected under 1926.1060 only"
+      ],
+      "answerKey": 1,
+      "hard": true,
+      "hintLadder": [
+        "Primary noun: extension ABOVE THE LANDING — separate from the setup angle",
+        "Tab family: Ladders (1926.1053)",
+        "Cite: 1926.1053 — the extension-above-landing clause is separate from the angle clause; read both in your book"
+      ],
+      "lookupPath": ["Ladders", "1926.1053"],
+      "timeTargetSec": 150,
+      "tags": ["osha", "ladders", "trap", "hard"],
+      "verifyAgainst": "your book"
+    },
+    {
+      "id": "drill-osha-ladders-3",
+      "topic": "osha-ladders",
+      "stem": "An employee has used ladders for years without any formal instruction. Does that experience satisfy OSHA's ladder-related training duty?",
+      "choices": [
+        "Yes — years of informal experience always substitutes for training",
+        "No — 1926.1060 requires training on ladder/stairway hazards regardless of tenure",
+        "Only if the employee is over a certain age",
+        "Only if the ladder is used above a certain height"
+      ],
+      "answerKey": 1,
+      "hard": false,
+      "hintLadder": [
+        "Primary noun: TRAINING duty, separate from years of informal experience",
+        "Tab family: Ladders (1926.1060)",
+        "Cite: 1926.1060 — the training requirement exists independent of tenure; confirm the scope in your book"
+      ],
+      "lookupPath": ["Ladders", "1926.1060"],
+      "timeTargetSec": 150,
+      "tags": ["osha", "ladders", "trap"],
+      "verifyAgainst": "your book"
+    }
+  ]
+}

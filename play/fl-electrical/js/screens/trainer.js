@@ -1,12 +1,14 @@
 // js/screens/trainer.js — Trainer engine: a dual-pane drill player for the
-// four Art. 250 topics. LEFT pane = the question (stem, choices, a countdown
-// timer ring, a 3-rung hint ladder, submit). RIGHT pane = the shared codebook
-// mock (js/codebook-mock.js) in 'nec' mode, so the visitor practices the SAME
-// look-it-up habit the walkthrough taught.
+// four Art. 250 topics PLUS (Task 9) the OSHA topics once their lane
+// unlocks. LEFT pane = the question (stem, choices, a countdown timer ring,
+// a 3-rung hint ladder, submit). RIGHT pane = the shared codebook mock
+// (js/codebook-mock.js) in the topic's own book mode ('nec' or 'osha'), so
+// the visitor practices the SAME look-it-up habit the walkthrough taught.
 //
-// CITE-ONLY (constraints.md): the drill JSON (data/drills/nec-250-*.json)
-// stores section/table NUMBERS and a search METHOD only — never a cmil area,
-// an AWG size, or an ampacity. The "correct" choice states the METHOD ("read
+// CITE-ONLY (constraints.md): the drill JSON (data/drills/nec-250-*.json,
+// data/drills/osha-*.json) stores section/table NUMBERS and a search METHOD
+// only — never a cmil area, an AWG size, an ampacity, or (OSHA) a trigger
+// height/ratio/reporting clock. The "correct" choice states the METHOD ("read
 // the aluminum column of Table 250.122"), not a value. Scenario inputs like
 // "#12 to #8 Cu" or "20A OCPD" are lookup KEYS and are fine.
 //
@@ -31,11 +33,32 @@
 import { mountCodebook } from '../codebook-mock.js';
 import { isTrainerTopicUnlocked } from './walkthrough.js';
 
-// The signal Task 9 (OSHA drills) reads to know its lane is available. Written
+// The signal Task 9 (OSHA drills) reads to know its lane is AVAILABLE. Written
 // by main.js's scoring handler; declared here so both sides share one string.
+// This is deliberately a DIFFERENT signal from isOshaLaneComplete() below —
+// "unlocked" fires at 3 nec-250 clears (before any OSHA content is touched);
+// "complete" fires once the visitor has actually played the OSHA lane.
 export const OSHA_LANE_UNLOCK = 'lane:osha';
 export function isOshaLaneUnlocked(progress) {
   return (progress.unlocked || []).includes(OSHA_LANE_UNLOCK);
+}
+
+// Task 9: distinct correct OSHA drills required, on top of finishing at least
+// one OSHA walkthrough, to mark the whole OSHA lane COMPLETE (checklist.json
+// `e-osha`, auto id 'osha-lane-complete' — see checklist.js's isAutoDone,
+// which imports isOshaLaneComplete from here rather than re-deriving it).
+// OSHA drill ids are authored as `drill-osha-<topic>-<n>` (data/drills/osha-*
+// .json), so a simple id-prefix filter finds them without needing the
+// topic->book map that only main.js's boot() closure holds.
+export const OSHA_DRILLS_FOR_COMPLETE = 3;
+
+export function oshaCorrectDrillCount(progress) {
+  return (progress.trainerCorrectDrills || []).filter((id) => id.startsWith('drill-osha-')).length;
+}
+
+export function isOshaLaneComplete(progress) {
+  const walkthroughDone = (progress.completedWalkthroughs || []).some((id) => id.startsWith('osha-'));
+  return walkthroughDone && oshaCorrectDrillCount(progress) >= OSHA_DRILLS_FOR_COMPLETE;
 }
 
 // A topic "clears" at this many DISTINCT correct drills (constraints.md: gate
@@ -70,12 +93,21 @@ function topicCorrectCount(progress, drills) {
   return drills.filter((d) => done.has(d.id)).length;
 }
 
+// OSHA topic cards are REVEALED only once the OSHA lane is unlocked — hidden
+// entirely before that (constraints.md), not merely shown-disabled like the
+// per-topic 🔒 state below (which is a DIFFERENT, already-visible lock: "this
+// topic's own walkthrough isn't done yet").
+function visibleTopicsMeta(topicsMeta, progress) {
+  return topicsMeta.filter((t) => t.book !== 'osha' || isOshaLaneUnlocked(progress));
+}
+
 function renderPicker(root, { topicsMeta, drillsByTopic, progress, onSelect }) {
   const nec250Clears = (progress.trainerTopicClears || []).filter((t) => t.startsWith('nec-250')).length;
-  const oshaTarget = 3;
-  const oshaDone = isOshaLaneUnlocked(progress);
+  const oshaUnlockTarget = 3;
+  const oshaUnlocked = isOshaLaneUnlocked(progress);
+  const oshaComplete = isOshaLaneComplete(progress);
 
-  const cards = topicsMeta
+  const cards = visibleTopicsMeta(topicsMeta, progress)
     .map((topic) => {
       const drills = drillsByTopic[topic.id] || [];
       const unlocked = isTrainerTopicUnlocked(progress, topic.id);
@@ -99,13 +131,16 @@ function renderPicker(root, { topicsMeta, drillsByTopic, progress, onSelect }) {
     })
     .join('');
 
-  const oshaLine = oshaDone
-    ? '<span class="tr-osha-done">OSHA lane unlocked ✓</span>'
-    : `OSHA lane unlocks at ${oshaTarget} Art. 250 topic clears · <strong>${nec250Clears}/${oshaTarget}</strong>`;
+  const oshaCorrect = oshaCorrectDrillCount(progress);
+  const oshaLine = oshaComplete
+    ? '<span class="tr-osha-done">OSHA lane complete ✓</span>'
+    : oshaUnlocked
+      ? `OSHA lane unlocked · <strong>${oshaCorrect}/${OSHA_DRILLS_FOR_COMPLETE}</strong> OSHA drills correct to complete it`
+      : `OSHA lane unlocks at ${oshaUnlockTarget} Art. 250 topic clears · <strong>${nec250Clears}/${oshaUnlockTarget}</strong>`;
 
   root.innerHTML = `
     <section class="trainer-screen">
-      <h2>Art. 250 Trainer</h2>
+      <h2>Trainer</h2>
       <p class="tr-lede">Answer on the left, look it up on the right. Hard drills won't accept a right answer until you've opened the cited tab — that's the exam habit. No sizes or table values live here; verify everything in your book.</p>
       <p class="tr-osha-track">${oshaLine}</p>
       <div class="tr-topic-grid">${cards}</div>
@@ -118,7 +153,7 @@ function renderPicker(root, { topicsMeta, drillsByTopic, progress, onSelect }) {
 }
 
 function renderResult(root, ctx) {
-  const { drill, topicTitle, index, total, correct, lookupHit, elapsed, after, justCleared, justUnlockedOsha, editionPin, onNext, onExit } = ctx;
+  const { drill, topicTitle, index, total, correct, lookupHit, elapsed, after, justCleared, justUnlockedOsha, justCompletedOsha, editionPin, onNext, onExit } = ctx;
   const isLast = index + 1 >= total;
   const answerText = drill.choices[drill.answerKey];
   const bonus = correct && lookupHit;
@@ -127,6 +162,7 @@ function renderResult(root, ctx) {
   const banners = [
     justCleared ? '<p class="tr-banner tr-banner-clear">Topic cleared ✓ — two correct drills logged.</p>' : '',
     justUnlockedOsha ? '<p class="tr-banner tr-banner-osha">OSHA lane unlocked — three Art. 250 topics cleared.</p>' : '',
+    justCompletedOsha ? `<p class="tr-banner tr-banner-osha">OSHA lane complete ✓ — ${OSHA_DRILLS_FOR_COMPLETE} OSHA drills correct with a walkthrough done.</p>` : '',
   ].join('');
 
   root.innerHTML = `
@@ -157,7 +193,13 @@ function renderResult(root, ctx) {
 }
 
 function renderDrill(root, ctx) {
-  const { drill, topicTitle, index, total, cleared, tabs, editionPin, getProgress, onResult, onNext, onExit } = ctx;
+  const { drill, topicTitle, book, index, total, cleared, tabsByBook, editionPins, getProgress, onResult, onNext, onExit } = ctx;
+  // Book-derived mode/tabs/edition pin — never hardcoded to 'nec' (Task 9):
+  // an OSHA topic's drills mount the OSHA codebook mode and show the OSHA
+  // edition pin instead of the NEC one.
+  const mode = book === 'osha' ? 'osha' : 'nec';
+  const tabs = tabsByBook[mode] || [];
+  const editionPin = editionPins[mode];
 
   const choicesHtml = drill.choices
     .map(
@@ -290,7 +332,7 @@ function renderDrill(root, ctx) {
   // ---- right pane: codebook. Mounted once; onPick records the visitor's
   // navigation and flags a lookup hit when they open a cited node/tab. ----
   mountCodebook(root.querySelector('#tr-codebook'), {
-    mode: 'nec',
+    mode,
     tabs,
     highlightTarget: null,
     onPick: (id) => {
@@ -327,11 +369,13 @@ function renderDrill(root, ctx) {
     const before = getProgress();
     const beforeCleared = (before.trainerTopicClears || []).includes(drill.topic);
     const beforeOsha = isOshaLaneUnlocked(before);
+    const beforeOshaComplete = isOshaLaneComplete(before);
 
     const after = onResult({ drill, correct, lookupHit, pickedPath: pickedPath.slice(), elapsed }) || getProgress();
 
     const justCleared = !beforeCleared && (after.trainerTopicClears || []).includes(drill.topic);
     const justUnlockedOsha = !beforeOsha && isOshaLaneUnlocked(after);
+    const justCompletedOsha = !beforeOshaComplete && isOshaLaneComplete(after);
 
     renderResult(root, {
       drill,
@@ -344,6 +388,7 @@ function renderDrill(root, ctx) {
       after,
       justCleared,
       justUnlockedOsha,
+      justCompletedOsha,
       editionPin,
       onNext,
       onExit,
@@ -351,19 +396,24 @@ function renderDrill(root, ctx) {
   });
 }
 
-// renderTrainer(root, { topicsMeta, drillsByTopic, tabs, editionPin, getProgress, onResult })
-//   topicsMeta   — [{ id, title }] for the four nec-250 topics (main.js reuses
-//                  the already-loaded walkthrough titles — the ids match by
-//                  contract, so there is no second title source to drift).
-//   drillsByTopic— { topicId: drill[] } parsed from data/drills/nec-250-*.json.
-//   tabs         — data/tabs/nec-curated.json's `tabs`, passed to mountCodebook.
-//   editionPin   — manifest.editionPins.nec, shown on every drill so each one
-//                  visibly carries its edition + "verify in your book".
+// renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, getProgress, onResult })
+//   topicsMeta   — [{ id, title, book }] for ALL topics, nec-250 + (Task 9)
+//                  osha (main.js reuses the already-loaded walkthrough
+//                  titles/book — the ids match by contract, so there is no
+//                  second title source to drift). OSHA entries are hidden by
+//                  the picker (visibleTopicsMeta) until the OSHA lane unlocks.
+//   drillsByTopic— { topicId: drill[] } parsed from data/drills/nec-250-*.json
+//                  and data/drills/osha-*.json.
+//   tabsByBook   — { nec: nec-curated tabs, osha: osha-curated tabs }; each
+//                  drill's mode/tab-set is picked off its topic's `book`.
+//   editionPins  — manifest.editionPins ({ nec, osha }); the drill shown picks
+//                  the pin matching its own book so it visibly carries its
+//                  edition + "verify in your book".
 //   getProgress  — live getter (() => loadProgress(KEY)); the picker re-reads
 //                  fresh state on every return trip (same reason as intro.js).
 //   onResult(payload) — main.js owns the storage mutation and RETURNS the
 //                  updated progress so this screen can show clear/unlock banners.
-export function renderTrainer(root, { topicsMeta, drillsByTopic, tabs, editionPin, getProgress, onResult }) {
+export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, getProgress, onResult }) {
   stopTimer(); // clear any interval a prior mount left running
 
   function showPicker() {
@@ -372,7 +422,11 @@ export function renderTrainer(root, { topicsMeta, drillsByTopic, tabs, editionPi
   }
 
   function startTopic(topicId) {
-    if (!isTrainerTopicUnlocked(getProgress(), topicId)) {
+    const meta = topicsMeta.find((t) => t.id === topicId);
+    // Defensive re-check (belt-and-suspenders): the picker never renders a
+    // button for a hidden OSHA topic OR a topic whose own walkthrough isn't
+    // done, but don't trust either lock's absence-of-a-button alone.
+    if (!meta || (meta.book === 'osha' && !isOshaLaneUnlocked(getProgress())) || !isTrainerTopicUnlocked(getProgress(), topicId)) {
       showPicker();
       return;
     }
@@ -391,11 +445,12 @@ export function renderTrainer(root, { topicsMeta, drillsByTopic, tabs, editionPi
     renderDrill(root, {
       drill: drills[safeIndex],
       topicTitle: meta ? meta.title : topicId,
+      book: meta ? meta.book : 'nec',
       index: safeIndex,
       total: drills.length,
       cleared: (progress.trainerTopicClears || []).includes(topicId),
-      tabs,
-      editionPin,
+      tabsByBook,
+      editionPins,
       getProgress,
       onResult,
       onNext: (nextIndex) => playDrill(topicId, nextIndex),

@@ -1,0 +1,33 @@
+{
+  "id": "osha-falls",
+  "title": "Fall Protection Duty",
+  "book": "osha",
+  "steps": [
+    {
+      "prompt": "Underline the primary noun in: duty to have fall protection when employees are exposed to a fall hazard",
+      "action": "pickNoun",
+      "choices": ["duty", "fall protection", "employees"],
+      "correctTarget": "fall protection",
+      "teach": "Noun-first: 'fall protection' is the thing being required — 'duty' and 'employees' are the framing around it, not the lookup target."
+    },
+    {
+      "prompt": "Which tab family holds the baseline rule that fall protection is required once a trigger condition is met?",
+      "action": "pickTab",
+      "correctTarget": "Fall Protection",
+      "teach": "The baseline duty-to-provide rule lives at 1926.501 — the trigger differs by WORK CATEGORY (leading edge, ramps, holes, and more). Read the category that matches your scenario instead of assuming one number covers all of them."
+    },
+    {
+      "prompt": "Underline the primary noun in: criteria and practice requirements for guardrail, safety net, and personal fall arrest SYSTEMS",
+      "action": "pickNoun",
+      "choices": ["criteria", "systems", "practice requirements"],
+      "correctTarget": "systems",
+      "teach": "1926.502 sets the specs for each SYSTEM type. Once 501 tells you protection is required, 502 tells you what a compliant system looks like — a separate question from whether the duty applies at all."
+    },
+    {
+      "prompt": "Open the footnote / notes habit zone before you answer.",
+      "action": "openNotes",
+      "correctTarget": "footnote-zone",
+      "teach": "OSHA traps hide in definitions (1926.500) and cross-referenced exceptions, not the headline sentence — check the section's own definitions before you commit to an answer."
+    }
+  ]
+}

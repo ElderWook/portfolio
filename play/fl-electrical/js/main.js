@@ -4,7 +4,7 @@ import { openIntro } from './intro.js';
 import { renderPath } from './screens/path.js';
 import { renderBookMap } from './screens/bookmap.js';
 import { renderWalkthrough, trainerTopicUnlockKey } from './screens/walkthrough.js';
-import { renderTrainer, OSHA_LANE_UNLOCK, CLEAR_THRESHOLD } from './screens/trainer.js';
+import { renderTrainer, OSHA_LANE_UNLOCK, CLEAR_THRESHOLD, isOshaLaneUnlocked } from './screens/trainer.js';
 
 // GitHub Pages has no bundler — load ALL JSON via fetch (no import-attributes, which Pages won't serve).
 async function loadJSON(path) {
@@ -45,18 +45,29 @@ export async function boot() {
 
   // The four Art. 250 topic ids are shared by contract across the walkthrough
   // AND trainer screens (a walkthrough's id doubles as its trainer topic id).
-  const WALKTHROUGH_IDS = ['nec-250-gec', 'nec-250-122', 'nec-250-122b', 'nec-250-traps'];
-  const [checklist, books, kit, path, necTabs, ...topicData] = await Promise.all([
+  // Task 9 adds the OSHA topic ids to the SAME generic id-driven loader below
+  // — nothing about the loading/indexing code is NEC-specific, so the OSHA
+  // topics just ride along once their id is in this combined list.
+  const NEC_TOPIC_IDS = ['nec-250-gec', 'nec-250-122', 'nec-250-122b', 'nec-250-traps'];
+  const OSHA_TOPIC_IDS = ['osha-falls', 'osha-ladders'];
+  const TOPIC_IDS = [...NEC_TOPIC_IDS, ...OSHA_TOPIC_IDS];
+  const [checklist, books, kit, path, necTabs, oshaTabs, ...topicData] = await Promise.all([
     loadJSON('data/checklist.json'),
     loadJSON('data/books.json'),
     loadJSON('data/kit.json'),
     loadJSON('data/path.json'),
     loadJSON('data/tabs/nec-curated.json'),
-    ...WALKTHROUGH_IDS.map((id) => loadJSON(`data/walkthroughs/${id}.json`)),
-    ...WALKTHROUGH_IDS.map((id) => loadJSON(`data/drills/${id}.json`)),
+    loadJSON('data/tabs/osha-curated.json'),
+    ...TOPIC_IDS.map((id) => loadJSON(`data/walkthroughs/${id}.json`)),
+    ...TOPIC_IDS.map((id) => loadJSON(`data/drills/${id}.json`)),
   ]);
-  const walkthroughs = topicData.slice(0, WALKTHROUGH_IDS.length);
-  const drillFiles = topicData.slice(WALKTHROUGH_IDS.length);
+  const walkthroughs = topicData.slice(0, TOPIC_IDS.length);
+  const drillFiles = topicData.slice(TOPIC_IDS.length);
+
+  // tabsByBook: the codebook mock needs a DIFFERENT tab set per book ('nec' vs
+  // 'osha') — walkthrough.js/trainer.js pick the right one per-topic off each
+  // walkthrough's own `book` field (never hardcoded to 'nec' anymore).
+  const tabsByBook = { nec: necTabs.tabs, osha: oshaTabs.tabs };
 
   // drillsByTopic: { topicId: drill[] } for the Trainer picker/player.
   // drillIdToTopic: id -> topic, so the scoring handler can count DISTINCT
@@ -68,8 +79,9 @@ export async function boot() {
     file.drills.forEach((d) => { drillIdToTopic[d.id] = d.topic; });
   });
   // Trainer reuses the walkthrough titles (ids match by contract — one title
-  // source, no drift).
-  const trainerTopicsMeta = walkthroughs.map((w) => ({ id: w.id, title: w.title }));
+  // source, no drift). `book` rides along so the trainer picker/player can
+  // gate OSHA cards on the lane unlock and mount the right codebook mode.
+  const trainerTopicsMeta = walkthroughs.map((w) => ({ id: w.id, title: w.title, book: w.book }));
 
   const sidebar = document.getElementById('sidebar');
   const rail = document.getElementById('rail');
@@ -152,7 +164,8 @@ export async function boot() {
     if (screen === 'walkthrough') {
       renderWalkthrough(screenRoot, {
         topics: walkthroughs,
-        tabs: necTabs.tabs,
+        tabsByBook,
+        isOshaUnlocked: isOshaLaneUnlocked,
         getProgress: () => loadProgress(KEY),
         onComplete(topicId) {
           mutateProgress(KEY, (p) => {
@@ -175,8 +188,8 @@ export async function boot() {
       renderTrainer(screenRoot, {
         topicsMeta: trainerTopicsMeta,
         drillsByTopic,
-        tabs: necTabs.tabs,
-        editionPin: manifest.editionPins.nec,
+        tabsByBook,
+        editionPins: manifest.editionPins,
         getProgress: () => loadProgress(KEY),
         onResult: onTrainerResult,
       });

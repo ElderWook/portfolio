@@ -15,6 +15,8 @@
 // a compartment only gets its computed *default* open state the first time it
 // appears (including the very first render).
 
+import { isOshaLaneComplete } from './screens/trainer.js';
+
 const renderState = new WeakMap(); // root -> { visible: Set<compartmentId> }
 
 // ---------- auto-status resolution (compartment E) ----------
@@ -24,6 +26,13 @@ const renderState = new WeakMap(); // root -> { visible: Set<compartmentId> }
 function isAutoDone(auto, progress) {
   if (auto === 'pathComplete') return progress.pathComplete === true;
   if (auto === 'timedAttempted') return progress.timedAttempted === true;
+  // NOT the same signal as trainer.js's OSHA_LANE_UNLOCK/'lane:osha' (which
+  // fires at 3 nec-250 clears, before any OSHA content is touched) — this is
+  // Task 9's LANE-COMPLETE flag: the OSHA walkthrough(s) done AND >=3 OSHA
+  // drills answered correctly. Delegated to trainer.js (the owner of all
+  // OSHA-lane predicates) rather than re-deriving the drill-id-prefix match
+  // here too.
+  if (auto === 'osha-lane-complete') return isOshaLaneComplete(progress);
   if (auto.startsWith('walkthroughs:')) {
     const topic = auto.slice('walkthroughs:'.length);
     return (progress.completedWalkthroughs || []).some((id) => id === topic || id.startsWith(`${topic}-`));

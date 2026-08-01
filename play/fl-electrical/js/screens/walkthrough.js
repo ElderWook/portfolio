@@ -1,17 +1,20 @@
 // js/screens/walkthrough.js — Walkthrough engine: a topic picker plus a
 // step-by-step player for the four Art. 250 topics
-// (data/walkthroughs/nec-250-*.json).
+// (data/walkthroughs/nec-250-*.json) PLUS (Task 9) the OSHA topics
+// (data/walkthroughs/osha-*.json), revealed in the same picker once the
+// OSHA lane unlocks — see visibleTopics()/renderWalkthrough's isOshaUnlocked.
 //
 // CITE-ONLY (constraints.md): every walkthrough JSON stores section/table
 // NUMBERS and a search SEQUENCE (noun -> tab -> table/column -> footnote) —
-// never a table cell, an AWG size, a cmil area, or any other answer value.
-// Those come from the visitor's physical book.
+// never a table cell, an AWG size, a cmil area, or (for OSHA) a trigger
+// height/ratio/reporting clock. Those come from the visitor's physical book.
 //
 // Each step names an `action`:
 //   pickNoun   — the step supplies its own `choices` array; rendered as
 //                plain buttons here (no codebook involved).
 //   pickTab    — mounts the shared codebook mock (js/codebook-mock.js) in
-//                'nec' mode; a tab-strip click fires onPick(tab.label).
+//                the topic's own book mode ('nec' or 'osha'); a tab-strip
+//                click fires onPick(tab.label).
 //   openNotes  — same codebook mock; only the footnote-zone button is the
 //                expected pick (onPick('footnote-zone')).
 // In both codebook cases the step's `correctTarget` is always a tab LABEL or
@@ -31,8 +34,9 @@
 // the sidebar (XP counter, checklist auto-rows) afterward.
 //
 // UNLOCK CONTRACT for Task 8 (the Trainer screen): each walkthrough's `id`
-// doubles as its Trainer topic id — nec-250-gec/122/122b/traps name the same
-// four topics in both screens. `onComplete(topicId)` is expected to push
+// doubles as its Trainer topic id — nec-250-gec/122/122b/traps AND (Task 9)
+// osha-falls/osha-ladders name the same topics in both screens.
+// `onComplete(topicId)` is expected to push
 // `trainerTopicUnlockKey(topicId)` into `progress.unlocked`. Task 8 should
 // treat a Trainer topic as selectable only once
 // `isTrainerTopicUnlocked(progress, topicId)` is true — this file exports
@@ -70,11 +74,21 @@ function renderTopicCard(topic, progress) {
     </button>`;
 }
 
-function renderPicker(root, { topics, progress, onSelect }) {
-  const cards = topics.map((t) => renderTopicCard(t, progress)).join('');
+// OSHA topics are REVEALED only once the OSHA lane is unlocked (constraints:
+// pickers show OSHA topics only after `isOshaLaneUnlocked` — hidden, not just
+// disabled, before that; unlike the per-topic trainer lock below, which shows
+// a disabled card once its OWN prefix-lane is already visible).
+function visibleTopics(topics, progress, isOshaUnlocked) {
+  return topics.filter((t) => t.book !== 'osha' || isOshaUnlocked(progress));
+}
+
+function renderPicker(root, { topics, progress, isOshaUnlocked, onSelect }) {
+  const cards = visibleTopics(topics, progress, isOshaUnlocked)
+    .map((t) => renderTopicCard(t, progress))
+    .join('');
   root.innerHTML = `
     <section class="walkthrough-screen">
-      <h2>Art. 250 Walkthroughs</h2>
+      <h2>Walkthroughs</h2>
       <p class="wt-lede">Step-by-step drills that teach the SEARCH SEQUENCE — noun, tab, table/column, footnote. No sizes or table values live here; open your book and verify everything.</p>
       <div class="wt-topic-grid">${cards}</div>
     </section>`;
@@ -92,7 +106,12 @@ function renderChips(steps, currentIndex) {
     .join('');
 }
 
-function renderPlayer(root, { topic, tabs, stepIndex, wrong, onPick, onExit }) {
+function renderPlayer(root, { topic, tabsByBook, stepIndex, wrong, onPick, onExit }) {
+  // Codebook MODE follows the topic's own `book` field — never hardcoded to
+  // 'nec' — so an OSHA topic mounts the OSHA parts/subparts tree instead of
+  // the NEC tab strip (Task 6's mountCodebook contract).
+  const mode = topic.book === 'osha' ? 'osha' : 'nec';
+  const tabs = tabsByBook[mode] || [];
   const step = topic.steps[stepIndex];
   const isNoun = step.action === 'pickNoun';
   const choicesHtml = isNoun
@@ -125,7 +144,7 @@ function renderPlayer(root, { topic, tabs, stepIndex, wrong, onPick, onExit }) {
     });
   } else {
     mountCodebook(root.querySelector('#wt-codebook'), {
-      mode: 'nec',
+      mode,
       tabs,
       highlightTarget: null,
       onPick,
@@ -154,22 +173,33 @@ function renderDone(root, topic, onExit) {
   root.querySelector('#wt-done-back').addEventListener('click', onExit);
 }
 
-// renderWalkthrough(root, { topics, tabs, getProgress, onComplete })
-//   topics      — the four parsed walkthrough JSON files (already fetched by
-//                 main.js, same "preload, don't lazy-fetch" pattern as path/
-//                 checklist/books/kit).
-//   tabs        — data/tabs/nec-curated.json's `tabs` array, passed straight
-//                 through to mountCodebook's 'nec' mode.
+// renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked, getProgress, onComplete })
+//   topics      — ALL parsed walkthrough JSON files, NEC + OSHA combined
+//                 (already fetched by main.js, same "preload, don't
+//                 lazy-fetch" pattern as path/checklist/books/kit). Each
+//                 topic's own `book` field ('nec'|'osha') selects both the
+//                 codebook mode and (for OSHA) the picker's reveal gate.
+//   tabsByBook  — { nec: data/tabs/nec-curated.json's tabs, osha:
+//                 data/tabs/osha-curated.json's tabs }, so renderPlayer can
+//                 mount the right tab set for whichever topic is active.
+//   isOshaUnlocked(progress) — Task 8's `isOshaLaneUnlocked`, injected from
+//                 main.js rather than imported directly here to avoid a
+//                 walkthrough.js <-> trainer.js import cycle (trainer.js
+//                 already imports `isTrainerTopicUnlocked` FROM this file).
+//                 Gates whether OSHA topic cards are ever rendered in the
+//                 picker — see visibleTopics().
 //   getProgress — a live getter (`() => loadProgress(KEY)`), not a snapshot —
 //                 same reasoning as intro.js: onComplete mutates storage from
 //                 inside this same screen instance, so the picker must
 //                 re-read fresh state on every return trip rather than close
-//                 over a stale snapshot from mount time.
+//                 over a stale snapshot from mount time. This is also what
+//                 lets the OSHA reveal appear mid-session the moment the
+//                 lane unlocks (no full screen remount needed).
 //   onComplete(topicId) — fired once, on the right pick that finishes a
 //                 topic's last step. The caller (main.js) owns the
 //                 mutateProgress call (push id, award XP, unlock trainer
 //                 topic) and any sidebar re-render.
-export function renderWalkthrough(root, { topics, tabs, getProgress, onComplete }) {
+export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = () => false, getProgress, onComplete }) {
   // Resolved once per startTopic() call rather than re-searched from
   // `topics` on every playStep()/handlePick() — a topic is picked once per
   // play-through, so there is exactly one lookup to do, not one per click.
@@ -179,18 +209,26 @@ export function renderWalkthrough(root, { topics, tabs, getProgress, onComplete 
 
   function showPicker() {
     activeTopic = null;
-    renderPicker(root, { topics, progress: getProgress(), onSelect: startTopic });
+    renderPicker(root, { topics, progress: getProgress(), isOshaUnlocked, onSelect: startTopic });
   }
 
   function startTopic(topicId) {
-    activeTopic = topics.find((t) => t.id === topicId);
+    const topic = topics.find((t) => t.id === topicId);
+    // Defensive re-check (belt-and-suspenders, mirrors trainer.js's own
+    // startTopic guard): the picker never renders a button for a hidden OSHA
+    // topic, but don't trust that alone against a stale card / replayed click.
+    if (!topic || (topic.book === 'osha' && !isOshaUnlocked(getProgress()))) {
+      showPicker();
+      return;
+    }
+    activeTopic = topic;
     stepIndex = 0;
     wrong = false;
     playStep();
   }
 
   function playStep() {
-    renderPlayer(root, { topic: activeTopic, tabs, stepIndex, wrong, onPick: handlePick, onExit: showPicker });
+    renderPlayer(root, { topic: activeTopic, tabsByBook, stepIndex, wrong, onPick: handlePick, onExit: showPicker });
   }
 
   function handlePick(value) {

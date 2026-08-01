@@ -1,0 +1,11 @@
+{
+  "tabs": [
+    { "label": "Fall Protection", "targets": ["1926.500", "1926.501", "1926.502", "1926.503"], "pillar": "1926" },
+    { "label": "Ladders", "targets": ["1926.1053", "1926.1060"], "pillar": "1926" },
+    { "label": "Electrical Safety", "targets": ["1926.404", "1926.416", "1926.417"], "pillar": "1926" },
+    { "label": "PPE", "targets": ["1926.95", "1926.100"], "pillar": "1926" },
+    { "label": "Battery Charging", "targets": ["1926.441"], "pillar": "1926" },
+    { "label": "Lockout/Tagout", "targets": ["1910.147"], "pillar": "1910" },
+    { "label": "Recordkeeping & Reporting", "targets": ["1904.29", "1904.32", "1904.39"], "pillar": "1904" }
+  ]
+}
