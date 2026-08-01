@@ -38,9 +38,9 @@
   },
   "freePractice": {
     "label": "Practice on the real code for free",
-    "body": "You don't need to buy a thing to start building the lookup habit. NFPA puts the NEC (NFPA 70) online as free, read-only access. Open it, work the index, and practice finding sections cold before your own tabbed copies arrive.",
-    "cta": "Open NFPA free access",
-    "href": "https://www.nfpa.org/free-access"
+    "body": "You don't need to buy a thing to start building the lookup habit. NFPA puts the NEC (NFPA 70), 2023 edition, online as free read-only access through NFPA LiNK. A free account signs you in. Open it, work the index, and practice finding sections cold before your own tabbed copies arrive.",
+    "cta": "Open the free 2023 NEC",
+    "href": "https://link.nfpa.org/free-access/publications/70/2023"
   },
   "steps": [
     {

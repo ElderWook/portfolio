@@ -1231,42 +1231,40 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
 
 /* ---------- toasts ---------- */
 
+/* A prominent top STRIP: full-width banners in the content column, under the
+   rail and above the screen. In-flow, so showing one pushes content down. */
 .toast-host {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 200;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: min(380px, calc(100vw - 32px));
-  pointer-events: none; /* only individual toasts capture clicks */
+  gap: 8px;
+  margin: 0 0 16px;
 }
+.toast-host:empty { display: none; margin: 0; }
 .toast {
-  pointer-events: auto;
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 11px 12px 11px 13px;
-  background: var(--panel);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px 12px 16px;
+  background: color-mix(in srgb, var(--acc3) 8%, var(--panel));
   border: 1px solid var(--line);
   border-left: 3px solid var(--acc3);
-  border-radius: 9px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .28);
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(-8px);
   transition: opacity .22s ease, transform .22s ease;
 }
 .toast.toast-in { opacity: 1; transform: translateY(0); }
-.toast.toast-out { opacity: 0; transform: translateY(8px); }
-.toast-win { border-left-color: var(--acc); }
-.toast-lock { border-left-color: var(--acc2); }
-.toast-info { border-left-color: var(--acc3); }
-.toast-icon { flex: none; font-size: 14px; line-height: 1.5; }
+.toast.toast-out { opacity: 0; transform: translateY(-6px); }
+.toast-win { border-left-color: var(--acc); background: color-mix(in srgb, var(--acc) 8%, var(--panel)); }
+.toast-lock { border-left-color: var(--acc2); background: color-mix(in srgb, var(--acc2) 8%, var(--panel)); }
+.toast-info { border-left-color: var(--acc3); background: color-mix(in srgb, var(--acc3) 8%, var(--panel)); }
+.toast-icon { flex: none; font-size: 15px; line-height: 1.4; }
 .toast-win .toast-icon { color: var(--acc); }
 .toast-lock .toast-icon { color: var(--acc2); }
 .toast-info .toast-icon { color: var(--acc3); }
-.toast-msg { flex: 1; font-size: 12.5px; line-height: 1.5; color: var(--ink); }
+.toast-msg { flex: 1; font-size: 13px; line-height: 1.5; color: var(--ink); }
 .toast-action {
   flex: none;
   align-self: center;
@@ -1285,6 +1283,39 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
   padding: 0 2px; cursor: pointer;
 }
 .toast-close:hover, .toast-close:focus-visible { color: var(--ink); }
+
+/* ---------- coach-marks (anchored guided-tour pop-ups) ---------- */
+.coach-layer { position: fixed; inset: 0; z-index: 300; pointer-events: auto; }
+/* the spotlight: a bright hole over the target, everything else dimmed by a huge
+   spread box-shadow. The outline rings the target in the structure accent. */
+.coach-spot {
+  position: fixed; border-radius: 6px; pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(4, 7, 16, .68);
+  outline: 2px solid var(--acc3); outline-offset: 0;
+}
+.coach-pop {
+  position: fixed; z-index: 2; max-width: 320px; pointer-events: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; box-shadow: 0 16px 44px rgba(0, 0, 0, .55);
+}
+.coach-arrow {
+  position: absolute; width: 12px; height: 12px; background: var(--panel);
+  transform: translateX(-6px) rotate(45deg);
+}
+.coach-pop.below .coach-arrow { top: -6px; border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+.coach-pop.above .coach-arrow { bottom: -6px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.coach-step { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--acc3); margin: 0 0 6px; }
+.coach-title { font-weight: 700; color: var(--ink); font-size: 14px; margin: 0 0 5px; }
+.coach-body { color: var(--ink2); font-size: 13px; line-height: 1.5; margin: 0 0 12px; }
+.coach-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
+.coach-skip { background: none; border: none; color: var(--ink3); font-family: var(--mono); font-size: 11px; cursor: pointer; padding: 4px; }
+.coach-skip:hover, .coach-skip:focus-visible { color: var(--ink); }
+.coach-next {
+  font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--bg);
+  background: var(--acc); border: 1px solid var(--acc); border-radius: 6px;
+  padding: 6px 14px; cursor: pointer;
+}
+.coach-next:hover { background: color-mix(in srgb, var(--acc) 85%, #fff); }
 
 /* ---------- settings overlay ---------- */
 .settings-backdrop {

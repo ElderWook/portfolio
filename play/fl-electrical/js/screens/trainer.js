@@ -32,6 +32,7 @@
 
 import { mountCodebook } from '../codebook-mock.js';
 import { isTrainerTopicUnlocked } from './walkthrough.js';
+import { runTour, coachSeen } from '../coachmark.js';
 
 // The signal Task 9 (OSHA drills) reads to know its lane is AVAILABLE. Written
 // by main.js's scoring handler; declared here so both sides share one string.
@@ -393,6 +394,37 @@ function renderDrill(root, ctx) {
       onExit,
     });
   });
+
+  // First-ever drill: a 4-step guided walkthrough anchored to each part of the
+  // lookup flow (question, tab, the green confirmation, the answer). Show-once.
+  if (!coachSeen('trainer-tour')) {
+    const answerText = drill.choices[drill.answerKey];
+    runTour([
+      {
+        target: () => root.querySelector('#tr-stem-card'),
+        title: 'Read the question',
+        body: 'Pick out the key words: the noun, plus any conditions like sizes or ratings. Those are exactly what you go looking for.',
+      },
+      {
+        target: () => root.querySelector('#tr-codebook .codebook-tabs'),
+        title: 'Flip to the right tab',
+        body: 'Open the tab family that covers those key words, then the section under it. These are the same tabs your real book will have.',
+      },
+      {
+        target: () => root.querySelector('#tr-lookup'),
+        onEnter: () => { lookupEl.hidden = false; },
+        onExit: () => { if (!lookupHit) lookupEl.hidden = true; },
+        title: 'Green means you found it',
+        body: 'Open a cited section and you get this confirmation you are in the right place. Hard drills will not take an answer until you have opened it. That is the exam habit.',
+      },
+      {
+        target: () => root.querySelector('.tr-choices'),
+        title: 'Answer, then see why',
+        body: `The method for this one: "${answerText}". Submit, and the result lays out the search ladder and reminds you to confirm every value in your book.`,
+        doneLabel: 'Got it, my turn',
+      },
+    ]);
+  }
 }
 
 // renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, oshaUnlockTarget, getProgress, onResult })

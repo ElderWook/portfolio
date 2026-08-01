@@ -1,5 +1,6 @@
 import { loadProgress, saveProgress, mutateProgress, markStarted, resetProgress } from './progress.js';
 import { initToasts, toast, toastOnce, resetToastOnce } from './toast.js';
+import { runTour, coachSeen, coachReset, closeCoachmark } from './coachmark.js';
 import { renderChecklist } from './checklist.js';
 import { openIntro } from './intro.js';
 import { openSettings } from './settings.js';
@@ -204,6 +205,18 @@ export async function boot() {
           renderSidebar();
         },
       });
+      // First-visit pointer: aim a coach-mark at a book card so the visitor
+      // knows the cards are clickable (their key test points live inside).
+      // Skipped when we deep-linked straight into a book's flyer.
+      const firstCard = openBookId ? null : screenRoot.querySelector('.bookcard');
+      if (firstCard && !coachSeen('bookmap-cards')) {
+        runTour([{
+          target: firstCard,
+          title: 'Read the key test points',
+          body: 'Click any book card to open its high-yield topics: the questions the exam pulls from that book, why they matter, and the traps to watch.',
+          doneLabel: 'Got it',
+        }]);
+      }
       return;
     }
     if (screen === 'walkthrough') {
@@ -377,6 +390,7 @@ export async function boot() {
   // so a fresh visitor (or one who only ticked a kit item) can always read
   // it without ever touching Start studying.
   function go(screen) {
+    closeCoachmark(); // any open first-run walkthrough ends when we navigate
     const p = loadProgress(KEY);
     if (!p.started && screen !== 'path') {
       openIntroNow();
@@ -432,7 +446,8 @@ export async function boot() {
       onReset: onResetProgress,
       onReplayTips() {
         resetToastOnce();
-        toast('Screen tips reset. They’ll show again as you visit each screen.', { type: 'info' });
+        coachReset();
+        toast('Tips reset. The screen banners and the first-run walkthroughs will show again.', { type: 'info' });
       },
       onShowIntro: openIntroNow,
     });
@@ -447,6 +462,7 @@ export async function boot() {
     if (!confirm('Reset all exam-prep progress? This clears your checklist, XP, and unlocks.')) return;
     resetProgress(KEY);
     resetToastOnce(); // let the first-visit nudges fire again — a true clean slate
+    coachReset(); // and the first-run walkthroughs
     renderSidebar();
     go('path');
     openIntroNow();

@@ -33,7 +33,12 @@ export function initToasts() {
     host.setAttribute('aria-live', 'polite');
     // deliberately NOT aria-atomic: we append discrete banners and want only
     // the newly-added one announced, not the whole stack re-read each time.
-    document.body.appendChild(host);
+    // Live IN the content column, under the rail and above the screen, so the
+    // banners read as a prominent top strip (not a corner toast). Falls back
+    // to <body> if that anchor isn't present.
+    const anchor = document.getElementById('screen');
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(host, anchor);
+    else document.body.appendChild(host);
   }
   return host;
 }
