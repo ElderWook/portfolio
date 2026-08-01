@@ -5,6 +5,7 @@ import { renderPath } from './screens/path.js';
 import { renderBookMap } from './screens/bookmap.js';
 import { renderWalkthrough, trainerTopicUnlockKey } from './screens/walkthrough.js';
 import { renderTrainer, OSHA_LANE_UNLOCK, CLEAR_THRESHOLD, isOshaLaneUnlocked } from './screens/trainer.js';
+import { renderTimed, isTimedUnlocked } from './screens/timed.js';
 
 // GitHub Pages has no bundler — load ALL JSON via fetch (no import-attributes, which Pages won't serve).
 async function loadJSON(path) {
@@ -51,18 +52,23 @@ export async function boot() {
   const NEC_TOPIC_IDS = ['nec-250-gec', 'nec-250-122', 'nec-250-122b', 'nec-250-traps'];
   const OSHA_TOPIC_IDS = ['osha-falls', 'osha-ladders'];
   const TOPIC_IDS = [...NEC_TOPIC_IDS, ...OSHA_TOPIC_IDS];
-  const [checklist, books, kit, path, necTabs, oshaTabs, ...topicData] = await Promise.all([
+  const [checklist, books, kit, path, necTabs, oshaTabs, timedMiniFile, ...topicData] = await Promise.all([
     loadJSON('data/checklist.json'),
     loadJSON('data/books.json'),
     loadJSON('data/kit.json'),
     loadJSON('data/path.json'),
     loadJSON('data/tabs/nec-curated.json'),
     loadJSON('data/tabs/osha-curated.json'),
+    loadJSON('data/drills/timed-mini.json'),
     ...TOPIC_IDS.map((id) => loadJSON(`data/walkthroughs/${id}.json`)),
     ...TOPIC_IDS.map((id) => loadJSON(`data/drills/${id}.json`)),
   ]);
   const walkthroughs = topicData.slice(0, TOPIC_IDS.length);
   const drillFiles = topicData.slice(TOPIC_IDS.length);
+  // Timed mini-set (Task 10): a fixed, mixed-lane subset of the SAME drill
+  // schema — each item keeps its original topic id, so timed.js can derive
+  // book/edition-pin per item without a second lookup table.
+  const timedDrills = timedMiniFile.drills;
 
   // tabsByBook: the codebook mock needs a DIFFERENT tab set per book ('nec' vs
   // 'osha') — walkthrough.js/trainer.js pick the right one per-topic off each
@@ -124,9 +130,27 @@ export async function boot() {
   // Rail lock gate: distinct from the intro-dismiss gate (see intro.js). The
   // rail unlocks ONLY on `started` — a kit tick alone (kitTouched) can close
   // the intro modal, but must NOT let the visitor into study screens.
+  // 'timed' carries a SECOND, independent lock on top of that: it stays
+  // disabled until trainerTopicClears.length reaches the manifest's
+  // combined-clears target (constraints.md — gate on clears, never raw
+  // trainerCorrectCount). timed.js's own isTimedUnlocked() re-derives this
+  // exact check defensively inside the screen itself.
   function updateRailLocks(p) {
     rail.querySelectorAll('[data-screen]').forEach((btn) => {
-      btn.disabled = !p.started && btn.dataset.screen !== 'path';
+      const screen = btn.dataset.screen;
+      if (screen === 'path') {
+        btn.disabled = false;
+        return;
+      }
+      if (!p.started) {
+        btn.disabled = true;
+        return;
+      }
+      if (screen === 'timed') {
+        btn.disabled = !isTimedUnlocked(p, manifest.unlock.trainerClearsForTimed);
+        return;
+      }
+      btn.disabled = false;
     });
   }
 
@@ -136,9 +160,9 @@ export async function boot() {
     });
   }
 
-  // Scope guard: 'path', 'bookmap', and 'walkthrough' are real screens now.
-  // trainer/timed (later tasks) still get a placeholder so the router never
-  // crashes on a screen id with no module yet.
+  // All five screens are real now (Task 10 finished 'timed'). The fallback
+  // at the bottom of this function stays only as a defensive default for an
+  // unrecognized screen id — it should never actually be reached.
   function renderScreen(screen) {
     if (screen === 'path') {
       renderPath(screenRoot, { path, onShowIntro: openIntroNow });
@@ -195,6 +219,18 @@ export async function boot() {
       });
       return;
     }
+    if (screen === 'timed') {
+      renderTimed(screenRoot, {
+        drills: timedDrills,
+        tabsByBook,
+        editionPins: manifest.editionPins,
+        unlockTarget: manifest.unlock.trainerClearsForTimed,
+        getProgress: () => loadProgress(KEY),
+        onAttemptStart: onTimedAttemptStart,
+        onResult: onTimedResult,
+      });
+      return;
+    }
     const label = screen.charAt(0).toUpperCase() + screen.slice(1);
     screenRoot.innerHTML = `
       <div class="screen-soon">
@@ -234,6 +270,47 @@ export async function boot() {
         const nec250Clears = p.trainerTopicClears.filter((t) => t.startsWith('nec-250')).length;
         if (nec250Clears >= manifest.unlock.trainerTopicsForOsha && !p.unlocked.includes(OSHA_LANE_UNLOCK)) {
           p.unlocked.push(OSHA_LANE_UNLOCK);
+        }
+      } else {
+        p.missLog.push({
+          stemId: drill.id,
+          yourPath: pickedPath,
+          correctPath: drill.lookupPath || [],
+          elapsed,
+        });
+      }
+      return p;
+    });
+    renderSidebar();
+    // A trainer clear can be the 5th COMBINED clear that unlocks Timed —
+    // refresh the rail's disabled state live (not just on next navigation)
+    // so the 'timed' button lights up the instant that threshold is crossed.
+    updateRailLocks(next);
+    return next;
+  }
+
+  // Timed scoring (Task 10) — separate from onTrainerResult on purpose: the
+  // Timed lane doesn't feed trainerTopicClears/trainerCorrectDrills (those
+  // already gated its own unlock; replaying the same drill ids here must not
+  // re-trigger clears or double-count the lifetime trainer tally). It owns
+  // exactly two things: the manifest's own-lane XP bonus, and missLog
+  // entries in the SAME {stemId, yourPath, correctPath, elapsed} shape
+  // trainer misses use (timed.js's `timedOut` flag doesn't need its own
+  // branch here — an unanswered timeout is scored `correct: false` already,
+  // so it falls into the same miss-push path as a wrong pick).
+  function onTimedAttemptStart() {
+    mutateProgress(KEY, (p) => {
+      p.timedAttempted = true;
+      return p;
+    });
+    renderSidebar();
+  }
+
+  function onTimedResult({ drill, correct, elapsed, pickedPath }) {
+    const next = mutateProgress(KEY, (p) => {
+      if (correct) {
+        if (elapsed <= drill.timeTargetSec) {
+          p.xp += manifest.xp.timedUnderTarget;
         }
       } else {
         p.missLog.push({
