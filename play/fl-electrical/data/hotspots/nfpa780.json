@@ -1,0 +1,33 @@
+{
+  "bookId": "nfpa780",
+  "hotspots": [
+    {
+      "topic": "Air terminal placement and zone of protection",
+      "whyItMatters": "Strike-termination layout is the geometry-heavy centerpiece of lightning-protection design.",
+      "searchNouns": ["air terminal spacing", "rolling sphere method", "zone of protection", "strike termination"],
+      "cite": "NFPA 780 — General Requirements chapter, Class I/II systems (confirm chapter number in your 2017 edition)",
+      "trap": "Spacing air terminals by a single rule-of-thumb distance without checking the class-dependent (Class I vs. Class II) spacing/height rule that actually governs."
+    },
+    {
+      "topic": "Down conductors and bonding",
+      "whyItMatters": "The path from air terminal to ground, and bonding to other grounded building systems, is what prevents dangerous side-flash.",
+      "searchNouns": ["down conductor", "bonding to grounded systems", "side flash", "conductor clearance from metal"],
+      "cite": "NFPA 780 — Down Conductors/Bonding section (confirm section number in your edition)",
+      "trap": "Routing a down conductor too close to metal ductwork or piping without the required bonding or separation distance, creating a side-flash path."
+    },
+    {
+      "topic": "Grounding electrode requirements for lightning protection",
+      "whyItMatters": "LPS grounding electrodes have their own resistance/quantity rules, distinct from — but bonded to — the building's NEC Article 250 grounding electrode system.",
+      "searchNouns": ["LPS ground electrode", "ground resistance", "electrode bonding to building system"],
+      "cite": "NFPA 780 — Grounding chapter (confirm chapter number in your edition)",
+      "trap": "Assuming the building's NEC electrical grounding electrode automatically satisfies the LPS grounding requirement without the required bonding and verification."
+    },
+    {
+      "topic": "Surge protection at the service entrance",
+      "whyItMatters": "Lightning-protection design pairs with surge protection to protect the electrical system, not just structural strike termination.",
+      "searchNouns": ["surge protection device", "SPD coordination", "secondary surge arrester"],
+      "cite": "NFPA 780 — surge protection section (confirm section in your edition); cross-check NEC 230.67",
+      "trap": "Treating the structural lightning protection system as sufficient protection for sensitive electronics without a coordinated SPD strategy."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "bookId": "neon",
+  "hotspots": [
+    {
+      "topic": "Neon tube secondary-circuit wiring",
+      "whyItMatters": "High-voltage secondary wiring for neon has its own clearance and support rules, distinct from low-voltage branch circuits.",
+      "searchNouns": ["neon secondary wiring", "GTO cable", "high-voltage clearance"],
+      "cite": "NEON Techniques and Handling — confirm chapter in your copy; cross-check NEC Article 600",
+      "trap": "Running neon secondary conductors with the same clearance and support habits used for ordinary low-voltage branch wiring."
+    },
+    {
+      "topic": "Transformer/power supply mounting and disconnect",
+      "whyItMatters": "Neon transformers (or electronic power supplies) need accessible disconnects and specific mounting practices.",
+      "searchNouns": ["neon transformer", "electronic sign power supply", "disconnect switch", "ground-fault protection of equipment"],
+      "cite": "NEON Techniques and Handling — confirm chapter in your copy; cross-check NEC 600.6",
+      "trap": "Forgetting that ground-fault protection of equipment (GFPE) is now required for neon secondary circuits under the modern code, even though this 1997 handbook predates that requirement."
+    },
+    {
+      "topic": "Tube handling and glass safety",
+      "whyItMatters": "A hands-on safety topic distinct from electrical rules — tube breakage and mercury handling.",
+      "searchNouns": ["tube handling", "glass breakage", "mercury safety"],
+      "cite": "NEON Techniques and Handling — confirm chapter in your copy",
+      "trap": "Treating neon tube handling as routine glass handling without the specific breakage/exposure precautions this trade actually requires."
+    }
+  ]
+}

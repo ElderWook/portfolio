@@ -1,0 +1,26 @@
+{
+  "bookId": "ntc",
+  "hotspots": [
+    {
+      "topic": "Alarm circuit classification (power-limited vs. non-power-limited)",
+      "whyItMatters": "Low-voltage licensing hinges on knowing which wiring rules — and which NEC article — apply to a given circuit type.",
+      "searchNouns": ["power-limited circuit", "non-power-limited circuit", "low-voltage classification"],
+      "cite": "NTC Blue Book — confirm chapter/section in your copy; cross-check NEC Art. 725/760",
+      "trap": "Assuming every low-voltage circuit is automatically 'power-limited' just because the voltage is low — power-limiting comes from the listed supply, not the voltage alone."
+    },
+    {
+      "topic": "Central station vs. proprietary monitoring",
+      "whyItMatters": "The exam distinguishes monitoring-service arrangements when asking about alarm system responsibilities.",
+      "searchNouns": ["central station", "proprietary supervising station", "runner service", "monitoring agreement"],
+      "cite": "NTC Blue Book — confirm chapter/section in your copy",
+      "trap": "Treating 'monitored' as one single category instead of recognizing the different signal-transmission and response duties tied to each station type."
+    },
+    {
+      "topic": "Standby/secondary power for alarm systems",
+      "whyItMatters": "Battery standby duration requirements are a common low-voltage sizing question.",
+      "searchNouns": ["standby battery", "secondary power", "battery calculation", "backup power duration"],
+      "cite": "NTC Blue Book — confirm chapter/section in your copy",
+      "trap": "Sizing standby battery capacity for quiescent (standby) current only and forgetting to add the alarm-condition current draw for the required alarm period."
+    }
+  ]
+}

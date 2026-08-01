@@ -1,0 +1,26 @@
+{
+  "bookId": "concrete",
+  "hotspots": [
+    {
+      "topic": "Concrete-encased electrode (\"Ufer ground\") basics",
+      "whyItMatters": "Direct crossover with NEC 250.52 grounding electrodes — whether a rebar electrode qualifies depends on concrete placement practice.",
+      "searchNouns": ["concrete-encased electrode", "Ufer ground", "rebar electrode", "footing concrete"],
+      "cite": "Design and Control of Concrete Mixtures — confirm chapter in your copy; cross-check NEC 250.52(A)(3)",
+      "trap": "Assuming any rebar touching the ground qualifies as a concrete-encased electrode without the code's minimum-length, encasement, and earth-contact conditions being met."
+    },
+    {
+      "topic": "Concrete curing and embedded conduit/electrodes",
+      "whyItMatters": "Curing time and conditions affect when it's safe to disturb embedded raceways or electrodes.",
+      "searchNouns": ["curing time", "embedded conduit", "concrete strength gain"],
+      "cite": "Design and Control of Concrete Mixtures — confirm chapter in your copy",
+      "trap": "Disturbing or loading a slab/footing with embedded electrical work before adequate cure strength is reached."
+    },
+    {
+      "topic": "Mix design basics relevant to sign/structural footings",
+      "whyItMatters": "Ties back into the sign-structures subject cluster — footings for pole and monument signs.",
+      "searchNouns": ["mix design", "water-cement ratio", "footing concrete strength"],
+      "cite": "Design and Control of Concrete Mixtures — confirm chapter in your copy",
+      "trap": "Specifying a footing by volume/depth alone without regard to the mix strength the structural design actually assumes."
+    }
+  ]
+}

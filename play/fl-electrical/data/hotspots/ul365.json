@@ -1,0 +1,26 @@
+{
+  "bookId": "ul365",
+  "hotspots": [
+    {
+      "topic": "Scope: police-connected vs. central-station monitoring",
+      "whyItMatters": "UL 365 specifically covers systems connected to a police station — distinct from the central-station model covered by UL 681/NTC material.",
+      "searchNouns": ["police-connected alarm", "direct connect", "police station monitoring"],
+      "cite": "UL 365 — confirm section in your copy",
+      "trap": "Assuming 'police-connected' and 'monitored by a central station that calls police' are the same arrangement — they're different signal paths with different requirements."
+    },
+    {
+      "topic": "Signal transmission requirements",
+      "whyItMatters": "The reliability and backup requirements for the signal path to the police station are the technical heart of this standard.",
+      "searchNouns": ["signal transmission", "backup transmission path", "line supervision"],
+      "cite": "UL 365 — confirm section in your copy",
+      "trap": "Relying on a single transmission path without the required backup/supervision the standard expects for a police-connected system."
+    },
+    {
+      "topic": "Runner response and testing",
+      "whyItMatters": "Ties the technical install back to the operational (runner/response) side the exam sometimes probes.",
+      "searchNouns": ["runner service", "response time", "system testing schedule"],
+      "cite": "UL 365 — confirm section in your copy",
+      "trap": "Treating the technical install as 'done' once wired, without accounting for the required response and testing regime the standard also governs."
+    }
+  ]
+}

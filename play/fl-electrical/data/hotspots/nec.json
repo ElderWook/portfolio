@@ -1,0 +1,61 @@
+{
+  "bookId": "nec",
+  "hotspots": [
+    {
+      "topic": "Grounding electrode system",
+      "whyItMatters": "Article 250 is the single highest-yield topic in Wiring and Protection, and this app's whole Trainer lane is built around it. Questions like to ask which electrodes present at a building must be bonded together into one system.",
+      "searchNouns": ["grounding electrode", "ground rod", "ufer", "concrete-encased electrode", "water pipe electrode", "electrode bonding jumper"],
+      "cite": "250.50, 250.52, 250.53",
+      "trap": "Treating a single driven rod as automatically sufficient, or forgetting that every qualifying electrode present at the building (metal water pipe, concrete-encased, ground ring, rod) has to be bonded into one combined system — you don't get to pick just one."
+    },
+    {
+      "topic": "Grounding electrode conductor (GEC) sizing",
+      "whyItMatters": "Classic table-lookup question: the GEC is sized from the service-entrance conductor, not from the connected load.",
+      "searchNouns": ["GEC sizing", "grounding electrode conductor", "Table 250.66", "service-entrance conductor size"],
+      "cite": "250.66, Table 250.66",
+      "trap": "Sizing the GEC off the calculated load instead of the service conductor size/area, and forgetting the reduced-size exception when the electrode is only a rod, pipe, or plate."
+    },
+    {
+      "topic": "Equipment grounding conductor (EGC) sizing",
+      "whyItMatters": "The exam loves pairing this against GEC sizing as a distractor — EGC is sized by the upstream overcurrent device rating, a completely different input than GEC sizing.",
+      "searchNouns": ["equipment grounding conductor", "EGC sizing", "Table 250.122", "OCPD rating"],
+      "cite": "250.122, Table 250.122",
+      "trap": "Confusing the EGC's sizing input (ampere rating of the OCPD ahead of the circuit) with the GEC's sizing input (service conductor size), and forgetting the required upsizing when circuit conductors were increased for voltage drop."
+    },
+    {
+      "topic": "Bonding of service equipment",
+      "whyItMatters": "Main bonding jumper placement — and where it is NOT allowed — is a recurring scenario question.",
+      "searchNouns": ["main bonding jumper", "bonding jumper", "service equipment bonding", "supply-side bonding jumper"],
+      "cite": "250.28, 250.92, 250.97",
+      "trap": "Installing (or leaving) a main bonding jumper downstream of the first disconnecting means, creating an illegal parallel neutral-to-ground path at a subpanel."
+    },
+    {
+      "topic": "Overcurrent protection: standard ratings and conductor ampacity",
+      "whyItMatters": "The 'round up to the next standard size' allowance plus the ampacity tables are the backbone of nearly every sizing question in this subject.",
+      "searchNouns": ["standard ampere ratings", "next size up rule", "conductor ampacity", "Table 310.16"],
+      "cite": "240.4, 240.6, 310.15, Table 310.16",
+      "trap": "Applying the 'next standard size up' allowance where it doesn't apply — it does not cover 10 AWG and smaller branch-circuit conductors supplying multiple outlets."
+    },
+    {
+      "topic": "Branch-circuit and feeder load calculations",
+      "whyItMatters": "General lighting load plus demand factors is the calc-heavy centerpiece of this subject; the 2023 cycle renumbered Article 220's load-calc sections, so double-check your edition's numbering.",
+      "searchNouns": ["general lighting load", "demand factors", "standard method", "optional method", "dwelling load calculation"],
+      "cite": "Article 220, Table 220.45 (verify exact subsection numbering against your 2023 book — this area was renumbered from the 2020 cycle)",
+      "trap": "Mixing standard-method demand factors with the optional method's demand factors in the same calculation, or using a table meant for one occupancy type on a different one."
+    },
+    {
+      "topic": "Service disconnecting means",
+      "whyItMatters": "The 2023 emergency-disconnect requirement for one- and two-family dwellings is new material and a good exam wedge between old and new code.",
+      "searchNouns": ["service disconnect", "emergency disconnect", "outside disconnect", "number of disconnects", "surge protection"],
+      "cite": "230.70, 230.71, 230.85, 230.67",
+      "trap": "Forgetting the emergency disconnect at one- and two-family dwellings must be outside (or at the nearest point of entry) and confusing its count/location rule with the normal up-to-six-disconnects rule."
+    },
+    {
+      "topic": "GFCI and AFCI protection locations",
+      "whyItMatters": "Dwelling-unit GFCI/AFCI location lists grow almost every code cycle, which makes 'is this the current list' a favorite exam trap.",
+      "searchNouns": ["GFCI locations", "AFCI locations", "dwelling unit protection", "kitchen receptacles", "bathroom receptacles"],
+      "cite": "210.8, 210.12",
+      "trap": "Assuming GFCI and AFCI protection are interchangeable, or relying on a location list memorized from an older code cycle instead of the current 2023 list."
+    }
+  ]
+}

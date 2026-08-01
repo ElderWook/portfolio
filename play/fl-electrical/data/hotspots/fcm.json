@@ -1,0 +1,53 @@
+{
+  "bookId": "fcm",
+  "hotspots": [
+    {
+      "topic": "Fire Marshal authority and plan review",
+      "whyItMatters": "Understand where the State Fire Marshal's authority sits relative to the local AHJ for fire-protection-related electrical work (alarms, sign structures near assembly occupancies, etc.).",
+      "searchNouns": ["State Fire Marshal", "plan review", "fire code enforcement", "local AHJ"],
+      "cite": "F.S. 633 (see the Manual's Fire Marshal chapter)",
+      "containedIn": "fcm",
+      "trap": "Assuming a local building inspector's sign-off automatically satisfies a State Fire Marshal review trigger."
+    },
+    {
+      "topic": "ADA / accessibility requirements",
+      "whyItMatters": "Mounting heights and accessible-route rules intersect directly with electrical rough-in — switch/receptacle heights, panel clearances, reach range.",
+      "searchNouns": ["accessible route", "mounting height", "reach range", "accessibility code"],
+      "cite": "ADA Title III, 42 U.S.C. 12181 et seq.; F.S. 553 (Florida Accessibility Code) — see the Manual's ADA chapter",
+      "containedIn": "fcm",
+      "trap": "Carrying a residential mounting-height habit onto a commercial job, where the accessible reach-range rule actually governs."
+    },
+    {
+      "topic": "Recordkeeping duties",
+      "whyItMatters": "What a licensed contractor must retain (contracts, permits, financial records) and for how long, tested as straight business-law recall.",
+      "searchNouns": ["contractor recordkeeping", "record retention", "license renewal records"],
+      "cite": "F.S. 489 — see the Manual's recordkeeping chapter",
+      "containedIn": "fcm",
+      "trap": "Assuming project records can be discarded once a job passes final inspection — retention duties usually outlast the job itself."
+    },
+    {
+      "topic": "Construction liens",
+      "whyItMatters": "Notice-to-owner and claim-of-lien timing is some of the most heavily tested business-law material in the whole exam.",
+      "searchNouns": ["notice to owner", "claim of lien", "lien deadlines", "final payment affidavit"],
+      "cite": "F.S. 713, Part I — see the Manual's liens chapter",
+      "containedIn": "fcm",
+      "trap": "Missing the notice-to-owner deadline and assuming lien rights survive automatically without it."
+    },
+    {
+      "topic": "Workers' compensation",
+      "whyItMatters": "Coverage requirements and exemptions for contractors and their employees/subcontractors.",
+      "searchNouns": ["workers comp exemption", "coverage requirement", "employee vs subcontractor"],
+      "cite": "F.S. 440 — see the Manual's workers' compensation chapter",
+      "containedIn": "fcm",
+      "trap": "Assuming a signed exemption for the general contractor also exempts every subcontractor working on the job."
+    },
+    {
+      "topic": "Tax and labor law (sales tax / FLSA)",
+      "whyItMatters": "Combines Florida sales/use tax basics for contractors with federal wage-and-hour (overtime) rules — two different bodies of law tested together.",
+      "searchNouns": ["sales tax on materials", "use tax", "overtime rule", "minimum wage", "FLSA"],
+      "cite": "F.S. 212; Fair Labor Standards Act, 29 U.S.C. 201 et seq. — see the Manual's tax/labor chapter",
+      "containedIn": "fcm",
+      "trap": "Assuming a flat-rate or lump-sum contract removes the tax obligation on materials, or treating every worker as overtime-exempt by job title alone."
+    }
+  ]
+}

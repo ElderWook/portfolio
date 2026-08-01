@@ -1,0 +1,26 @@
+{
+  "bookId": "signstruct",
+  "hotspots": [
+    {
+      "topic": "Wind load basics for sign structures",
+      "whyItMatters": "Sign structural failures are almost always a wind-load problem — the exam tests whether you know load matters, not the calc itself.",
+      "searchNouns": ["wind load", "sign structural loading", "pole sign support", "monument sign support"],
+      "cite": "Engineering Sign Structures — confirm chapter in your copy",
+      "trap": "Sizing a sign's electrical/structural support for its weight alone and ignoring lateral wind loading."
+    },
+    {
+      "topic": "Footing and embedment depth",
+      "whyItMatters": "Freestanding sign poles rely on footing depth and soil bearing — a recurring structural/electrical crossover topic.",
+      "searchNouns": ["footing depth", "embedment", "soil bearing", "pole foundation"],
+      "cite": "Engineering Sign Structures — confirm chapter in your copy",
+      "trap": "Using one fixed embedment depth regardless of pole height, sign area, or local soil conditions."
+    },
+    {
+      "topic": "Attachment and bracing of sign faces",
+      "whyItMatters": "Connects the sign's structural support to the electrical raceway/enclosure mounted on it.",
+      "searchNouns": ["sign face attachment", "bracing", "cabinet mounting"],
+      "cite": "Engineering Sign Structures — confirm chapter in your copy",
+      "trap": "Assuming the electrical enclosure's mounting hardware also satisfies the structural bracing requirement for the sign face."
+    }
+  ]
+}

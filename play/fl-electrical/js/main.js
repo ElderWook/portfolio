@@ -2,6 +2,7 @@ import { loadProgress, saveProgress, mutateProgress, markStarted } from './progr
 import { renderChecklist } from './checklist.js';
 import { openIntro } from './intro.js';
 import { renderPath } from './screens/path.js';
+import { renderBookMap } from './screens/bookmap.js';
 
 // GitHub Pages has no bundler — load ALL JSON via fetch (no import-attributes, which Pages won't serve).
 async function loadJSON(path) {
@@ -52,6 +53,11 @@ export async function boot() {
   const screenRoot = document.getElementById('screen');
   const introRoot = document.getElementById('intro-root');
 
+  // Consumed by renderScreen('bookmap') the next time it runs, then cleared —
+  // set by the sidebar's per-book info button (onOpenBook below) so that
+  // flow can jump straight to a book's flyer instead of just the bare grid.
+  let pendingBookOpen = null;
+
   function renderSidebar() {
     const progress = loadProgress(KEY);
     document.getElementById('xp').textContent = `XP ${progress.xp}`;
@@ -71,8 +77,11 @@ export async function boot() {
         renderSidebar();
       },
       onOpenBook(bookId) {
-        // Task 5 (Book Map) wires the real detail flyer; no-op hook for now.
-        console.debug('fl-electrical: open book', bookId);
+        // Jump to the Book Map screen and pop that book's hotspot flyer open
+        // immediately — go() re-gates through the intro if !started, same as
+        // any other rail navigation, so this can't bypass the lock.
+        pendingBookOpen = bookId;
+        go('bookmap');
       },
     });
   }
@@ -92,12 +101,29 @@ export async function boot() {
     });
   }
 
-  // Scope guard: only 'path' is a real screen this task. bookmap/walkthrough/
-  // trainer/timed (Tasks 5-10) get a placeholder so the router never crashes
-  // on a screen id with no module yet.
+  // Scope guard: 'path' and 'bookmap' are real screens now. walkthrough/
+  // trainer/timed (later tasks) still get a placeholder so the router never
+  // crashes on a screen id with no module yet.
   function renderScreen(screen) {
     if (screen === 'path') {
       renderPath(screenRoot, { path, onShowIntro: openIntroNow });
+      return;
+    }
+    if (screen === 'bookmap') {
+      const openBookId = pendingBookOpen;
+      pendingBookOpen = null;
+      renderBookMap(screenRoot, {
+        books,
+        progress: loadProgress(KEY),
+        openBookId,
+        onToggleSkimmed(checked) {
+          mutateProgress(KEY, (p) => {
+            p.checklist['e-map'] = checked;
+            return p;
+          });
+          renderSidebar();
+        },
+      });
       return;
     }
     const label = screen.charAt(0).toUpperCase() + screen.slice(1);
