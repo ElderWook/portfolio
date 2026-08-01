@@ -445,6 +445,127 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
 }
 .hotspot-empty { color: var(--ink3); font-size: 13px; }
 
+/* ---------- Walkthrough screen ---------- */
+
+.walkthrough-screen { max-width: 720px; }
+.walkthrough-screen h2 {
+  font-family: var(--mono);
+  font-size: clamp(18px, 2.4vw, 22px);
+  color: var(--acc);
+  margin: 0 0 6px;
+}
+.wt-lede { color: var(--ink2); margin: 0 0 18px; max-width: 640px; }
+
+.wt-topic-grid { display: flex; flex-direction: column; gap: 10px; }
+.wt-topic-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition: border-color .15s, transform .15s;
+}
+.wt-topic-card:hover { border-color: color-mix(in srgb, var(--acc) 45%, var(--line)); transform: translateY(-1px); }
+.wt-topic-card.done { border-color: color-mix(in srgb, var(--acc) 55%, var(--line)); }
+.wt-topic-status {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  color: var(--ink3);
+}
+.wt-topic-card.done .wt-topic-status { border-color: var(--acc); color: var(--acc); }
+.wt-topic-body { display: flex; flex-direction: column; gap: 2px; }
+.wt-topic-title { font-size: 14px; color: var(--ink); }
+.wt-topic-meta { font-family: var(--mono); font-size: 11px; color: var(--ink3); }
+
+.wt-headrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+
+.wt-chips { display: flex; gap: 8px; margin: 4px 0 18px; }
+.wt-chip {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink3);
+}
+.wt-chip.done { border-color: var(--acc); color: var(--acc); background: color-mix(in srgb, var(--acc) 14%, transparent); }
+.wt-chip.current { border-color: var(--acc3); color: var(--ink); font-weight: 700; }
+
+.wt-prompt-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px clamp(14px, 2.5vw, 20px);
+  margin-bottom: 16px;
+}
+.wt-prompt-card.shake { animation: intro-shake .5s; }
+.wt-action-tag {
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--acc3);
+}
+.wt-prompt { margin: 0 0 14px; font-size: 14px; color: var(--ink); }
+
+.wt-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.wt-choice {
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  color: var(--ink);
+  transition: border-color .15s, background .15s;
+}
+.wt-choice:hover { border-color: color-mix(in srgb, var(--acc) 45%, var(--line)); }
+
+.wt-teach {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--ink2);
+}
+.wt-teach[hidden] { display: none; }
+.wt-teach-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--acc2);
+  margin-right: 6px;
+}
+
+.wt-complete {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px clamp(16px, 3vw, 24px);
+  text-align: center;
+}
+.wt-complete h2 { color: var(--acc); }
+.wt-complete p { color: var(--ink2); margin: 0 0 16px; }
+
 /* ---------- intro overlay ---------- */
 
 .intro-backdrop {

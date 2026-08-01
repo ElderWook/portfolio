@@ -1,0 +1,33 @@
+{
+  "id": "nec-250-122",
+  "title": "Table 250.122 Lookup",
+  "book": "nec",
+  "steps": [
+    {
+      "prompt": "Underline the sizing INPUT in: minimum EGC for a circuit protected by a 60A breaker, aluminum conductors",
+      "action": "pickNoun",
+      "choices": ["60A breaker rating", "conductor ampacity", "aluminum material"],
+      "correctTarget": "60A breaker rating",
+      "teach": "Table 250.122 keys off the rating of the overcurrent device AHEAD of the circuit — not the ampacity of the conductor it protects. Ampacity is a Table 310.16 question, not this one."
+    },
+    {
+      "prompt": "Which tab family holds this table?",
+      "action": "pickTab",
+      "correctTarget": "250.122 EGC",
+      "teach": "Table 250.122 lives under this one tab every time, no matter which specific question you're asked about it."
+    },
+    {
+      "prompt": "Underline which COLUMN of the table you would read for aluminum conductors",
+      "action": "pickNoun",
+      "choices": ["copper column", "aluminum or copper-clad aluminum column", "the OCPD-rating column"],
+      "correctTarget": "aluminum or copper-clad aluminum column",
+      "teach": "Table 250.122 has separate copper vs. aluminum/copper-clad-aluminum columns. Reading the wrong column for the stated material is a classic miss — check the column header before you lock a number."
+    },
+    {
+      "prompt": "Open the footnote / notes habit zone before you answer.",
+      "action": "openNotes",
+      "correctTarget": "footnote-zone",
+      "teach": "Table 250.122 carries its own notes, including how to handle conductors installed in parallel. Check them before you commit to a number."
+    }
+  ]
+}

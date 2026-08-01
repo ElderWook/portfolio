@@ -3,6 +3,7 @@ import { renderChecklist } from './checklist.js';
 import { openIntro } from './intro.js';
 import { renderPath } from './screens/path.js';
 import { renderBookMap } from './screens/bookmap.js';
+import { renderWalkthrough, trainerTopicUnlockKey } from './screens/walkthrough.js';
 
 // GitHub Pages has no bundler — load ALL JSON via fetch (no import-attributes, which Pages won't serve).
 async function loadJSON(path) {
@@ -41,11 +42,14 @@ export async function boot() {
     `<button type="button" data-screen="${s}" class="rail-btn">${s}</button>`
   ).join('');
 
-  const [checklist, books, kit, path] = await Promise.all([
+  const WALKTHROUGH_IDS = ['nec-250-gec', 'nec-250-122', 'nec-250-122b', 'nec-250-traps'];
+  const [checklist, books, kit, path, necTabs, ...walkthroughs] = await Promise.all([
     loadJSON('data/checklist.json'),
     loadJSON('data/books.json'),
     loadJSON('data/kit.json'),
     loadJSON('data/path.json'),
+    loadJSON('data/tabs/nec-curated.json'),
+    ...WALKTHROUGH_IDS.map((id) => loadJSON(`data/walkthroughs/${id}.json`)),
   ]);
 
   const sidebar = document.getElementById('sidebar');
@@ -101,7 +105,7 @@ export async function boot() {
     });
   }
 
-  // Scope guard: 'path' and 'bookmap' are real screens now. walkthrough/
+  // Scope guard: 'path', 'bookmap', and 'walkthrough' are real screens now.
   // trainer/timed (later tasks) still get a placeholder so the router never
   // crashes on a screen id with no module yet.
   function renderScreen(screen) {
@@ -119,6 +123,28 @@ export async function boot() {
         onToggleSkimmed(checked) {
           mutateProgress(KEY, (p) => {
             p.checklist['e-map'] = checked;
+            return p;
+          });
+          renderSidebar();
+        },
+      });
+      return;
+    }
+    if (screen === 'walkthrough') {
+      renderWalkthrough(screenRoot, {
+        topics: walkthroughs,
+        tabs: necTabs.tabs,
+        getProgress: () => loadProgress(KEY),
+        onComplete(topicId) {
+          mutateProgress(KEY, (p) => {
+            if (!p.completedWalkthroughs.includes(topicId)) {
+              p.completedWalkthroughs.push(topicId);
+              p.xp += manifest.xp.walkthrough;
+            }
+            const unlockKey = trainerTopicUnlockKey(topicId);
+            if (!p.unlocked.includes(unlockKey)) {
+              p.unlocked.push(unlockKey);
+            }
             return p;
           });
           renderSidebar();

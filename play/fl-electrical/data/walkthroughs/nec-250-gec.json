@@ -1,0 +1,32 @@
+{
+  "id": "nec-250-gec",
+  "title": "GEC vs EGC",
+  "book": "nec",
+  "steps": [
+    {
+      "prompt": "Underline the primary noun in: minimum size equipment grounding conductor for a 20A OCPD",
+      "action": "pickNoun",
+      "choices": ["minimum", "equipment grounding conductor", "20A"],
+      "correctTarget": "equipment grounding conductor",
+      "teach": "Noun-first: EGC, not the adjective 'minimum' or the OCPD rating — those are inputs to the lookup, not the thing being sized."
+    },
+    {
+      "prompt": "Which tab family holds the EGC sizing table?",
+      "action": "pickTab",
+      "correctTarget": "250.122 EGC",
+      "teach": "EGC sizing lives in Table 250.122 — not 250.66. 250.66 sizes a different conductor (the GEC) off a different input."
+    },
+    {
+      "prompt": "Open the footnote / notes habit zone before you answer.",
+      "action": "openNotes",
+      "correctTarget": "footnote-zone",
+      "teach": "Florida loves table notes. Always look below the table before you lock an answer."
+    },
+    {
+      "prompt": "Now the other conductor: which tab family sizes the grounding ELECTRODE conductor (GEC) instead?",
+      "action": "pickTab",
+      "correctTarget": "250 Grounding",
+      "teach": "GEC sizing (250.66 / Table 250.66) is bundled under the general '250 Grounding' tab in this kit. Its sizing input is the service-entrance conductor — a completely different question from the EGC table you just used."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "nec-250-traps",
+  "title": "Common Art. 250 Traps",
+  "book": "nec",
+  "steps": [
+    {
+      "prompt": "Underline the primary noun in: bonding jumper connecting the neutral to the enclosure at service equipment",
+      "action": "pickNoun",
+      "choices": ["bonding jumper", "neutral", "service equipment"],
+      "correctTarget": "bonding jumper",
+      "teach": "The bonding jumper is the piece the rule is written about — not the conductor it lands on (neutral) or the enclosure it lands in."
+    },
+    {
+      "prompt": "Which tab family covers where that bonding jumper is (and is NOT) allowed?",
+      "action": "pickTab",
+      "correctTarget": "250 Bonding",
+      "teach": "Main/system bonding jumper placement lives under the '250 Bonding' family (250.28, 250.92, 250.97) — a different cluster than EGC or GEC sizing."
+    },
+    {
+      "prompt": "Underline the qualifying condition in: the GEC reduced-size exception applies when the electrode is only a ___",
+      "action": "pickNoun",
+      "choices": ["rod, pipe, or plate electrode", "concrete-encased electrode", "metal water pipe electrode"],
+      "correctTarget": "rod, pipe, or plate electrode",
+      "teach": "The reduced-size GEC exception is scoped to rod/pipe/plate electrodes specifically. Don't reuse it for a concrete-encased or water-pipe electrode without rereading the exception's exact wording."
+    },
+    {
+      "prompt": "Which tab family covers identifying every electrode present at a building and bonding them into one system?",
+      "action": "pickTab",
+      "correctTarget": "250.50 Electrodes",
+      "teach": "Electrode identification and the 'bond every qualifying electrode together' rule lives under 250.50/250.52/250.53 — a step visitors often skip on the way to a GEC sizing question."
+    },
+    {
+      "prompt": "Open the footnote / notes habit zone before you answer.",
+      "action": "openNotes",
+      "correctTarget": "footnote-zone",
+      "teach": "Most Art. 250 exam traps hide in an exception or a table note, not the headline rule. Scan below the text before you commit to an answer."
+    }
+  ]
+}
