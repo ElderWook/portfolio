@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FL Electrical Exam Prep — Beta</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Prep checklist"></aside>
+    <div class="maincol">
+      <header class="top">
+        <a class="back" href="../../projects/voltwright/exam-prep.html">◀ Exam Prep</a>
+        <h1><span class="gnd">⏚</span> FL Electrical Exam Prep <span class="beta">Beta</span></h1>
+        <button type="button" id="btn-intro" class="nav">Show intro</button>
+        <button type="button" id="btn-checklist" class="nav ghost mobile-only">Checklist</button>
+        <div class="xpwrap"><span id="xp">XP 0</span></div>
+      </header>
+      <nav class="rail" id="rail" aria-label="Study rail"></nav>
+      <main id="screen"></main>
+      <footer>© 2026 Oasis Games LLC · Verify every answer in your codebook · Not affiliated with DBPR</footer>
+    </div>
+  </div>
+  <div id="intro-root" hidden></div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

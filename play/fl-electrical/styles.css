@@ -1,0 +1,174 @@
+:root {
+  --bg: #0b1020;
+  --panel: #131b2e;
+  --line: rgba(255, 255, 255, .12);
+  --ink: #eaf0fb;
+  --ink2: #aab6d0;
+  --ink3: #7c88a3;
+  --acc: #33d17a;
+  --acc2: #f5c211;
+  --acc3: #3ad4dd;
+  --bad: #ff6b6b;
+  --mono: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+
+body {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(58, 212, 221, .045) 27px 28px),
+    repeating-linear-gradient(90deg, transparent 0 27px, rgba(58, 212, 221, .045) 27px 28px),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+a { color: var(--acc); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- layout ---------- */
+
+.app { display: grid; grid-template-columns: minmax(240px, 300px) 1fr; min-height: 100vh; }
+
+.sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 18px 16px;
+  overflow-y: auto;
+}
+
+.maincol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 22px clamp(16px, 3vw, 40px) 60px;
+}
+
+.mobile-only { display: none; }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    z-index: 40;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(320px, 84vw);
+    transform: translateX(-100%);
+    transition: transform .2s ease;
+    box-shadow: 2px 0 24px rgba(0, 0, 0, .5);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .mobile-only { display: inline-flex; }
+}
+
+/* ---------- header ---------- */
+
+header.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 18px;
+}
+
+h1 {
+  font-family: var(--mono);
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h1 .gnd { color: var(--acc); font-weight: 400; }
+
+.beta {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--acc2);
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-weight: 700;
+}
+
+.back {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink3);
+}
+.back:hover { color: var(--acc); text-decoration: none; }
+
+/* ---------- buttons ---------- */
+
+button.nav,
+.rail-btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 8px 14px;
+  border: 1px solid color-mix(in srgb, var(--acc) 40%, transparent);
+  background: transparent;
+  color: var(--acc);
+  transition: background .15s, border-color .15s;
+}
+button.nav:hover:not(:disabled),
+.rail-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--acc) 14%, transparent);
+}
+button.nav.ghost { border-color: var(--line); color: var(--ink3); }
+button.nav.ghost:hover:not(:disabled) { background: color-mix(in srgb, var(--ink3) 12%, transparent); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.xpwrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink2);
+  flex-wrap: wrap;
+}
+#xp { color: var(--acc); font-weight: 700; }
+
+/* ---------- rail ---------- */
+
+.rail { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 22px; }
+.rail-btn.active { background: var(--acc); color: var(--bg); border-color: var(--acc); font-weight: 700; }
+.rail button[disabled] { opacity: 0.4; }
+
+/* ---------- screen / footer ---------- */
+
+#screen { flex: 1; min-height: 240px; }
+
+footer {
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink3);
+}
+
+#intro-root[hidden] { display: none; }
+
+/* ---------- motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
