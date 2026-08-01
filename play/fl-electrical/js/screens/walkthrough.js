@@ -89,7 +89,7 @@ function renderPicker(root, { topics, progress, isOshaUnlocked, onSelect }) {
   root.innerHTML = `
     <section class="walkthrough-screen">
       <h2>Walkthroughs</h2>
-      <p class="wt-lede">Step-by-step drills that teach the SEARCH SEQUENCE — noun, tab, table/column, footnote. No sizes or table values live here; open your book and verify everything.</p>
+      <p class="wt-lede">Step-by-step drills that teach the SEARCH SEQUENCE: noun, tab, table/column, footnote. No sizes or table values live here. Open your book and verify everything.</p>
       <div class="wt-topic-grid">${cards}</div>
     </section>`;
   root.querySelectorAll('[data-topic]').forEach((btn) => {
@@ -165,7 +165,7 @@ function renderDone(root, topic, onExit) {
   root.innerHTML = `
     <section class="walkthrough-screen">
       <div class="wt-complete">
-        <h2>${topic.title} &mdash; complete</h2>
+        <h2>${topic.title} &middot; complete</h2>
         <p>Marked done. The matching Trainer topic just unlocked.</p>
         <button type="button" class="nav" id="wt-done-back">All topics</button>
       </div>

@@ -55,7 +55,7 @@
       "title": "Business (later)",
       "unlockWhen": "studyHalfOrExpand",
       "items": [
-        { "id": "f-stub", "label": "Business exam kit — post-beta", "disabled": true }
+        { "id": "f-stub", "label": "Business exam kit (post-beta)", "disabled": true }
       ]
     }
   ]

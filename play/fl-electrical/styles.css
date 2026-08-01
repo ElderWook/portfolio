@@ -9,6 +9,7 @@
   --acc2: #f5c211;
   --acc3: #3ad4dd;
   --bad: #ff6b6b;
+  --note: #38bdf8;
   --mono: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
   --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
 }
@@ -148,6 +149,11 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .rail { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 22px; }
 .rail-btn.active { background: var(--acc); color: var(--bg); border-color: var(--acc); font-weight: 700; }
 .rail button[disabled] { opacity: 0.4; }
+/* Locked, but still clickable — a click fires an explanatory toast rather than
+   doing nothing (see main.js). Dimmed + a lock glyph signal it's not open yet. */
+.rail-btn.locked { opacity: .5; border-color: var(--line); color: var(--ink3); cursor: help; }
+.rail-btn.locked:hover { background: color-mix(in srgb, var(--ink3) 12%, transparent); }
+.rail-btn.locked::before { content: "🔒 "; font-size: 11px; }
 
 /* ---------- screen / footer ---------- */
 
@@ -1102,6 +1108,212 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
 }
 .tm-path-node { font-family: var(--mono); }
 .tm-path-arrow { margin: 0 4px; color: var(--ink3); }
+
+/* ---------- intro / path thesis reframe (shared) ---------- */
+/* Skinned to the HELM/portfolio schematic language: a dashed-trace TITLEBLOCK
+   with a glowing pin-1 dot, silkscreen band labels (tick + rail wire), dashed
+   mono pin chips, SMD-pad list markers, and a boxed drawing NOTE. */
+
+/* pin-1 indicator (an IC's pin-1 dot), reused on every titleblock/callout */
+.pin1 {
+  position: absolute; left: 13px; top: 13px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--acc3); box-shadow: 0 0 9px color-mix(in srgb, var(--acc3) 60%, transparent);
+  pointer-events: none; z-index: 2;
+}
+
+/* The thesis = a schematic titleblock: dashed accent trace, faint panel fill,
+   pin-1 dot, mono headline in ink with a green role kicker above it. */
+.intro-thesis, .path-thesis {
+  position: relative;
+  border: 1.5px dashed color-mix(in srgb, var(--acc) 40%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 55%, transparent);
+  padding: 18px 22px 16px 30px;
+  margin-bottom: 20px;
+}
+.intro-kicker, .path-kicker {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--acc); margin: 0 0 7px;
+}
+.intro-thesis h2, .path-thesis h2 {
+  font-family: var(--mono); color: var(--ink); font-weight: 800; letter-spacing: -.01em; line-height: 1.14;
+  margin: 0 0 8px;
+}
+.intro-thesis h2 { font-size: clamp(17px, 2.4vw, 22px); }
+.path-thesis h2 { font-size: clamp(20px, 2.7vw, 26px); }
+.intro-thesis .intro-lede, .path-thesis .path-lede { margin-bottom: 0; color: var(--ink2); }
+
+.intro-block, .path-block { margin: 0 0 18px; }
+/* silkscreen band label: a tick + a rail wire, exactly like the portfolio .dim */
+.intro-block-label, .path-block-label {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink3); margin: 0 0 12px;
+}
+.intro-block-label::before, .path-block-label::before {
+  content: ""; width: 22px; height: 5px; flex: none;
+  border-left: 1px solid var(--acc2); border-right: 1px solid var(--acc2);
+  background: linear-gradient(var(--acc2), var(--acc2)) center / 100% 1px no-repeat;
+}
+.intro-block-label::after, .path-block-label::after {
+  content: ""; flex: 1; height: 1px; background: color-mix(in srgb, var(--acc) 24%, transparent);
+}
+
+/* The 3 prep moves — pin-numbered (indexing, move 2, is the point). */
+.intro-moves, .path-moves { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 13px; }
+.intro-move, .path-move { display: flex; gap: 13px; align-items: flex-start; }
+.intro-move-num, .path-move-num {
+  flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--acc3) 55%, transparent);
+  color: var(--acc3); font-family: var(--mono); font-size: 12px; font-weight: 700;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--acc3) 22%, transparent);
+}
+.intro-move-body, .path-move-body { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.intro-move-title, .path-move-title { font-weight: 700; color: var(--ink); font-size: 14px; }
+.intro-move-text, .path-move-text { color: var(--ink2); font-size: 13px; line-height: 1.5; }
+/* the "where" tag is a dashed mono pin chip, like the portfolio .pins */
+.intro-move-where, .path-move-where {
+  font-family: var(--mono); font-size: 10.5px; color: var(--acc2);
+  border: 1px dashed color-mix(in srgb, var(--acc2) 42%, var(--line)); border-radius: 3px; padding: 2px 7px;
+}
+
+/* Myth-buster = a boxed drawing NOTE (dashed frame + tagged label). */
+.intro-myth, .path-myth {
+  margin: 0 0 18px; padding: 12px 14px;
+  border: 1px dashed color-mix(in srgb, var(--acc2) 45%, var(--line));
+  border-radius: 6px; background: color-mix(in srgb, var(--acc2) 7%, transparent);
+  font-size: 13px; color: var(--ink); line-height: 1.55;
+}
+.intro-myth-label, .path-myth-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--acc2); margin-right: 8px; white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--acc2) 45%, transparent); border-radius: 3px; padding: 1px 6px;
+}
+
+/* exam-shape rows = mono with little glowing SMD-pad markers (sky) */
+.intro-shape, .path-shape { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.intro-shape li, .path-shape li { position: relative; padding-left: 17px; font-family: var(--mono); font-size: 12.5px; color: var(--ink2); }
+.intro-shape li::before, .path-shape li::before {
+  content: ""; position: absolute; left: 0; top: 5px; width: 6px; height: 6px; border-radius: 1px;
+  background: var(--note); box-shadow: 0 0 6px color-mix(in srgb, var(--note) 55%, transparent);
+}
+
+/* CIB link = a bordered mono chip button, like the portfolio .clinks */
+.intro-cib, .path-cib { margin: 0 0 18px; }
+.intro-cib a, .path-cib a {
+  display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--acc);
+  border: 1px solid color-mix(in srgb, var(--acc) 42%, transparent); border-radius: 5px; padding: 6px 12px;
+}
+.intro-cib a:hover, .path-cib a:hover { background: color-mix(in srgb, var(--acc) 12%, transparent); }
+.intro-cib-note, .path-cib-note { display: block; margin-top: 8px; font-size: 12px; color: var(--ink3); line-height: 1.5; }
+
+/* Free-practice callout (Path only): a schematic hero box with a filled CTA. */
+.path-freeprac {
+  position: relative; margin: 6px 0 22px; padding: 16px 20px 18px 30px; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--acc3) 30%, var(--line)); border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--acc3) 11%, transparent), color-mix(in srgb, var(--acc) 6%, transparent)),
+    color-mix(in srgb, var(--panel) 45%, transparent);
+}
+.path-freeprac::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 26px, color-mix(in srgb, var(--acc3) 6%, transparent) 26px 27px);
+}
+.path-freeprac-label, .path-freeprac-title, .path-freeprac-body, .path-freeprac-cta { position: relative; z-index: 1; }
+.path-freeprac-label { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--acc3); margin: 0 0 8px; }
+.path-freeprac-title { font-weight: 700; color: var(--ink); font-size: 15px; margin: 0 0 6px; }
+.path-freeprac-body { color: var(--ink2); font-size: 13.5px; line-height: 1.55; margin: 0 0 13px; max-width: 68ch; }
+.path-freeprac-cta {
+  display: inline-block; font-family: var(--mono); font-size: 12.5px; font-weight: 700; letter-spacing: .02em;
+  color: var(--bg); background: var(--acc); border: 1px solid var(--acc); border-radius: 5px; padding: 8px 15px;
+}
+.path-freeprac-cta:hover { background: color-mix(in srgb, var(--acc) 82%, #fff); }
+
+/* ---------- toasts ---------- */
+
+.toast-host {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(380px, calc(100vw - 32px));
+  pointer-events: none; /* only individual toasts capture clicks */
+}
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px 11px 13px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--acc3);
+  border-radius: 9px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .22s ease, transform .22s ease;
+}
+.toast.toast-in { opacity: 1; transform: translateY(0); }
+.toast.toast-out { opacity: 0; transform: translateY(8px); }
+.toast-win { border-left-color: var(--acc); }
+.toast-lock { border-left-color: var(--acc2); }
+.toast-info { border-left-color: var(--acc3); }
+.toast-icon { flex: none; font-size: 14px; line-height: 1.5; }
+.toast-win .toast-icon { color: var(--acc); }
+.toast-lock .toast-icon { color: var(--acc2); }
+.toast-info .toast-icon { color: var(--acc3); }
+.toast-msg { flex: 1; font-size: 12.5px; line-height: 1.5; color: var(--ink); }
+.toast-action {
+  flex: none;
+  align-self: center;
+  font-family: var(--mono); font-size: 11px;
+  padding: 5px 9px;
+  border: 1px solid color-mix(in srgb, var(--acc) 45%, transparent);
+  border-radius: 6px;
+  background: transparent; color: var(--acc);
+  cursor: pointer;
+}
+.toast-action:hover { background: color-mix(in srgb, var(--acc) 14%, transparent); }
+.toast-close {
+  flex: none;
+  background: none; border: none;
+  color: var(--ink3); font-size: 17px; line-height: 1;
+  padding: 0 2px; cursor: pointer;
+}
+.toast-close:hover, .toast-close:focus-visible { color: var(--ink); }
+
+/* ---------- settings overlay ---------- */
+.settings-backdrop {
+  position: fixed; inset: 0; z-index: 150;
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+  background: rgba(4, 7, 16, .72);
+}
+.settings-card {
+  position: relative;
+  width: min(480px, 100%); max-height: 85vh; overflow-y: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 22px clamp(18px, 3vw, 26px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+}
+.settings-head { position: relative; padding: 2px 0 14px 20px; border-bottom: 1px solid var(--line); }
+.settings-kicker { font-family: var(--mono); font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--acc); margin: 0 0 5px; }
+.settings-head h2 { font-family: var(--mono); font-size: 19px; font-weight: 800; color: var(--ink); margin: 0; }
+.settings-list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; }
+.settings-row {
+  display: flex; align-items: center; gap: 16px; justify-content: space-between;
+  padding: 13px 4px; border-top: 1px solid var(--line);
+}
+.settings-row:first-child { border-top: none; }
+.settings-row-text { display: flex; flex-direction: column; gap: 3px; }
+.settings-row-title { font-weight: 700; color: var(--ink); font-size: 13.5px; }
+.settings-row-note { color: var(--ink3); font-size: 12px; line-height: 1.45; max-width: 46ch; }
+.settings-row .nav { flex: none; }
+.settings-foot { margin: 14px 0 0; font-family: var(--mono); font-size: 11px; color: var(--ink3); }
+.settings-actions { display: flex; justify-content: flex-end; margin-top: 16px; }
 
 /* ---------- motion ---------- */
 

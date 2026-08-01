@@ -8,13 +8,13 @@
       "action": "pickNoun",
       "choices": ["bonding jumper", "neutral", "service equipment"],
       "correctTarget": "bonding jumper",
-      "teach": "The bonding jumper is the piece the rule is written about — not the conductor it lands on (neutral) or the enclosure it lands in."
+      "teach": "The bonding jumper is the piece the rule is written about, not the conductor it lands on (neutral) or the enclosure it lands in."
     },
     {
       "prompt": "Which tab family covers where that bonding jumper is (and is NOT) allowed?",
       "action": "pickTab",
       "correctTarget": "250 Bonding",
-      "teach": "Main/system bonding jumper placement lives under the '250 Bonding' family (250.28, 250.92, 250.97) — a different cluster than EGC or GEC sizing."
+      "teach": "Main/system bonding jumper placement lives under the '250 Bonding' family (250.28, 250.92, 250.97), a different cluster than EGC or GEC sizing."
     },
     {
       "prompt": "Underline the qualifying condition in: the GEC reduced-size exception applies when the electrode is only a ___",
@@ -27,7 +27,7 @@
       "prompt": "Which tab family covers identifying every electrode present at a building and bonding them into one system?",
       "action": "pickTab",
       "correctTarget": "250.50 Electrodes",
-      "teach": "Electrode identification and the 'bond every qualifying electrode together' rule lives under 250.50/250.52/250.53 — a step visitors often skip on the way to a GEC sizing question."
+      "teach": "Electrode identification and the 'bond every qualifying electrode together' rule lives under 250.50/250.52/250.53, a step visitors often skip on the way to a GEC sizing question."
     },
     {
       "prompt": "Open the footnote / notes habit zone before you answer.",

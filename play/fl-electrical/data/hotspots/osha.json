@@ -6,7 +6,7 @@
       "whyItMatters": "This is the signature OSHA-electrical topic for construction: temporary cord-and-plug equipment must be protected by ONE of two compliant methods, not both.",
       "searchNouns": ["GFCI construction site", "assured grounding program", "AEGCP", "cord sets", "temporary wiring"],
       "cite": "29 CFR 1926.404",
-      "trap": "Believing GFCI protection and the assured equipment grounding conductor program are both required together — the standard treats them as alternative, either/or compliance paths."
+      "trap": "Believing GFCI protection and the assured equipment grounding conductor program are both required together. The standard treats them as alternative, either/or compliance paths."
     },
     {
       "topic": "Lockout and tagging of circuits",
@@ -20,10 +20,10 @@
       "whyItMatters": "Broad language protecting employees from exposed energized parts underlies many scenario-style questions.",
       "searchNouns": ["exposed energized parts", "worn or frayed cords", "protective shields", "warning signs"],
       "cite": "29 CFR 1926.416",
-      "trap": "Assuming a cord or tool that still 'works' is compliant even though its insulation is visibly damaged — the rule is about condition, not function."
+      "trap": "Assuming a cord or tool that still 'works' is compliant even though its insulation is visibly damaged. The rule is about condition, not function."
     },
     {
-      "topic": "Recordkeeping — injury and illness logs",
+      "topic": "Recordkeeping: injury and illness logs",
       "whyItMatters": "The 300/300A/301 forms and their posting/retention duties are a distinct recordkeeping question set, separate from safety-practice questions.",
       "searchNouns": ["OSHA 300 log", "300A summary", "301 incident report", "posting requirement", "record retention"],
       "cite": "29 CFR 1904.29, 29 CFR 1904.32",
@@ -34,7 +34,7 @@
       "whyItMatters": "The short reporting clocks (fatality vs. hospitalization/amputation/eye loss) are a favorite 'which number is it' question.",
       "searchNouns": ["reporting", "fatality", "hospitalization", "amputation", "loss of an eye"],
       "cite": "29 CFR 1904.39",
-      "trap": "Assuming a single reporting deadline covers everything — a fatality and an in-patient hospitalization/amputation/eye-loss report are on two different clocks keyed to severity, so look up which one applies before you assume the timing."
+      "trap": "Assuming a single reporting deadline covers everything. A fatality and an in-patient hospitalization/amputation/eye-loss report are on two different clocks keyed to severity, so look up which one applies before you assume the timing."
     },
     {
       "topic": "Personal protective equipment",
@@ -48,11 +48,11 @@
       "whyItMatters": "Ladder setup and use rules show up under the tools/testing side of this exam subject.",
       "searchNouns": ["ladder angle", "extension above landing", "ladder inspection", "three points of contact"],
       "cite": "29 CFR 1926.1053",
-      "trap": "Setting a portable ladder by feel instead of the required setup angle, and forgetting the separate rule that the side rails must extend above the landing point — verify both against the standard."
+      "trap": "Setting a portable ladder by feel instead of the required setup angle, and forgetting the separate rule that the side rails must extend above the landing point. Verify both against the standard."
     },
     {
       "topic": "Battery charging and storage",
-      "whyItMatters": "A distinct construction-electrical hazard topic — ventilation and facility protection around charging areas, not just PPE.",
+      "whyItMatters": "A distinct construction-electrical hazard topic: ventilation and facility protection around charging areas, not just PPE.",
       "searchNouns": ["battery charging area", "ventilation", "eyewash facilities", "battery room"],
       "cite": "29 CFR 1926.441",
       "trap": "Treating battery-charging hazards as generic chemical storage instead of the specific ventilation and facility-protection duties this section actually imposes."

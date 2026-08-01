@@ -68,8 +68,8 @@ function pillarLabel(mode, pillar) {
 
 function footnoteStrategy(mode) {
   return mode === 'osha'
-    ? "Check the section’s own definitions and any referenced appendix before you answer — OSHA traps hide in the fine print, not the headline rule."
-    : 'Read the notes and exceptions printed directly under the table before you answer — the exam pulls traps from footnotes, not just the table body.';
+    ? "Check the section’s own definitions and any referenced appendix before you answer. OSHA traps hide in the fine print, not the headline rule."
+    : 'Read the notes and exceptions printed directly under the table before you answer. The exam pulls traps from footnotes, not just the table body.';
 }
 
 // Groups adjacent same-pillar tabs into visual clusters, preserving the
@@ -107,7 +107,11 @@ export function mountCodebook(root, opts = {}) {
 
   const tabs = suppliedTabs && suppliedTabs.length ? suppliedTabs : mode === 'osha' ? DEFAULT_OSHA_TABS : [];
   const resolved = resolveHighlight(tabs, highlightTarget);
-  let activeIndex = resolved.tabIndex != null ? resolved.tabIndex : tabs.length ? 0 : -1;
+  // Open on NOTHING ("Select a tab") unless a highlightTarget explicitly names
+  // a tab to jump to. Auto-opening tab 0 made the finder look like it had
+  // pre-picked a tab for you — misleading (tab 0 is rarely the right one) and
+  // it spoils the "flip to it yourself" habit the whole widget is teaching.
+  let activeIndex = resolved.tabIndex != null ? resolved.tabIndex : -1;
 
   function renderTabButton(tab) {
     const isActive = tab.index === activeIndex;
@@ -142,7 +146,7 @@ export function mountCodebook(root, opts = {}) {
 
     return `
       <div class="codebook" data-mode="${mode}">
-        <p class="codebook-lede">${mode === 'osha' ? 'OSHA parts (mock)' : 'NEC tab kit (mock)'} — tab labels and section numbers only. Verify every value against your book.</p>
+        <p class="codebook-lede">${mode === 'osha' ? 'OSHA parts (mock)' : 'NEC tab kit (mock)'}. Tab labels and section numbers only. Verify every value against your book.</p>
         <div class="codebook-tabs" role="tablist">${tabStrip}</div>
         <div class="codebook-tree">
           <p class="cb-tree-heading">${active ? active.label : 'Select a tab'}</p>

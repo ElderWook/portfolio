@@ -95,7 +95,7 @@ function renderLocked(root, { clears, unlockTarget }) {
   root.innerHTML = `
     <section class="timed-screen">
       <h2>Timed mini-set</h2>
-      <p class="tm-locked">Locked &mdash; clear <strong>${unlockTarget}</strong> combined Art. 250 + OSHA topics in the Trainer to unlock (with only four Art. 250 topics, reaching ${unlockTarget} always pulls in at least one OSHA clear). <strong>${clears}/${unlockTarget}</strong> cleared so far.</p>
+      <p class="tm-locked">Locked. Clear <strong>${unlockTarget}</strong> combined Art. 250 + OSHA topics in the Trainer to unlock (with only four Art. 250 topics, reaching ${unlockTarget} always pulls in at least one OSHA clear). <strong>${clears}/${unlockTarget}</strong> cleared so far.</p>
     </section>`;
 }
 
@@ -103,13 +103,13 @@ function renderIntro(root, { drills, onStart }) {
   root.innerHTML = `
     <section class="timed-screen">
       <h2>Timed mini-set</h2>
-      <p class="tm-lede">${drills.length} items, mixed Art. 250 + OSHA. Each question carries its own clock &mdash; on this screen it is a real cutoff, not the soft target the Trainer used. Work it in three passes:</p>
+      <p class="tm-lede">${drills.length} items, mixed Art. 250 + OSHA. Each question carries its own clock. On this screen it is a real cutoff, not the soft target the Trainer used. Work it in three passes:</p>
       <ol class="tm-strategy">
         <li><strong>Pass 1 &middot; Knowledge.</strong> Answer what you know cold. Flag anything else and move on.</li>
         <li><strong>Pass 2 &middot; Lookup.</strong> Circle back through the flagged items with the codebook open.</li>
-        <li><strong>Pass 3 &middot; Calc-last.</strong> Whatever is still flagged gets finished here &mdash; no more flagging.</li>
+        <li><strong>Pass 3 &middot; Calc-last.</strong> Whatever is still flagged gets finished here. No more flagging.</li>
       </ol>
-      <p class="tm-lede">No feedback while you play. The review at the end replays the citation PATH for every item &mdash; where to check &mdash; never the answer itself. Verify every value in your own book.</p>
+      <p class="tm-lede">No feedback while you play. The review at the end replays the citation PATH for every item (where to check), never the answer itself. Verify every value in your own book.</p>
       <button type="button" class="nav" id="tm-start">Start timed set</button>
     </section>`;
   root.querySelector('#tm-start').addEventListener('click', onStart);
@@ -140,7 +140,7 @@ function renderReview(root, { logs, drills, editionPins, onRestart }) {
       const verdictLabel = l.correct ? 'Correct' : l.timedOut ? 'Timed out' : 'Miss';
       const pathHtml = (l.drill.lookupPath || [])
         .map((p) => `<span class="tm-path-node">${p}</span>`)
-        .join('<span class="tm-path-arrow">&rarr;</span>');
+        .join('<span class="tm-path-arrow">&rsaquo;</span>');
       const flaggedTag = l.flagged ? '<span class="tm-flagged-tag">was flagged</span>' : '';
       return `
         <li class="tm-review-row ${verdictCls}">
@@ -156,8 +156,8 @@ function renderReview(root, { logs, drills, editionPins, onRestart }) {
 
   root.innerHTML = `
     <section class="timed-screen">
-      <h2>Timed set &mdash; review</h2>
-      <p class="tm-lede">${correctCount}/${total} correct across ${drills.length} queued items. This replays where to LOOK for each one, not the correct choice &mdash; confirm every value in your own book.</p>
+      <h2>Timed set &middot; review</h2>
+      <p class="tm-lede">${correctCount}/${total} correct across ${drills.length} queued items. This replays where to LOOK for each one, not the correct choice. Confirm every value in your own book.</p>
       <ul class="tm-review-list">${rows}</ul>
       <button type="button" class="nav" id="tm-restart">Run it again</button>
     </section>`;

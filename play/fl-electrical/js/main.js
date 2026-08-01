@@ -1,6 +1,8 @@
 import { loadProgress, saveProgress, mutateProgress, markStarted, resetProgress } from './progress.js';
+import { initToasts, toast, toastOnce, resetToastOnce } from './toast.js';
 import { renderChecklist } from './checklist.js';
 import { openIntro } from './intro.js';
+import { openSettings } from './settings.js';
 import { renderPath } from './screens/path.js';
 import { renderBookMap } from './screens/bookmap.js';
 import { renderWalkthrough, trainerTopicUnlockKey } from './screens/walkthrough.js';
@@ -88,11 +90,14 @@ export async function boot() {
   // source, no drift). `book` rides along so the trainer picker/player can
   // gate OSHA cards on the lane unlock and mount the right codebook mode.
   const trainerTopicsMeta = walkthroughs.map((w) => ({ id: w.id, title: w.title, book: w.book }));
+  const topicTitleById = {};
+  trainerTopicsMeta.forEach((t) => { topicTitleById[t.id] = t.title; });
 
   const sidebar = document.getElementById('sidebar');
   const rail = document.getElementById('rail');
   const screenRoot = document.getElementById('screen');
   const introRoot = document.getElementById('intro-root');
+  const settingsRoot = document.getElementById('settings-root');
 
   // Consumed by renderScreen('bookmap') the next time it runs, then cleared —
   // set by the sidebar's per-book info button (onOpenBook below) so that
@@ -135,24 +140,40 @@ export async function boot() {
   // combined-clears target (constraints.md — gate on clears, never raw
   // trainerCorrectCount). timed.js's own isTimedUnlocked() re-derives this
   // exact check defensively inside the screen itself.
+  // Why a rail screen is locked, or null if it's open. One source of truth for
+  // both the visual lock (updateRailLocks) and the explanatory toast the click
+  // handler fires — they can never drift.
+  function railLockReason(p, screen) {
+    if (screen === 'path') return null;
+    if (!p.started) return 'notStarted';
+    if (screen === 'timed' && !isTimedUnlocked(p, manifest.unlock.trainerClearsForTimed)) return 'timedLocked';
+    return null;
+  }
+
+  // Locked rail buttons stay genuinely ENABLED (not `disabled`, not
+  // aria-disabled) so every input path — mouse, keyboard, assistive tech —
+  // can activate them and hear the "here's how to unlock" toast; marking them
+  // aria-disabled would tell AT they're off-limits and the explanation would
+  // never reach a screen-reader user. The .locked class dims them and adds a
+  // 🔒 glyph (CSS generated content, which folds into the accessible name, so
+  // the locked state is still announced). go()'s router guard + timed.js's
+  // renderLocked remain the real gates against a slipped-through navigation.
   function updateRailLocks(p) {
     rail.querySelectorAll('[data-screen]').forEach((btn) => {
-      const screen = btn.dataset.screen;
-      if (screen === 'path') {
-        btn.disabled = false;
-        return;
-      }
-      if (!p.started) {
-        btn.disabled = true;
-        return;
-      }
-      if (screen === 'timed') {
-        btn.disabled = !isTimedUnlocked(p, manifest.unlock.trainerClearsForTimed);
-        return;
-      }
+      const reason = railLockReason(p, btn.dataset.screen);
       btn.disabled = false;
+      btn.classList.toggle('locked', !!reason);
     });
   }
+
+  // First-visit, show-once nudges — the ONE thing each screen is really for
+  // (distinct from its descriptive lede). Capped to the three screens where a
+  // reframe helps; Path is the intro itself and Timed has its own intro page.
+  const SCREEN_NUDGE = {
+    bookmap: "Skim each book once. You're learning WHERE things live, not memorizing them. That map is what makes lookups fast.",
+    walkthrough: 'This drills the search path: noun, tab, table, footnote, in that order. Same moves every time, until they’re automatic.',
+    trainer: 'Answer on the left, look it up on the right. Being fast at finding is the whole game, not recall.',
+  };
 
   function updateRailActive(screen) {
     rail.querySelectorAll('[data-screen]').forEach((btn) => {
@@ -236,7 +257,7 @@ export async function boot() {
     screenRoot.innerHTML = `
       <div class="screen-soon">
         <h2>${label}</h2>
-        <p>Coming soon &mdash; this lane lands in a later build task.</p>
+        <p>Coming soon. This lane lands in a later build task.</p>
       </div>`;
   }
 
@@ -251,6 +272,11 @@ export async function boot() {
   //              Three cleared nec-250 topics record OSHA_LANE_UNLOCK.
   //   wrong    → a missLog entry { stemId, yourPath, correctPath, elapsed }.
   function onTrainerResult({ drill, correct, lookupHit, pickedPath, elapsed }) {
+    const timedTarget = manifest.unlock.trainerClearsForTimed;
+    const before = loadProgress(KEY);
+    const beforeClears = (before.trainerTopicClears || []).slice();
+    const beforeOsha = (before.unlocked || []).includes(OSHA_LANE_UNLOCK);
+    const beforeTimed = isTimedUnlocked(before, timedTarget);
     const next = mutateProgress(KEY, (p) => {
       if (correct) {
         p.trainerCorrectCount += 1;
@@ -287,6 +313,24 @@ export async function boot() {
     // refresh the rail's disabled state live (not just on next navigation)
     // so the 'timed' button lights up the instant that threshold is crossed.
     updateRailLocks(next);
+
+    // Milestone toasts — the trainer's result card already shows an inline
+    // banner for a clear / OSHA-unlock; these add the cross-screen
+    // acknowledgment, and for Timed they are the ONLY signal a new lane opened
+    // (the trainer card never mentions Timed).
+    if (correct) {
+      const newClears = (next.trainerTopicClears || []).filter((t) => !beforeClears.includes(t));
+      newClears.forEach((t) => toast(`Topic cleared · ${topicTitleById[t] || t}`, { type: 'win' }));
+      if (!beforeOsha && (next.unlocked || []).includes(OSHA_LANE_UNLOCK)) {
+        toast('OSHA lane unlocked. Three Art. 250 topics cleared. New topics are waiting in the Walkthrough + Trainer.', { type: 'win' });
+      }
+      if (!beforeTimed && isTimedUnlocked(next, timedTarget)) {
+        toast('Timed mini-set unlocked. You’ve cleared 5 topics. Ready for a real timed run?', {
+          type: 'win',
+          action: { label: 'Open Timed', onClick: () => go('timed') },
+        });
+      }
+    }
     return next;
   }
 
@@ -343,6 +387,9 @@ export async function boot() {
     renderScreen(screen);
     updateRailLocks(p);
     updateRailActive(screen);
+    if (p.started && SCREEN_NUDGE[screen]) {
+      toastOnce(`screen:${screen}`, SCREEN_NUDGE[screen], { type: 'info' });
+    }
   }
 
   function openIntroNow() {
@@ -373,7 +420,21 @@ export async function boot() {
         });
         updateRailLocks(loadProgress(KEY));
       },
+    });
+  }
+
+  // Settings overlay (top-bar button). The Path screen already carries the
+  // intro material, so the top button houses options instead: re-open the
+  // intro, replay the first-visit screen tips, reset progress, and future
+  // toggles. Reset lives HERE now (moved off the intro modal).
+  function openSettingsNow() {
+    openSettings(settingsRoot, {
       onReset: onResetProgress,
+      onReplayTips() {
+        resetToastOnce();
+        toast('Screen tips reset. They’ll show again as you visit each screen.', { type: 'info' });
+      },
+      onShowIntro: openIntroNow,
     });
   }
 
@@ -385,6 +446,7 @@ export async function boot() {
   function onResetProgress() {
     if (!confirm('Reset all exam-prep progress? This clears your checklist, XP, and unlocks.')) return;
     resetProgress(KEY);
+    resetToastOnce(); // let the first-visit nudges fire again — a true clean slate
     renderSidebar();
     go('path');
     openIntroNow();
@@ -392,12 +454,30 @@ export async function boot() {
 
   rail.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-screen]');
-    if (!btn || btn.disabled) return;
-    go(btn.dataset.screen);
+    if (!btn) return;
+    const screen = btn.dataset.screen;
+    const p = loadProgress(KEY);
+    const reason = railLockReason(p, screen);
+    if (reason === 'notStarted') {
+      // The intro IS the explanation for the started-gate — reopen it.
+      openIntroNow();
+      return;
+    }
+    if (reason === 'timedLocked') {
+      const target = manifest.unlock.trainerClearsForTimed;
+      const clears = (p.trainerTopicClears || []).length;
+      toast(
+        `Timed unlocks after ${target} topic clears in the Trainer. You're at ${clears}/${target}. Clear ${target - clears} more and this lights up.`,
+        { type: 'lock', action: { label: 'Go to Trainer', onClick: () => go('trainer') } }
+      );
+      return;
+    }
+    go(screen);
   });
 
-  document.getElementById('btn-intro').addEventListener('click', openIntroNow);
+  document.getElementById('btn-settings').addEventListener('click', openSettingsNow);
 
+  initToasts();
   renderSidebar();
   mountMobileSidebarToggle();
 

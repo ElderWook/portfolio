@@ -8,26 +8,26 @@
       "action": "pickNoun",
       "choices": ["setup angle", "non-self-supporting", "portable ladder"],
       "correctTarget": "setup angle",
-      "teach": "The rule is about the ANGLE at which you set the ladder — 'non-self-supporting' and 'portable ladder' just describe which ladder type it covers."
+      "teach": "The rule is about the ANGLE at which you set the ladder. 'Non-self-supporting' and 'portable ladder' just describe which ladder type it covers."
     },
     {
       "prompt": "Which tab family holds portable ladder setup rules (angle, extension above landing, inspection)?",
       "action": "pickTab",
       "correctTarget": "Ladders",
-      "teach": "It all lives at 1926.1053 — angle, extension above the landing, and inspection/load duties are subsections of the same rule, not separate tabs."
+      "teach": "It all lives at 1926.1053: angle, extension above the landing, and inspection/load duties are subsections of the same rule, not separate tabs."
     },
     {
       "prompt": "Underline the SEPARATE rule visitors often forget: side rails must do what at the landing point?",
       "action": "pickNoun",
       "choices": ["extend above the landing point", "touch the ground first", "be painted a warning color"],
       "correctTarget": "extend above the landing point",
-      "teach": "Extension above the landing is a distinct requirement from the setup angle — read both, don't assume satisfying one satisfies the other."
+      "teach": "Extension above the landing is a distinct requirement from the setup angle. Read both, don't assume satisfying one satisfies the other."
     },
     {
       "prompt": "Open the footnote / notes habit zone before you answer.",
       "action": "openNotes",
       "correctTarget": "footnote-zone",
-      "teach": "Duty-to-inspect and defective-ladder removal rules sit in the same section as setup — read the full text under 1926.1053, not just the headline angle/extension rule."
+      "teach": "Duty-to-inspect and defective-ladder removal rules sit in the same section as setup. Read the full text under 1926.1053, not just the headline angle/extension rule."
     }
   ]
 }

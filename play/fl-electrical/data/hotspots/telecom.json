@@ -5,21 +5,21 @@
       "topic": "Cable categories and performance",
       "whyItMatters": "Cat 3/Cat 5-era category distinctions still anchor 'what wire for what job' questions on the low-voltage side.",
       "searchNouns": ["cable category", "Cat 3", "Cat 5", "twisted pair performance"],
-      "cite": "Telecommunication Wiring — confirm chapter in your copy; cross-check NEC Article 800",
+      "cite": "Telecommunication Wiring. Confirm chapter in your copy. Cross-check NEC Article 800",
       "trap": "Treating category rating as only about speed and ignoring that it also governs required physical handling (bend radius, untwist length) needed to preserve performance."
     },
     {
       "topic": "Cross-connect and termination practices",
       "whyItMatters": "Punch-down and termination workmanship rules are a recurring low-voltage installation topic.",
       "searchNouns": ["punch-down block", "cross-connect", "termination practices"],
-      "cite": "Telecommunication Wiring — confirm chapter in your copy",
+      "cite": "Telecommunication Wiring. Confirm chapter in your copy",
       "trap": "Over-untwisting pairs at the termination point, which degrades performance even on an otherwise correct run."
     },
     {
       "topic": "Separation from power wiring",
       "whyItMatters": "Physical separation between telecom/low-voltage and power conductors prevents induced noise.",
       "searchNouns": ["separation from power", "induced noise", "parallel run spacing"],
-      "cite": "Telecommunication Wiring — confirm chapter in your copy; cross-check NEC 800.133",
+      "cite": "Telecommunication Wiring. Confirm chapter in your copy. Cross-check NEC 800.133",
       "trap": "Assuming any conduit or raceway separation 'looks fine' without checking the specific minimum-spacing rule for parallel runs near power conductors."
     }
   ]

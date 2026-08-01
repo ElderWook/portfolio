@@ -16,7 +16,7 @@
       "hintLadder": [
         "Primary noun: the EGC row is chosen by the OCPD rating, not the conductor",
         "Tab family: 250.122 EGC",
-        "Cite: Table 250.122, OCPD row, copper column — read the size in your book"
+        "Cite: Table 250.122, OCPD row, copper column. Read the size in your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122"],
       "timeTargetSec": 150,
@@ -31,14 +31,14 @@
         "The copper column",
         "The aluminum or copper-clad aluminum column",
         "The OCPD-rating column",
-        "Either column — the material does not change the EGC"
+        "Either column, the material does not change the EGC"
       ],
       "answerKey": 1,
       "hard": true,
       "hintLadder": [
-        "Primary noun: conductor MATERIAL selects the column — aluminum here",
+        "Primary noun: conductor MATERIAL selects the column, aluminum here",
         "Tab family: 250.122 EGC",
-        "Cite: Table 250.122 has separate copper vs aluminum/copper-clad-aluminum columns — read the aluminum column value in your book"
+        "Cite: Table 250.122 has separate copper vs aluminum/copper-clad-aluminum columns. Read the aluminum column value in your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122"],
       "timeTargetSec": 150,
@@ -58,9 +58,9 @@
       "answerKey": 1,
       "hard": false,
       "hintLadder": [
-        "Primary noun: the sizing INPUT — the overcurrent device rating, not the wire's ampacity",
+        "Primary noun: the sizing INPUT is the overcurrent device rating, not the wire's ampacity",
         "Tab family: 250.122 EGC (then check the notes below the table)",
-        "Cite: Table 250.122 keyed to the OCPD rating; read the table notes for parallel-conductor cases — verify in your book"
+        "Cite: Table 250.122 keyed to the OCPD rating. Read the table notes for parallel-conductor cases. Verify in your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122", "footnote-zone"],
       "timeTargetSec": 150,

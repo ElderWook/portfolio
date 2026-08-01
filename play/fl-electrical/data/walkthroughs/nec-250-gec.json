@@ -8,13 +8,13 @@
       "action": "pickNoun",
       "choices": ["minimum", "equipment grounding conductor", "20A"],
       "correctTarget": "equipment grounding conductor",
-      "teach": "Noun-first: EGC, not the adjective 'minimum' or the OCPD rating — those are inputs to the lookup, not the thing being sized."
+      "teach": "Noun-first: EGC, not the adjective 'minimum' or the OCPD rating. Those are inputs to the lookup, not the thing being sized."
     },
     {
       "prompt": "Which tab family holds the EGC sizing table?",
       "action": "pickTab",
       "correctTarget": "250.122 EGC",
-      "teach": "EGC sizing lives in Table 250.122 — not 250.66. 250.66 sizes a different conductor (the GEC) off a different input."
+      "teach": "EGC sizing lives in Table 250.122, not 250.66. 250.66 sizes a different conductor (the GEC) off a different input."
     },
     {
       "prompt": "Open the footnote / notes habit zone before you answer.",
@@ -26,7 +26,7 @@
       "prompt": "Now the other conductor: which tab family sizes the grounding ELECTRODE conductor (GEC) instead?",
       "action": "pickTab",
       "correctTarget": "250 Grounding",
-      "teach": "GEC sizing (250.66 / Table 250.66) is bundled under the general '250 Grounding' tab in this kit. Its sizing input is the service-entrance conductor — a completely different question from the EGC table you just used."
+      "teach": "GEC sizing (250.66 / Table 250.66) is bundled under the general '250 Grounding' tab in this kit. Its sizing input is the service-entrance conductor, a completely different question from the EGC table you just used."
     }
   ]
 }

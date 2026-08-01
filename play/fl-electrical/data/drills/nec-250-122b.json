@@ -16,7 +16,7 @@
       "hintLadder": [
         "Primary noun: equipment grounding conductor + the trigger phrase 'increased in size'",
         "Tab family: 250.122 EGC / 250.122(B)",
-        "Cite: 250.122(B); the increase is a circular-mils ratio from Chapter 9 Table 8 — read your book"
+        "Cite: 250.122(B). The increase is a circular-mils ratio from Chapter 9 Table 8. Read your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122(B)", "Chapter 9 Table 8"],
       "timeTargetSec": 150,
@@ -31,14 +31,14 @@
         "Only for a voltage-drop upsize",
         "For any increase in ungrounded conductor size, regardless of the reason",
         "Only when the upsize is two trade sizes or more",
-        "Never — 250.122(B) applies to feeders only"
+        "Never. 250.122(B) applies to feeders only"
       ],
       "answerKey": 1,
       "hard": false,
       "hintLadder": [
         "Primary noun: the TRIGGER is the size increase itself, not the reason for it",
         "Tab family: 250.122 EGC / 250.122(B)",
-        "Cite: 250.122(B) — read the trigger wording in your book"
+        "Cite: 250.122(B). Read the trigger wording in your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122(B)"],
       "timeTargetSec": 150,
@@ -60,7 +60,7 @@
       "hintLadder": [
         "Primary noun: rounding rule after the proportional calculation",
         "Tab family: 250.122 EGC / 250.122(B)",
-        "Cite: 250.122(B) — read the exact rounding language in your book before you commit"
+        "Cite: 250.122(B). Read the exact rounding language in your book before you commit"
       ],
       "lookupPath": ["250.122 EGC", "250.122(B)"],
       "timeTargetSec": 150,

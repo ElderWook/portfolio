@@ -122,7 +122,7 @@ function linksHtml(links) {
 function renderBookRow(row, checked) {
   const book = row.book;
   const freeNote = book.acquisition === 'free-state-pdf'
-    ? `<p class="crow-note">Not sold — free from the state after you're approved for the exam; one combined email request covers UL 681 + UL 365.</p>`
+    ? `<p class="crow-note">Not sold. Free from the state after you're approved for the exam. One combined email request covers UL 681 + UL 365.</p>`
     : '';
   return `
     <div class="crow" data-row="${row.id}">

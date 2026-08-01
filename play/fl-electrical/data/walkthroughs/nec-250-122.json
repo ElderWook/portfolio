@@ -8,7 +8,7 @@
       "action": "pickNoun",
       "choices": ["60A breaker rating", "conductor ampacity", "aluminum material"],
       "correctTarget": "60A breaker rating",
-      "teach": "Table 250.122 keys off the rating of the overcurrent device AHEAD of the circuit — not the ampacity of the conductor it protects. Ampacity is a Table 310.16 question, not this one."
+      "teach": "Table 250.122 keys off the rating of the overcurrent device AHEAD of the circuit, not the ampacity of the conductor it protects. Ampacity is a Table 310.16 question, not this one."
     },
     {
       "prompt": "Which tab family holds this table?",
@@ -21,7 +21,7 @@
       "action": "pickNoun",
       "choices": ["copper column", "aluminum or copper-clad aluminum column", "the OCPD-rating column"],
       "correctTarget": "aluminum or copper-clad aluminum column",
-      "teach": "Table 250.122 has separate copper vs. aluminum/copper-clad-aluminum columns. Reading the wrong column for the stated material is a classic miss — check the column header before you lock a number."
+      "teach": "Table 250.122 has separate copper vs. aluminum/copper-clad-aluminum columns. Reading the wrong column for the stated material is a classic miss. Check the column header before you lock a number."
     },
     {
       "prompt": "Open the footnote / notes habit zone before you answer.",

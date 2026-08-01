@@ -140,7 +140,7 @@ function renderPicker(root, { topicsMeta, drillsByTopic, progress, oshaUnlockTar
   root.innerHTML = `
     <section class="trainer-screen">
       <h2>Trainer</h2>
-      <p class="tr-lede">Answer on the left, look it up on the right. Hard drills won't accept a right answer until you've opened the cited tab — that's the exam habit. No sizes or table values live here; verify everything in your book.</p>
+      <p class="tr-lede">Answer on the left, look it up on the right. Hard drills won't accept a right answer until you've opened the cited tab. That's the exam habit. No sizes or table values live here, so verify everything in your book.</p>
       <p class="tr-osha-track">${oshaLine}</p>
       <div class="tr-topic-grid">${cards}</div>
     </section>`;
@@ -159,21 +159,21 @@ function renderResult(root, ctx) {
   const ladder = drill.hintLadder.map((h) => `<li>${h}</li>`).join('');
 
   const banners = [
-    justCleared ? '<p class="tr-banner tr-banner-clear">Topic cleared ✓ — two correct drills logged.</p>' : '',
-    justUnlockedOsha ? '<p class="tr-banner tr-banner-osha">OSHA lane unlocked — three Art. 250 topics cleared.</p>' : '',
-    justCompletedOsha ? `<p class="tr-banner tr-banner-osha">OSHA lane complete ✓ — ${OSHA_DRILLS_FOR_COMPLETE} OSHA drills correct with a walkthrough done.</p>` : '',
+    justCleared ? '<p class="tr-banner tr-banner-clear">Topic cleared ✓. Two correct drills logged.</p>' : '',
+    justUnlockedOsha ? '<p class="tr-banner tr-banner-osha">OSHA lane unlocked. Three Art. 250 topics cleared.</p>' : '',
+    justCompletedOsha ? `<p class="tr-banner tr-banner-osha">OSHA lane complete ✓. ${OSHA_DRILLS_FOR_COMPLETE} OSHA drills correct with a walkthrough done.</p>` : '',
   ].join('');
 
   root.innerHTML = `
     <section class="trainer-screen">
       <div class="tr-headrow">
-        <h2>${topicTitle} — Trainer</h2>
+        <h2>${topicTitle} &middot; Trainer</h2>
         <button type="button" class="nav ghost" id="tr-exit">All topics</button>
       </div>
       <div class="tr-result-card ${correct ? 'ok' : 'miss'}">
         <p class="tr-result-head">${correct ? 'Correct' : 'Not quite'}${bonus ? ' · +lookup bonus' : ''}</p>
         <p class="tr-result-answer"><span class="tr-result-label">Method</span> ${answerText}</p>
-        <p class="tr-result-cite">Cite check: this is a lookup, not a memorized value — confirm it in your book (${editionPin}).</p>
+        <p class="tr-result-cite">Cite check: this is a lookup, not a memorized value, so confirm it in your book (${editionPin}).</p>
         <div class="tr-ladder">
           <p class="tr-ladder-label">Search ladder</p>
           <ol>${ladder}</ol>
@@ -214,7 +214,7 @@ function renderDrill(root, ctx) {
   root.innerHTML = `
     <section class="trainer-screen">
       <div class="tr-headrow">
-        <h2>${topicTitle} — Trainer</h2>
+        <h2>${topicTitle} &middot; Trainer</h2>
         <button type="button" class="nav ghost" id="tr-exit">All topics</button>
       </div>
       <p class="tr-progress">Drill ${index + 1} of ${total} · ${cleared ? 'topic already cleared' : `${CLEAR_THRESHOLD} correct clears this topic`}</p>
@@ -244,7 +244,7 @@ function renderDrill(root, ctx) {
             </div>
             <ol class="tr-hint-list">${hintItems}</ol>
           </div>
-          <p class="tr-lookup" id="tr-lookup" hidden>Lookup found ✓ — a cited tab is open on the right.</p>
+          <p class="tr-lookup" id="tr-lookup" hidden>Lookup found ✓. A cited tab is open on the right.</p>
           <p class="tr-held" id="tr-held" hidden></p>
           <div class="tr-actionrow">
             <button type="button" class="nav" id="tr-submit" disabled>Submit</button>

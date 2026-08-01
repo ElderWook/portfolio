@@ -8,25 +8,25 @@
       "action": "pickNoun",
       "choices": ["increased in size", "voltage drop", "equipment grounding conductor"],
       "correctTarget": "increased in size",
-      "teach": "250.122(B) triggers specifically when the circuit's ungrounded conductors were UPSIZED — the reason they were upsized (voltage drop or anything else) doesn't matter; the trigger is the size increase itself."
+      "teach": "250.122(B) triggers specifically when the circuit's ungrounded conductors were UPSIZED. The reason they were upsized (voltage drop or anything else) doesn't matter. The trigger is the size increase itself."
     },
     {
       "prompt": "Which tab family holds the rule that requires this EGC upsize?",
       "action": "pickTab",
       "correctTarget": "250.122 EGC",
-      "teach": "Still a 250.122 question — 250.122(B) is a subsection of the same article, not a separate table."
+      "teach": "Still a 250.122 question. 250.122(B) is a subsection of the same article, not a separate table."
     },
     {
       "prompt": "The upsize is proportional, not a flat jump to the next size. Which tab has the conductor circular-mil-area data you need to compute that proportion?",
       "action": "pickTab",
       "correctTarget": "Ch9 T8 Properties",
-      "teach": "250.122(B) sizing is a proportion: compare the circular-mil area of the upsized ungrounded conductor against the area of the size Table 250.122 would otherwise require — using Chapter 9, Table 8 — then apply that same proportion to the EGC. Know WHERE that comparison lives; the areas themselves come from your book."
+      "teach": "250.122(B) sizing is a proportion: compare the circular-mil area of the upsized ungrounded conductor against the area of the size Table 250.122 would otherwise require (using Chapter 9, Table 8), then apply that same proportion to the EGC. Know WHERE that comparison lives. The areas themselves come from your book."
     },
     {
       "prompt": "Open the footnote / notes habit zone before you lock your upsized EGC size.",
       "action": "openNotes",
       "correctTarget": "footnote-zone",
-      "teach": "After computing the proportional increase you still round up to the next standard EGC size in Table 250.122 — read the exact rounding language in 250.122(B) rather than guessing at a shortcut."
+      "teach": "After computing the proportional increase you still round up to the next standard EGC size in Table 250.122. Read the exact rounding language in 250.122(B) rather than guessing at a shortcut."
     }
   ]
 }

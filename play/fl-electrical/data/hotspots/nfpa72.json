@@ -5,28 +5,28 @@
       "topic": "Circuit and pathway classes",
       "whyItMatters": "Class A vs. Class B (survivability/supervision) pathway questions are classic fire-alarm-system material.",
       "searchNouns": ["Class A circuit", "Class B circuit", "pathway survivability", "supervised circuit"],
-      "cite": "NFPA 72 — Circuits and Pathways chapter (confirm chapter number in your 2019 edition)",
+      "cite": "NFPA 72, Circuits and Pathways chapter (confirm chapter number in your 2019 edition)",
       "trap": "Assuming Class A is just a 'redundant loop' without recognizing it must survive a single open or ground fault and keep reporting every device."
     },
     {
       "topic": "Initiating device placement (smoke detectors)",
       "whyItMatters": "Spacing and placement rules drive layout questions for detection coverage.",
       "searchNouns": ["smoke detector spacing", "detector placement", "initiating devices", "ceiling mounting"],
-      "cite": "NFPA 72 — Initiating Devices chapter (confirm chapter number in your edition)",
+      "cite": "NFPA 72, Initiating Devices chapter (confirm chapter number in your edition)",
       "trap": "Applying open-area spacing rules to a room with obstructions (beams, high ceilings) without the required spacing adjustment."
     },
     {
       "topic": "Notification appliance audibility and visibility",
       "whyItMatters": "Candela ratings and audible dBA-above-ambient rules are the notification-side counterpart to detector spacing.",
       "searchNouns": ["candela rating", "strobe placement", "audible signal", "dBA above ambient"],
-      "cite": "NFPA 72 — Notification Appliances chapter (confirm chapter number in your edition)",
+      "cite": "NFPA 72, Notification Appliances chapter (confirm chapter number in your edition)",
       "trap": "Sizing a strobe by room area alone and skipping the mounting-height requirement that also governs compliance."
     },
     {
       "topic": "Inspection, testing, and maintenance frequency",
       "whyItMatters": "Exam questions often ask 'how often' for a given device or system test.",
       "searchNouns": ["ITM frequency", "annual test", "sensitivity test", "acceptance test"],
-      "cite": "NFPA 72 — Inspection, Testing, and Maintenance chapter (confirm chapter number in your edition)",
+      "cite": "NFPA 72, Inspection, Testing, and Maintenance chapter (confirm chapter number in your edition)",
       "trap": "Using one blanket test interval for every device type instead of checking the device-specific frequency table."
     }
   ]

@@ -81,7 +81,7 @@ export function renderBookMap(root, { books, progress, onToggleSkimmed, openBook
   root.innerHTML = `
     <section class="bookmap-screen">
       <h2>Book Map</h2>
-      <p class="bookmap-lede">All 14 UE reference books. "Need now" is what to order first; the rest can wait until closer to exam day. Click a card for its high-yield topics.</p>
+      <p class="bookmap-lede">All 14 UE reference books. "Need now" is what to order first. The rest can wait until closer to exam day. Click a card for its high-yield topics.</p>
       <label class="bookmap-skim">
         <input type="checkbox" id="bookmap-skimmed" ${skimmed ? 'checked' : ''}>
         <span>Book Map skimmed</span>

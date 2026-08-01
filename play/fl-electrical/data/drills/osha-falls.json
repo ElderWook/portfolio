@@ -16,7 +16,7 @@
       "hintLadder": [
         "Primary noun: the WORK CATEGORY, not the person or the equipment on hand",
         "Tab family: Fall Protection (1926.501)",
-        "Cite: 1926.501 lists categories with their own trigger conditions — read the one matching your scenario in your book"
+        "Cite: 1926.501 lists categories with their own trigger conditions. Read the one matching your scenario in your book"
       ],
       "lookupPath": ["Fall Protection", "1926.501"],
       "timeTargetSec": 150,
@@ -36,9 +36,9 @@
       "answerKey": 1,
       "hard": true,
       "hintLadder": [
-        "Primary noun: SYSTEM criteria — a different question than whether protection is required at all",
+        "Primary noun: SYSTEM criteria, a different question than whether protection is required at all",
         "Tab family: Fall Protection (1926.502)",
-        "Cite: 1926.502 — read each system's spec in your book before you pick one"
+        "Cite: 1926.502. Read each system's spec in your book before you pick one"
       ],
       "lookupPath": ["Fall Protection", "1926.502"],
       "timeTargetSec": 150,
@@ -50,9 +50,9 @@
       "topic": "osha-falls",
       "stem": "An employer assumes verbally reminding employees to 'be careful near the edge' satisfies the fall protection duty. What is actually missing?",
       "choices": [
-        "Nothing — a verbal reminder satisfies 1926.501 on its own",
+        "Nothing. A verbal reminder satisfies 1926.501 on its own",
         "A protection SYSTEM under 1926.502 plus the training required by 1926.503",
-        "Only training under 1926.503; a physical system is never required",
+        "Only training under 1926.503. A physical system is never required",
         "Nothing is required until an injury occurs"
       ],
       "answerKey": 1,
@@ -60,7 +60,7 @@
       "hintLadder": [
         "Primary noun: 'system' and 'training' are two separate requirements once the duty applies",
         "Tab family: Fall Protection (1926.502 systems, 1926.503 training)",
-        "Cite: 1926.502 (systems) and 1926.503 (training) both apply once 1926.501 triggers — confirm both in your book"
+        "Cite: 1926.502 (systems) and 1926.503 (training) both apply once 1926.501 triggers. Confirm both in your book"
       ],
       "lookupPath": ["Fall Protection", "1926.502", "1926.503"],
       "timeTargetSec": 150,

@@ -5,21 +5,21 @@
       "topic": "Scope: what UL 681 covers",
       "whyItMatters": "Knowing whether an install falls under UL 681 (burglar/holdup) vs. UL 365 (police-connected) is a classic which-standard question.",
       "searchNouns": ["burglar alarm scope", "holdup alarm", "UL 681 applicability"],
-      "cite": "UL 681 — confirm section in your copy",
+      "cite": "UL 681. Confirm section in your copy",
       "trap": "Assuming every burglar alarm install is automatically UL 681-compliant just because it's 'monitored,' without checking the specific installation classification it claims."
     },
     {
       "topic": "Line security and circuit supervision grades",
-      "whyItMatters": "Burglar alarm circuits are graded by how hard they are to defeat or tamper with — a recurring theme across alarm standards.",
+      "whyItMatters": "Burglar alarm circuits are graded by how hard they are to defeat or tamper with, a recurring theme across alarm standards.",
       "searchNouns": ["line security grade", "circuit supervision", "tamper resistance"],
-      "cite": "UL 681 — confirm section in your copy",
+      "cite": "UL 681. Confirm section in your copy",
       "trap": "Treating 'supervised' as one blanket feature instead of a graded property tied to the specific grade of service being provided."
     },
     {
       "topic": "Installation classification (mercantile/bank/residential)",
-      "whyItMatters": "The type of premises drives which installation classification — and therefore which requirements — apply.",
+      "whyItMatters": "The type of premises drives which installation classification (and therefore which requirements) apply.",
       "searchNouns": ["installation classification", "mercantile premises", "bank premises", "residential premises"],
-      "cite": "UL 681 — confirm section in your copy",
+      "cite": "UL 681. Confirm section in your copy",
       "trap": "Applying a residential-grade installation classification to a commercial/mercantile premises because the equipment 'looks the same.'"
     }
   ]

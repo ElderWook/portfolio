@@ -14,9 +14,9 @@
       "answerKey": 0,
       "hard": false,
       "hintLadder": [
-        "Primary noun: equipment grounding conductor (EGC) — the wire being sized, not the OCPD or the circuit conductors",
+        "Primary noun: equipment grounding conductor (EGC), the wire being sized, not the OCPD or the circuit conductors",
         "Tab family: 250.122 EGC",
-        "Cite: Table 250.122, keyed to the OCPD rating — read the size from your book"
+        "Cite: Table 250.122, keyed to the OCPD rating. Read the size from your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122"],
       "timeTargetSec": 150,
@@ -36,9 +36,9 @@
       "answerKey": 1,
       "hard": true,
       "hintLadder": [
-        "Primary noun: grounding ELECTRODE conductor (GEC) — a different conductor than the EGC",
+        "Primary noun: grounding ELECTRODE conductor (GEC), a different conductor than the EGC",
         "Tab family: 250 Grounding (the GEC lives at 250.66, not 250.122)",
-        "Cite: 250.66 / Table 250.66, sized from the service-entrance conductor — read the value in your book"
+        "Cite: 250.66 / Table 250.66, sized from the service-entrance conductor. Read the value in your book"
       ],
       "lookupPath": ["250 Grounding", "250.66"],
       "timeTargetSec": 150,
@@ -51,16 +51,16 @@
       "stem": "EGC vs GEC: which statement pairs each conductor with the correct sizing INPUT?",
       "choices": [
         "Both are sized from the OCPD rating in Table 250.122",
-        "The EGC is sized from the OCPD (Table 250.122); the GEC is sized from the service conductor (250.66)",
-        "The EGC is sized from the service conductor (250.66); the GEC is sized from the OCPD (Table 250.122)",
+        "The EGC is sized from the OCPD (Table 250.122). The GEC is sized from the service conductor (250.66)",
+        "The EGC is sized from the service conductor (250.66). The GEC is sized from the OCPD (Table 250.122)",
         "Both are sized from the ungrounded conductor ampacity in Table 310.16"
       ],
       "answerKey": 1,
       "hard": false,
       "hintLadder": [
-        "Primary nouns: two different conductors — equipment grounding conductor and grounding electrode conductor",
+        "Primary nouns: two different conductors, equipment grounding conductor and grounding electrode conductor",
         "Tab families: 250.122 EGC for the EGC, 250 Grounding for the GEC",
-        "Cite: EGC = Table 250.122 (OCPD input); GEC = 250.66 (service-conductor input) — confirm both in your book"
+        "Cite: EGC = Table 250.122 (OCPD input). GEC = 250.66 (service-conductor input). Confirm both in your book"
       ],
       "lookupPath": ["250.122 EGC", "250 Grounding"],
       "timeTargetSec": 150,

@@ -14,9 +14,9 @@
       "answerKey": 0,
       "hard": false,
       "hintLadder": [
-        "Primary noun: equipment grounding conductor (EGC) — the wire being sized, not the OCPD or the circuit conductors",
+        "Primary noun: equipment grounding conductor (EGC), the wire being sized, not the OCPD or the circuit conductors",
         "Tab family: 250.122 EGC",
-        "Cite: Table 250.122, keyed to the OCPD rating — read the size from your book"
+        "Cite: Table 250.122, keyed to the OCPD rating. Read the size from your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122"],
       "timeTargetSec": 150,
@@ -36,9 +36,9 @@
       "answerKey": 1,
       "hard": true,
       "hintLadder": [
-        "Primary noun: SYSTEM criteria — a different question than whether protection is required at all",
+        "Primary noun: SYSTEM criteria, a different question than whether protection is required at all",
         "Tab family: Fall Protection (1926.502)",
-        "Cite: 1926.502 — read each system's spec in your book before you pick one"
+        "Cite: 1926.502. Read each system's spec in your book before you pick one"
       ],
       "lookupPath": ["Fall Protection", "1926.502"],
       "timeTargetSec": 150,
@@ -53,14 +53,14 @@
         "The copper column",
         "The aluminum or copper-clad aluminum column",
         "The OCPD-rating column",
-        "Either column — the material does not change the EGC"
+        "Either column, the material does not change the EGC"
       ],
       "answerKey": 1,
       "hard": true,
       "hintLadder": [
-        "Primary noun: conductor MATERIAL selects the column — aluminum here",
+        "Primary noun: conductor MATERIAL selects the column, aluminum here",
         "Tab family: 250.122 EGC",
-        "Cite: Table 250.122 has separate copper vs aluminum/copper-clad-aluminum columns — read the aluminum column value in your book"
+        "Cite: Table 250.122 has separate copper vs aluminum/copper-clad-aluminum columns. Read the aluminum column value in your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122"],
       "timeTargetSec": 150,
@@ -72,17 +72,17 @@
       "topic": "osha-ladders",
       "stem": "A question asks for the correct setup ANGLE for a non-self-supporting portable ladder. Which section and METHOD do you use?",
       "choices": [
-        "1926.1053 — read the exact ratio directly from your book",
-        "1926.502 — the fall-protection systems section",
-        "1926.1060 — the training section",
-        "Estimate the angle visually; no fixed ratio exists"
+        "1926.1053. Read the exact ratio directly from your book",
+        "1926.502, the fall-protection systems section",
+        "1926.1060, the training section",
+        "Estimate the angle visually. No fixed ratio exists"
       ],
       "answerKey": 0,
       "hard": false,
       "hintLadder": [
         "Primary noun: setup ANGLE, a portable-ladder-specific rule",
         "Tab family: Ladders (1926.1053)",
-        "Cite: 1926.1053 states the exact angle ratio — read it from your book, don't estimate"
+        "Cite: 1926.1053 states the exact angle ratio. Read it from your book, don't estimate"
       ],
       "lookupPath": ["Ladders", "1926.1053"],
       "timeTargetSec": 150,
@@ -102,9 +102,9 @@
       "answerKey": 1,
       "hard": false,
       "hintLadder": [
-        "Primary noun: bonding jumper — not the neutral it lands on or the enclosure it lands in",
+        "Primary noun: bonding jumper, not the neutral it lands on or the enclosure it lands in",
         "Tab family: 250 Bonding",
-        "Cite: 250.28 governs the main bonding jumper — read the placement rule in your book"
+        "Cite: 250.28 governs the main bonding jumper. Read the placement rule in your book"
       ],
       "lookupPath": ["250 Bonding", "250.28"],
       "timeTargetSec": 150,
@@ -116,9 +116,9 @@
       "topic": "osha-falls",
       "stem": "An employer assumes verbally reminding employees to 'be careful near the edge' satisfies the fall protection duty. What is actually missing?",
       "choices": [
-        "Nothing — a verbal reminder satisfies 1926.501 on its own",
+        "Nothing. A verbal reminder satisfies 1926.501 on its own",
         "A protection SYSTEM under 1926.502 plus the training required by 1926.503",
-        "Only training under 1926.503; a physical system is never required",
+        "Only training under 1926.503. A physical system is never required",
         "Nothing is required until an injury occurs"
       ],
       "answerKey": 1,
@@ -126,7 +126,7 @@
       "hintLadder": [
         "Primary noun: 'system' and 'training' are two separate requirements once the duty applies",
         "Tab family: Fall Protection (1926.502 systems, 1926.503 training)",
-        "Cite: 1926.502 (systems) and 1926.503 (training) both apply once 1926.501 triggers — confirm both in your book"
+        "Cite: 1926.502 (systems) and 1926.503 (training) both apply once 1926.501 triggers. Confirm both in your book"
       ],
       "lookupPath": ["Fall Protection", "1926.502", "1926.503"],
       "timeTargetSec": 150,
@@ -148,7 +148,7 @@
       "hintLadder": [
         "Primary noun: equipment grounding conductor + the trigger phrase 'increased in size'",
         "Tab family: 250.122 EGC / 250.122(B)",
-        "Cite: 250.122(B); the increase is a circular-mils ratio from Chapter 9 Table 8 — read your book"
+        "Cite: 250.122(B). The increase is a circular-mils ratio from Chapter 9 Table 8. Read your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122(B)", "Chapter 9 Table 8"],
       "timeTargetSec": 150,
@@ -160,8 +160,8 @@
       "topic": "osha-ladders",
       "stem": "An employee has used ladders for years without any formal instruction. Does that experience satisfy OSHA's ladder-related training duty?",
       "choices": [
-        "Yes — years of informal experience always substitutes for training",
-        "No — 1926.1060 requires training on ladder/stairway hazards regardless of tenure",
+        "Yes. Years of informal experience always substitutes for training",
+        "No. 1926.1060 requires training on ladder/stairway hazards regardless of tenure",
         "Only if the employee is over a certain age",
         "Only if the ladder is used above a certain height"
       ],
@@ -170,7 +170,7 @@
       "hintLadder": [
         "Primary noun: TRAINING duty, separate from years of informal experience",
         "Tab family: Ladders (1926.1060)",
-        "Cite: 1926.1060 — the training requirement exists independent of tenure; confirm the scope in your book"
+        "Cite: 1926.1060. The training requirement exists independent of tenure. Confirm the scope in your book"
       ],
       "lookupPath": ["Ladders", "1926.1060"],
       "timeTargetSec": 150,
@@ -192,7 +192,7 @@
       "hintLadder": [
         "Primary noun: the electrode TYPE that scopes the reduced-size allowance",
         "Tab families: 250 Grounding (the 250.66 allowance) and 250.50 Electrodes (electrode types at 250.52)",
-        "Cite: the reduced-size GEC allowance at 250.66 is scoped to rod/pipe/plate electrodes — reread the exact wording in your book"
+        "Cite: the reduced-size GEC allowance at 250.66 is scoped to rod/pipe/plate electrodes. Reread the exact wording in your book"
       ],
       "lookupPath": ["250 Grounding", "250.66", "250.50 Electrodes", "250.52"],
       "timeTargetSec": 150,

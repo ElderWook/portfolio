@@ -5,21 +5,21 @@
       "topic": "System design narrative and scope of work",
       "whyItMatters": "This handbook expands on NFPA 72's 'why,' which is useful for scope-and-intent style exam questions.",
       "searchNouns": ["design narrative", "system scope", "basis of design"],
-      "cite": "Handbook — confirm chapter in your copy; parallels the NFPA 72 fundamentals chapter",
+      "cite": "Handbook. Confirm chapter in your copy. Parallels the NFPA 72 fundamentals chapter",
       "trap": "Memorizing a rule number without the design intent behind it, which is exactly what a scenario-style question tests."
     },
     {
       "topic": "Voice evacuation and mass notification basics",
       "whyItMatters": "Expands on notification-appliance rules with voice/paging system context.",
       "searchNouns": ["voice evacuation", "mass notification", "paging zones"],
-      "cite": "Handbook — confirm chapter in your copy; cross-check the NFPA 72 notification chapter",
+      "cite": "Handbook. Confirm chapter in your copy. Cross-check the NFPA 72 notification chapter",
       "trap": "Treating a voice evacuation system as 'just louder speakers' instead of a zoned, intelligible-message system with its own performance criteria."
     },
     {
       "topic": "Interface with suppression and building systems",
-      "whyItMatters": "Fire alarm systems often trigger HVAC shutdown, door release, or elevator recall — cross-system interlocks show up on scenario questions.",
+      "whyItMatters": "Fire alarm systems often trigger HVAC shutdown, door release, or elevator recall. Cross-system interlocks show up on scenario questions.",
       "searchNouns": ["elevator recall", "smoke control interface", "door release", "HVAC shutdown interlock"],
-      "cite": "Handbook — confirm chapter in your copy; cross-check the NFPA 72 protected-premises chapter",
+      "cite": "Handbook. Confirm chapter in your copy. Cross-check the NFPA 72 protected-premises chapter",
       "trap": "Assuming the fire alarm contractor 'owns' every interlocked device instead of recognizing which interfaces are coordinated with other trades."
     }
   ]

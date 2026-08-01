@@ -5,28 +5,28 @@
       "topic": "Means of egress components",
       "whyItMatters": "Egress lighting and exit-sign power tie directly into electrical rough-in on commercial jobs.",
       "searchNouns": ["means of egress", "exit access", "exit discharge", "egress illumination"],
-      "cite": "NFPA 101 — Means of Egress chapter (confirm chapter number in your 2018 edition)",
+      "cite": "NFPA 101, Means of Egress chapter (confirm chapter number in your 2018 edition)",
       "trap": "Treating 'emergency lighting' and 'exit sign illumination' as one single requirement instead of two separate duties with separate duration/level rules."
     },
     {
       "topic": "Emergency lighting duration and level",
       "whyItMatters": "The electrical scope for life-safety branch circuits depends on these performance numbers.",
       "searchNouns": ["emergency lighting duration", "illumination level", "egress path lighting"],
-      "cite": "NFPA 101 — Emergency Lighting section (confirm section number in your edition)",
+      "cite": "NFPA 101, Emergency Lighting section (confirm section number in your edition)",
       "trap": "Sizing an emergency lighting unit for initial illumination only and ignoring the required minimum level at the end of the duration period."
     },
     {
       "topic": "Occupancy classification",
       "whyItMatters": "Nearly every other Life Safety Code requirement (egress capacity, alarm requirement) is keyed off occupancy classification.",
       "searchNouns": ["occupancy classification", "assembly occupancy", "business occupancy", "occupant load"],
-      "cite": "NFPA 101 — Classification of Occupancy chapter (confirm chapter number in your edition)",
+      "cite": "NFPA 101, Classification of Occupancy chapter (confirm chapter number in your edition)",
       "trap": "Picking an occupancy classification by the building's general use instead of the code's specific occupant-load and use-condition tests."
     },
     {
       "topic": "Fire alarm and detection requirements by occupancy",
       "whyItMatters": "Cross-references NFPA 72 requirements back into a specific occupancy chapter.",
       "searchNouns": ["occupancy fire alarm requirement", "detection requirement", "occupancy chapter cross-reference"],
-      "cite": "NFPA 101 — the relevant occupancy chapter (confirm chapter in your edition); cross-check NFPA 72",
+      "cite": "NFPA 101, the relevant occupancy chapter (confirm chapter in your edition). Cross-check NFPA 72",
       "trap": "Applying a fire-alarm requirement found in one occupancy chapter to a different occupancy without checking that chapter's own rule."
     }
   ]

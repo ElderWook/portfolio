@@ -26,28 +26,51 @@ export function canDismissIntro(p) {
 // both names so either spelling resolves.
 export const closeIntroAllowed = canDismissIntro;
 
-function renderStep(step) {
-  const links = (step.links || [])
-    .map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`)
-    .join(' &middot; ');
+// The intro modal is the MENTAL MODEL, kept short on purpose (research: an
+// upfront wall of steps is forgotten in ~20s and reads as complexity). It
+// carries the thesis + the 3 prep moves + the exam shape only. The granular
+// detail steps (DBPR/CIB/editions/bring-rules) live on the always-open Path
+// screen (path.js renders the SAME path.json plus those steps) — the modal is
+// the hook, the Path screen is the manual.
+function renderMove(move) {
   return `
-    <li class="intro-step">
-      <h3>${step.heading}</h3>
-      <p>${step.body}</p>
-      ${links ? `<div class="intro-links">${links}</div>` : ''}
+    <li class="intro-move">
+      <span class="intro-move-num" aria-hidden="true">${move.n}</span>
+      <span class="intro-move-body">
+        <span class="intro-move-title">${move.title}</span>
+        <span class="intro-move-text">${move.body}</span>
+        ${move.where ? `<span class="intro-move-where">${move.where}</span>` : ''}
+      </span>
     </li>`;
 }
 
 export function openIntro(root, { path, progress, onStart, onSkip, onReset }) {
   const getProgress = typeof progress === 'function' ? progress : () => progress;
-  const stepsHtml = (path.steps || []).map(renderStep).join('');
+  const movesHtml = (path.moves || []).map(renderMove).join('');
+  const shapeHtml = (path.examShape || []).map((s) => `<li>${s}</li>`).join('');
+  const cib = path.cib;
 
   root.innerHTML = `
     <div class="intro-backdrop">
       <div class="intro-card" role="dialog" aria-modal="true" aria-labelledby="intro-title">
-        <h2 id="intro-title">${path.title}</h2>
-        ${path.lede ? `<p class="intro-lede">${path.lede}</p>` : ''}
-        <ol class="intro-steps">${stepsHtml}</ol>
+        <div class="intro-thesis">
+          <span class="pin1" aria-hidden="true"></span>
+          ${path.kicker ? `<p class="intro-kicker">${path.kicker}</p>` : ''}
+          <h2 id="intro-title">${path.title}</h2>
+          ${path.lede ? `<p class="intro-lede">${path.lede}</p>` : ''}
+        </div>
+        ${movesHtml ? `
+        <div class="intro-block">
+          <p class="intro-block-label">What prep actually is</p>
+          <ol class="intro-moves">${movesHtml}</ol>
+        </div>` : ''}
+        ${path.mythBuster ? `<p class="intro-myth"><span class="intro-myth-label">Note</span> ${path.mythBuster}</p>` : ''}
+        ${shapeHtml ? `
+        <div class="intro-block">
+          <p class="intro-block-label">The exam at a glance</p>
+          <ul class="intro-shape">${shapeHtml}</ul>
+        </div>` : ''}
+        ${cib ? `<p class="intro-cib"><a href="${cib.href}" target="_blank" rel="noopener">${cib.label} &#8599;</a>${cib.note ? ` <span class="intro-cib-note">${cib.note}</span>` : ''}</p>` : ''}
         <p class="intro-note" id="intro-note" hidden aria-live="polite">Tick a kit item or Start studying to close this.</p>
         <div class="intro-actions">
           <button type="button" class="nav ghost" id="intro-skip">${(path.cta && path.cta.skip) || 'Skip for now'}</button>
