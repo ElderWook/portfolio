@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": "kit-nec-tabs",
+      "kind": "tabkit",
+      "label": "Permanent NEC tab kit (pre-labeled)",
+      "notes": "Exam allows permanently attached tabs only — no Post-its or removable flags.",
+      "links": [{ "label": "Search NEC tab kits", "href": "https://www.google.com/search?q=NEC+2023+permanent+tab+kit+electrical+exam" }],
+      "examDayOk": true
+    },
+    {
+      "id": "kit-highlighters",
+      "kind": "highlighter",
+      "label": "Highlighters for home study",
+      "notes": "Mark your books at home. Do not bring loose notes or removable flags into the exam.",
+      "links": [{ "label": "Search highlighters", "href": "https://www.google.com/search?q=bible+highlighters+no+bleed" }],
+      "examDayOk": false
+    }
+  ]
+}

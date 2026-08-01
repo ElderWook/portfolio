@@ -1,0 +1,62 @@
+{
+  "compartments": [
+    {
+      "id": "A",
+      "title": "License path",
+      "unlockWhen": "always",
+      "items": [
+        { "id": "a-dbpr", "label": "Open DBPR Electrical Contractors page", "href": "https://www2.myfloridalicense.com/electrical-contractors/" },
+        { "id": "a-cert", "label": "Confirm target: Unlimited Electrical (UE) Technical first" },
+        { "id": "a-parts", "label": "Know Tech 100Q/5hr vs Business 50Q/2.5hr" },
+        { "id": "a-cib", "label": "Save/read Candidate Information Booklet (CIB)" }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Books to order",
+      "unlockWhen": "always",
+      "itemsFromBooks": true
+    },
+    {
+      "id": "C",
+      "title": "Tabs & marking",
+      "unlockWhen": "always",
+      "itemsFromKit": true,
+      "extra": [
+        { "id": "c-tabs-nec", "label": "Permanent tabs installed on NEC" },
+        { "id": "c-tabs-osha", "label": "Permanent tabs installed on OSHA" }
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Exam-day rules",
+      "unlockWhen": "anyChecklistOrStarted",
+      "items": [
+        { "id": "d-perm-tabs", "label": "Understand: permanent tabs only at exam" },
+        { "id": "d-one-copy", "label": "One original copy per reference" },
+        { "id": "d-no-notes", "label": "No class notes / formula sheets in the room" }
+      ]
+    },
+    {
+      "id": "E",
+      "title": "Study progress",
+      "unlockWhen": "started",
+      "items": [
+        { "id": "e-path", "label": "Path / intro complete", "auto": "pathComplete" },
+        { "id": "e-map", "label": "Book Map skimmed" },
+        { "id": "e-250-w", "label": "Art. 250 walkthroughs done", "auto": "walkthroughs:nec-250" },
+        { "id": "e-250-t", "label": "Art. 250 trainer topics cleared", "auto": "trainer:nec-250" },
+        { "id": "e-osha", "label": "OSHA lane complete", "auto": "lane:osha" },
+        { "id": "e-timed", "label": "Timed mini-set attempted", "auto": "timedAttempted" }
+      ]
+    },
+    {
+      "id": "F",
+      "title": "Business (later)",
+      "unlockWhen": "studyHalfOrExpand",
+      "items": [
+        { "id": "f-stub", "label": "Business exam kit — post-beta", "disabled": true }
+      ]
+    }
+  ]
+}

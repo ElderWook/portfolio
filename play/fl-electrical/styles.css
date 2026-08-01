@@ -164,6 +164,137 @@ footer {
 
 #intro-root[hidden] { display: none; }
 
+/* ---------- checklist (sidebar) ---------- */
+
+.checklist { display: flex; flex-direction: column; gap: 10px; }
+
+details.compartment {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+details.compartment > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+details.compartment > summary::-webkit-details-marker { display: none; }
+details.compartment > summary::before {
+  content: '▸';
+  color: var(--acc3);
+  margin-right: 6px;
+  display: inline-block;
+  transition: transform .15s ease;
+}
+details.compartment[open] > summary::before { transform: rotate(90deg); }
+
+.ctitle { flex: 1; }
+.ccount { color: var(--ink3); font-weight: 400; }
+
+.citems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2px 12px 12px;
+}
+
+.crow {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.crow:first-child { border-top: none; padding-top: 0; }
+
+.crow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+
+.crow-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  flex: 1;
+}
+.crow-main input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--acc);
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+.clabel { font-size: 13px; color: var(--ink); }
+
+.cinfo {
+  background: none;
+  border: none;
+  color: var(--ink3);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px;
+}
+.cinfo:hover { color: var(--acc3); }
+
+.crow-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-radius: 20px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  color: var(--ink2);
+  white-space: nowrap;
+}
+.badge-now { color: var(--bg); background: var(--acc2); border-color: var(--acc2); }
+.badge-acq { color: var(--acc3); border-color: color-mix(in srgb, var(--acc3) 45%, transparent); }
+.badge-ok { color: var(--acc); border-color: color-mix(in srgb, var(--acc) 45%, transparent); }
+.badge-warn { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 45%, transparent); }
+.badge-soon { color: var(--ink3); }
+
+.cib { font-family: var(--mono); font-size: 10.5px; color: var(--ink3); }
+
+.crow-note { margin: 0; font-size: 11.5px; color: var(--ink3); }
+
+.crow-links { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11.5px; }
+.crow-links a, .crow-open { font-family: var(--mono); }
+
+.crow-auto { flex-direction: row; align-items: center; gap: 8px; }
+.cstatus { color: var(--acc); font-weight: 700; width: 14px; text-align: center; flex: none; }
+.crow-auto .clabel { color: var(--ink2); }
+
+.crow-disabled { opacity: .55; }
+.crow-disabled .crow-main { cursor: not-allowed; }
+
+/* ---------- mobile sidebar sheet backdrop ---------- */
+
+.sidebar-backdrop { display: none; }
+
+@media (max-width: 900px) {
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    background: rgba(0, 0, 0, .5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+  }
+  .sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
+}
+
 /* ---------- motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {

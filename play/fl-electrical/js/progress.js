@@ -12,6 +12,9 @@ const DEFAULT = () => ({
   trainerCorrectCount: 0,
   missLog: [],
   introDismissedSession: false,
+  kitTouched: false,
+  pathComplete: false,
+  timedAttempted: false,
 });
 
 export function loadProgress(storageKey) {

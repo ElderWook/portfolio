@@ -1,0 +1,208 @@
+{
+  "books": [
+    {
+      "id": "nec",
+      "cibCode": "RN9",
+      "title": "NFPA 70 — National Electrical Code (NEC)",
+      "edition": "2023",
+      "ueRequired": true,
+      "priority": "now",
+      "acquisition": "buy",
+      "examSubject": "Wiring and Protection",
+      "weightRange": "13-15",
+      "orderLinks": [
+        { "label": "NFPA catalog — NFPA 70", "href": "https://www.nfpa.org/product/nfpa-70-code/p0070code" },
+        { "label": "Search: NFPA 70 2023 National Electrical Code", "href": "https://www.google.com/search?q=NFPA+70+2023+National+Electrical+Code" }
+      ]
+    },
+    {
+      "id": "fcm",
+      "cibCode": "RN50",
+      "title": "Florida Contractors Manual",
+      "edition": "2021",
+      "ueRequired": true,
+      "priority": "now",
+      "acquisition": "buy",
+      "examSubject": "Life Safety and ADA",
+      "weightRange": "04-06",
+      "orderLinks": [
+        { "label": "Search: Florida Contractors Manual 2021 edition", "href": "https://www.google.com/search?q=Florida+Contractors+Manual+2021+edition" }
+      ]
+    },
+    {
+      "id": "osha",
+      "cibCode": "RN7",
+      "title": "MANCOMM OSHA — 29 CFR 1926 / 1910 / 1904",
+      "edition": "July 2020",
+      "ueRequired": true,
+      "priority": "now",
+      "acquisition": "buy",
+      "examSubject": "OSHA, Safety, Testing, Tools",
+      "weightRange": "08-10",
+      "orderLinks": [
+        { "label": "MANCOMM", "href": "https://www.mancomm.com" },
+        { "label": "Search: MANCOMM OSHA July 2020 edition", "href": "https://www.google.com/search?q=MANCOMM+OSHA+29+CFR+1926+1910+1904+July+2020+edition" }
+      ]
+    },
+    {
+      "id": "nfpa72",
+      "cibCode": "RN10",
+      "title": "NFPA 72 — National Fire Alarm and Signaling Code",
+      "edition": "2019",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Alarms / Limited Energy",
+      "weightRange": "14-16",
+      "orderLinks": [
+        { "label": "NFPA catalog — NFPA 72", "href": "https://www.nfpa.org/product/nfpa-72-code/p0072code" },
+        { "label": "Search: NFPA 72 2019 edition", "href": "https://www.google.com/search?q=NFPA+72+2019+edition" }
+      ]
+    },
+    {
+      "id": "ntc",
+      "cibCode": "RN39",
+      "title": "NTC Blue Book — Low Voltage Systems",
+      "edition": "2020",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Alarms / Limited Energy",
+      "weightRange": "14-16",
+      "orderLinks": [
+        { "label": "Search: NTC Blue Book Low Voltage Systems 2020 edition", "href": "https://www.google.com/search?q=NTC+Blue+Book+Low+Voltage+Systems+2020+edition" }
+      ]
+    },
+    {
+      "id": "nfpa101",
+      "cibCode": "RN13",
+      "title": "NFPA 101 — Life Safety Code",
+      "edition": "2018",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Life Safety and ADA",
+      "weightRange": "04-06",
+      "orderLinks": [
+        { "label": "NFPA catalog — NFPA 101", "href": "https://www.nfpa.org/product/nfpa-101-code/p0101code" },
+        { "label": "Search: NFPA 101 2018 edition", "href": "https://www.google.com/search?q=NFPA+101+2018+edition" }
+      ]
+    },
+    {
+      "id": "nfpa780",
+      "cibCode": "RN12",
+      "title": "NFPA 780 — Standard for the Installation of Lightning Protection Systems",
+      "edition": "2017",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Special Occupancies and Situations",
+      "weightRange": "13-15",
+      "orderLinks": [
+        { "label": "NFPA catalog — NFPA 780", "href": "https://www.nfpa.org/product/nfpa-780-code/p0780code" },
+        { "label": "Search: NFPA 780 2017 edition", "href": "https://www.google.com/search?q=NFPA+780+2017+edition" }
+      ]
+    },
+    {
+      "id": "firealarm",
+      "cibCode": "RN14",
+      "title": "Fire Alarm Signaling Systems Handbook",
+      "edition": "4th ed., 2010",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Alarms / Limited Energy",
+      "weightRange": "14-16",
+      "orderLinks": [
+        { "label": "Search: Fire Alarm Signaling Systems Handbook 4th ed. 2010", "href": "https://www.google.com/search?q=Fire+Alarm+Signaling+Systems+Handbook+4th+edition+2010" }
+      ]
+    },
+    {
+      "id": "signstruct",
+      "cibCode": "RN23",
+      "title": "Engineering Sign Structures",
+      "edition": "current ed. per CIB reference chart",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Electrical Signs / Outline Lighting / Structural",
+      "weightRange": "02-04",
+      "orderLinks": [
+        { "label": "Brown Technical Books (publisher)", "href": "https://www.browntechnical.org" },
+        { "label": "Search: Engineering Sign Structures Brown Technical", "href": "https://www.google.com/search?q=Engineering+Sign+Structures+Brown+Technical+Publications" }
+      ]
+    },
+    {
+      "id": "neon",
+      "cibCode": "RN25",
+      "title": "NEON Techniques and Handling",
+      "edition": "4th ed., 1997",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Electrical Signs / Outline Lighting / Structural",
+      "weightRange": "02-04",
+      "orderLinks": [
+        { "label": "Brown Technical Books (publisher)", "href": "https://www.browntechnical.org" },
+        { "label": "Search: NEON Techniques and Handling 4th ed. 1997", "href": "https://www.google.com/search?q=NEON+Techniques+and+Handling+4th+edition+1997" }
+      ]
+    },
+    {
+      "id": "concrete",
+      "cibCode": "RN28",
+      "title": "Design and Control of Concrete Mixtures",
+      "edition": "16th/17th ed.",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Electrical Signs / Outline Lighting / Structural",
+      "weightRange": "02-04",
+      "orderLinks": [
+        { "label": "American Cement Association (publisher)", "href": "https://www.cement.org" },
+        { "label": "Search: Design and Control of Concrete Mixtures 16th 17th edition", "href": "https://www.google.com/search?q=Design+and+Control+of+Concrete+Mixtures+16th+17th+edition" }
+      ]
+    },
+    {
+      "id": "telecom",
+      "cibCode": "RN30",
+      "title": "Telecommunication Wiring",
+      "edition": "2001, 3rd ed.",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "buy",
+      "examSubject": "Alarms / Limited Energy",
+      "weightRange": "14-16",
+      "orderLinks": [
+        { "label": "Search: Telecommunication Wiring 2001 3rd edition Prentice Hall", "href": "https://www.google.com/search?q=Telecommunication+Wiring+2001+3rd+edition+Prentice+Hall" }
+      ]
+    },
+    {
+      "id": "ul681",
+      "cibCode": "RN20",
+      "title": "UL 681 — Standard for Installation and Classification of Burglar and Holdup Alarm Systems",
+      "edition": "2014 ed. (flips 2027-08-21)",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "free-state-pdf",
+      "examSubject": "Alarms / Limited Energy",
+      "weightRange": "14-16",
+      "orderLinks": [
+        { "label": "Email DBPR — free copy after exam approval (combined UL 681 + UL 365 request)", "href": "mailto:ElectricalContractors.Reference@myfloridalicense.com?subject=UL%20681%20%2F%20UL%20365%20Reference%20Request" }
+      ]
+    },
+    {
+      "id": "ul365",
+      "cibCode": "RN21",
+      "title": "UL 365 — Standard for Police Station Connected Burglar Alarm Units and Systems",
+      "edition": "current ed. per CIB reference chart (flips 2027-08-21)",
+      "ueRequired": true,
+      "priority": "before-exam",
+      "acquisition": "free-state-pdf",
+      "examSubject": "Alarms / Limited Energy",
+      "weightRange": "14-16",
+      "orderLinks": [
+        { "label": "Email DBPR — free copy after exam approval (combined UL 681 + UL 365 request)", "href": "mailto:ElectricalContractors.Reference@myfloridalicense.com?subject=UL%20681%20%2F%20UL%20365%20Reference%20Request" }
+      ]
+    }
+  ]
+}
