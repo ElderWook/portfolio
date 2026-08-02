@@ -94,6 +94,21 @@ function stopTimer() {
 const RING_R = 26;
 const RING_C = 2 * Math.PI * RING_R;
 
+// Finder tool isolation (Task 10): when the Index or Contents tool is chosen we
+// must NOT hand the codebook the real tab set — every finder-path token
+// (250.122, 250.66, 250.50) is ALSO a real tabs-tree node id, so a visitor
+// could satisfy finder.indexPath by clicking the section in the Tabs tree
+// without ever touching the index, and get wrongly credited an index find.
+// But mountCodebook early-returns a "No NEC tabs loaded" empty widget on an
+// EMPTY tabs array (codebook-mock.js, out of this task's scope), which would
+// hide the Index/Contents panel entirely. This one no-node placeholder tab is
+// the minimum that lets the panel render while exposing zero clickable
+// finder-token nodes in the codebook's own Tabs view — so the id-based gate
+// (onPick below) can only ever be satisfied through the chosen finder. The
+// codebook's inner Tabs button then lands on this near-empty panel (cosmetic;
+// a full P3 pass would hide that button, but it can't leak a token now).
+const FINDER_TAB_PLACEHOLDER = [{ label: 'Section tabs off — use the finder above', targets: [], pillar: '' }];
+
 function fmtClock(totalSeconds) {
   const s = Math.max(0, totalSeconds);
   const m = Math.floor(s / 60);
@@ -380,40 +395,47 @@ function renderDrill(root, ctx) {
   // the tool chooser can both re-mount it — the demo tour with the correct
   // tab pre-opened (highlightTarget), the chooser in the newly-picked view
   // (reads chosenTool off the closure, so no separate arg is needed).
+  //
+  // TOOL ISOLATION: only the CHOSEN tool's surface is handed to mountCodebook,
+  // never all three — so the hard-gate can only be satisfied through the tool
+  // the visitor actually picked (see FINDER_TAB_PLACEHOLDER above for why the
+  // real tabs are withheld from the Index/Contents views). 'tab' gets the real
+  // tabs; 'index' gets the index corpus + a no-node placeholder tab; 'contents'
+  // gets the contents outline + the same placeholder.
+  //
   // `forceTabs` is used ONLY by the demo tour below: its highlightTarget is
   // always a tab-family label (drill.lookupPath[0]), which only pulses in the
-  // Tabs view — so the demo forces Tabs regardless of chosenTool/finder.
-  // Nothing clicks through onPick during the demo (it fakes the outcome
-  // directly), so activePath() staying tool-aware here is harmless. ----
+  // Tabs view — so the demo forces the real Tabs surface regardless of
+  // chosenTool/finder. Nothing clicks through onPick during the demo (it fakes
+  // the outcome directly), so activePath() staying tool-aware is harmless. ----
   function mountCb(highlightTarget, forceTabs = false) {
     const tool = forceTabs ? 'tab' : chosenTool;
-    const extra = tool === 'index'
-      ? { view: 'index', index: (indexByBook || {})[mode] }
+    const onPick = (id) => {
+      if (resolved) return;
+      pickedPath.push(id);
+      if (activePath().includes(id)) {
+        lookupHit = true;
+        lookupEl.hidden = false;
+        hideHeld();
+      }
+    };
+    const opts = tool === 'index'
+      ? { mode, tabs: FINDER_TAB_PLACEHOLDER, view: 'index', index: (indexByBook || {})[mode], highlightTarget: null, onPick }
       : tool === 'contents'
-        ? { view: 'contents', contents: (contentsByBook || {})[mode] }
-        : {};
-    mountCodebook(root.querySelector('#tr-codebook'), {
-      mode,
-      tabs,
-      highlightTarget,
-      onPick: (id) => {
-        if (resolved) return;
-        pickedPath.push(id);
-        if (activePath().includes(id)) {
-          lookupHit = true;
-          lookupEl.hidden = false;
-          hideHeld();
-        }
-      },
-      ...extra,
-    });
+        ? { mode, tabs: FINDER_TAB_PLACEHOLDER, view: 'contents', contents: (contentsByBook || {})[mode], highlightTarget: null, onPick }
+        : { mode, tabs, view: 'tabs', highlightTarget, onPick };
+    mountCodebook(root.querySelector('#tr-codebook'), opts);
   }
   mountCb(null);
 
   // ---- finder tool chooser (Task 10): only present when drill.finder is
   // set (see the template above). Switching tools re-mounts the codebook in
-  // the matching view and clears any stale "held" nudge, since the lookup
-  // requirement the visitor is chasing just changed underneath them. ----
+  // the matching view and RE-ARMS the lookup gate: the newly chosen tool has
+  // its OWN required path (activePath()), so a hit satisfied through the
+  // previous tool must not carry over — otherwise a visitor could satisfy the
+  // Index gate, flip to Contents, and get credited a contents find they never
+  // performed. Reset lookupHit + hide the green confirmation, and clear any
+  // stale "held" nudge (the requirement it named just changed). ----
   const toolChooser = root.querySelector('#tr-tool-chooser');
   if (toolChooser) {
     const toolBtns = [...toolChooser.querySelectorAll('[data-tool]')];
@@ -429,6 +451,8 @@ function renderDrill(root, ctx) {
       b.addEventListener('click', () => {
         if (resolved || b.dataset.tool === chosenTool) return;
         chosenTool = b.dataset.tool;
+        lookupHit = false;
+        lookupEl.hidden = true;
         paintToolChooser();
         hideHeld();
         mountCb(null);

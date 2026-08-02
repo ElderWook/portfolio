@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolveToken } from './citations.js';
+import { pathTo } from './contents.js';
 
 const read = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url)));
 const necTabs = read('data/tabs/nec-curated.json').tabs;
@@ -20,6 +21,38 @@ for (const topic of [...NEC, ...OSHA]) {
         if (tok === 'footnote-zone') continue;
         const r = resolveToken(tok, tabsFor(book));
         assert.notEqual(r.kind, null, `${topic}/${d.id}: "${tok}" resolves to nothing`);
+      }
+    }
+  });
+}
+
+// Task 10: a drill's `finder` paths must actually be reachable through the
+// tool they name, or the hard-gate can never release on that tool. The Index
+// panel (codebook-mock.js) only ever emits an entry's cite[0]; the Contents
+// panel only emits a real outline leaf's cite. So for every finder drill:
+//   (a) finder.indexPath must contain the cite[0] of at least one index entry
+//       in data/index/<book>.json — otherwise no index click can ever fire it.
+//   (b) every finder.contentsPath token must be a real contents leaf
+//       (pathTo(outline, tok) non-null in data/contents/<book>.json).
+for (const topic of [...NEC, ...OSHA]) {
+  test(`finder paths are reachable through their tool: ${topic}`, () => {
+    const book = topic.startsWith('osha') ? 'osha' : 'nec';
+    const { drills } = read(`data/drills/${topic}.json`);
+    const indexCiteHeads = new Set((read(`data/index/${book}.json`).entries || []).map((e) => e.cite[0]));
+    const outline = read(`data/contents/${book}.json`).outline;
+    for (const d of drills) {
+      if (!d.finder) continue;
+      const idxPath = d.finder.indexPath || [];
+      assert.ok(
+        idxPath.some((tok) => indexCiteHeads.has(tok)),
+        `${topic}/${d.id}: no finder.indexPath token is the cite[0] of any index entry, so the Index tool can never satisfy this drill`
+      );
+      for (const tok of d.finder.contentsPath || []) {
+        assert.notEqual(
+          pathTo(outline, tok),
+          null,
+          `${topic}/${d.id}: finder.contentsPath "${tok}" is not a real contents leaf`
+        );
       }
     }
   });
