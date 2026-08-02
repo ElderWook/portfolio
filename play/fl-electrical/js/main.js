@@ -65,7 +65,11 @@ export async function boot() {
   const NEC_TOPIC_IDS = ['nec-250-gec', 'nec-250-122', 'nec-250-122b', 'nec-250-traps'];
   const OSHA_TOPIC_IDS = ['osha-falls', 'osha-ladders'];
   const TOPIC_IDS = [...NEC_TOPIC_IDS, ...OSHA_TOPIC_IDS];
-  const [checklist, books, kit, path, necTabs, oshaTabs, timedMiniFile, ...topicData] = await Promise.all([
+  const [
+    checklist, books, kit, path, necTabs, oshaTabs, timedMiniFile,
+    necIndex, oshaIndex, necContents, oshaContents,
+    ...topicData
+  ] = await Promise.all([
     loadJSON('data/checklist.json'),
     loadJSON('data/books.json'),
     loadJSON('data/kit.json'),
@@ -73,6 +77,10 @@ export async function boot() {
     loadJSON('data/tabs/nec-curated.json'),
     loadJSON('data/tabs/osha-curated.json'),
     loadJSON('data/drills/timed-mini.json'),
+    loadJSON('data/index/nec.json'),
+    loadJSON('data/index/osha.json'),
+    loadJSON('data/contents/nec.json'),
+    loadJSON('data/contents/osha.json'),
     ...TOPIC_IDS.map((id) => loadJSON(`data/walkthroughs/${id}.json`)),
     ...TOPIC_IDS.map((id) => loadJSON(`data/drills/${id}.json`)),
   ]);
@@ -87,6 +95,13 @@ export async function boot() {
   // 'osha') — walkthrough.js/trainer.js pick the right one per-topic off each
   // walkthrough's own `book` field (never hardcoded to 'nec' anymore).
   const tabsByBook = { nec: necTabs.tabs, osha: oshaTabs.tabs };
+
+  // indexByBook/contentsByBook: the same per-book split as tabsByBook, for the
+  // codebook mock's Index/Contents views (js/codebook-mock.js, Tasks 6-7).
+  // Threaded into the screens below; the screens themselves forward whichever
+  // book's map applies into mountCodebook (Task 9).
+  const indexByBook = { nec: necIndex, osha: oshaIndex };
+  const contentsByBook = { nec: necContents, osha: oshaContents };
 
   // drillsByTopic: { topicId: drill[] } for the Trainer picker/player.
   // drillIdToTopic: id -> topic, so the scoring handler can count DISTINCT
@@ -285,6 +300,8 @@ export async function boot() {
       renderWalkthrough(screenRoot, {
         topics: walkthroughs,
         tabsByBook,
+        indexByBook,
+        contentsByBook,
         isOshaUnlocked: isOshaLaneUnlocked,
         getProgress: () => loadProgress(KEY),
         onComplete(topicId) {
@@ -309,6 +326,8 @@ export async function boot() {
         topicsMeta: trainerTopicsMeta,
         drillsByTopic,
         tabsByBook,
+        indexByBook,
+        contentsByBook,
         editionPins: manifest.editionPins,
         oshaUnlockTarget: manifest.unlock.trainerTopicsForOsha,
         getProgress: () => loadProgress(KEY),
