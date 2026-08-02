@@ -41,6 +41,7 @@
         "Cite: 1926.1053. The extension-above-landing clause is separate from the angle clause. Read both in your book"
       ],
       "lookupPath": ["Ladders", "1926.1053"],
+      "finder": { "recommend": "index", "indexPath": ["1926.1053"], "contentsPath": ["1926.1053"] },
       "timeTargetSec": 150,
       "tags": ["osha", "ladders", "trap", "hard"],
       "verifyAgainst": "your book"

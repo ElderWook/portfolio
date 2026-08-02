@@ -23,12 +23,17 @@
 //   openNotes    — same codebook mock; only the footnote-zone button is the
 //                  expected pick (onPick('footnote-zone')).
 //   findCitation — (Task 9) mounts the same codebook mock, but opened on the
-//                  step's own `mode` ('index'|'contents') with the topic
-//                  book's `indexByBook`/`contentsByBook` packs supplied, so
-//                  the Index search box or Contents drill is live instead of
-//                  the tab strip. `correctTarget` is a citation TOKEN — the
-//                  `cite` an index entry or contents leaf hands back to
-//                  onPick, per codebook-mock.js's contract.
+//                  step's own `mode` ('index'|'contents') with ONLY that
+//                  book's matching pack supplied (`indexByBook[mode]` for
+//                  'index', `contentsByBook[mode]` for 'contents' — never
+//                  both) plus a no-node placeholder tab in place of the real
+//                  `tabs`, so the Index search box or Contents drill is the
+//                  ONLY live surface (isolation: a findCitation correctTarget
+//                  is also a real Tabs node id, so the real tabs/other pack
+//                  would let a visitor route around the intended finder —
+//                  see FINDER_TAB_PLACEHOLDER below). `correctTarget` is a
+//                  citation TOKEN — the `cite` an index entry or contents
+//                  leaf hands back to onPick, per codebook-mock.js's contract.
 // In pickTab/openNotes the step's `correctTarget` is always a tab LABEL or
 // the literal 'footnote-zone' string — never a bare section fragment — per
 // Task 6's note that a bare fragment like "250.122" can first-match-resolve
@@ -60,6 +65,19 @@
 import { mountCodebook } from '../codebook-mock.js';
 import { coachmark, coachSeen, closeCoachmark } from '../coachmark.js';
 import { pathTo } from '../contents.js';
+
+// Finder isolation for findCitation steps (mirrors trainer.js's Task 10
+// FINDER_TAB_PLACEHOLDER, duplicated rather than imported to avoid a
+// walkthrough.js <-> trainer.js import cycle): every findCitation
+// correctTarget token is ALSO a real Tabs tree node id, so handing the real
+// `tabs` array to the codebook here would let a visitor satisfy the step by
+// clicking the Tabs tree instead of using the intended Index/Contents
+// finder. This single no-node tab keeps the codebook's Tabs view non-empty
+// (mountCodebook renders "No tabs loaded" on an empty array) while exposing
+// zero clickable section nodes. `pillar: ''` (not a dash) — codebook-mock.js's
+// pillarLabel() renders this into the visible group heading ("Art. " / "Part
+// "), so it must stay plain text, same as trainer.js's own placeholder.
+const FINDER_TAB_PLACEHOLDER = { label: 'Section tabs off. Use the finder above.', targets: [], pillar: '' };
 
 export function trainerTopicUnlockKey(walkthroughId) {
   return `trainer-topic:${walkthroughId}`;
@@ -176,16 +194,24 @@ function renderPlayer(root, { topic, tabsByBook, indexByBook = {}, contentsByBoo
     // findCitation opens the codebook straight into its own view (Index or
     // Contents) with that book's packs, instead of the default Tabs view —
     // everything else (pickTab/openNotes) keeps the plain tabs-only mount.
+    //
+    // ISOLATION: a findCitation step's correctTarget is a citation token that
+    // is ALSO a real Tabs tree node id, so the real `tabs` (and the OTHER
+    // pack) must not be handed to the codebook here — only the chosen
+    // surface (Index XOR Contents) plus the no-node placeholder tab, so the
+    // step can only be satisfied through the intended finder (mirrors
+    // trainer.js's Task 10 tool isolation).
     const isFindCitation = step.action === 'findCitation';
-    mountCodebook(root.querySelector('#wt-codebook'), {
-      mode,
-      tabs,
-      highlightTarget: null,
-      onPick,
-      ...(isFindCitation
-        ? { view: step.mode, index: indexByBook[mode], contents: contentsByBook[mode] }
-        : {}),
-    });
+    mountCodebook(root.querySelector('#wt-codebook'), isFindCitation
+      ? {
+          mode,
+          tabs: [FINDER_TAB_PLACEHOLDER],
+          view: step.mode,
+          highlightTarget: null,
+          onPick,
+          ...(step.mode === 'index' ? { index: indexByBook[mode] } : { contents: contentsByBook[mode] }),
+        }
+      : { mode, tabs, highlightTarget: null, onPick });
   }
 
   // No remove/reflow/re-add dance is needed here (unlike intro.js's shake,
@@ -322,8 +348,15 @@ export function renderWalkthrough(root, { topics, tabsByBook, indexByBook = {}, 
     // to the Tabs view, per codebook-mock.js's contract) — instead it opens
     // the codebook straight into the step's own Index/Contents view so the
     // demo shows the SAME panel the visitor will search or drill themselves.
+    // Same isolation as renderPlayer above: override `tabs` with the no-node
+    // placeholder and pass only the chosen pack (index XOR contents), so the
+    // demo mount can't be satisfied via the Tabs tree either.
     else if (step.action === 'findCitation') {
-      remountWtCodebook(null, { view: step.mode, index: indexByBook[mode], contents: contentsByBook[mode] });
+      remountWtCodebook(null, {
+        tabs: [FINDER_TAB_PLACEHOLDER],
+        view: step.mode,
+        ...(step.mode === 'index' ? { index: indexByBook[mode] } : { contents: contentsByBook[mode] }),
+      });
     }
 
     let target;

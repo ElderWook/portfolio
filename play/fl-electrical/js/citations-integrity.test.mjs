@@ -26,14 +26,21 @@ for (const topic of [...NEC, ...OSHA]) {
   });
 }
 
-// Task 10: a drill's `finder` paths must actually be reachable through the
-// tool they name, or the hard-gate can never release on that tool. The Index
-// panel (codebook-mock.js) only ever emits an entry's cite[0]; the Contents
-// panel only emits a real outline leaf's cite. So for every finder drill:
-//   (a) finder.indexPath must contain the cite[0] of at least one index entry
-//       in data/index/<book>.json — otherwise no index click can ever fire it.
-//   (b) every finder.contentsPath token must be a real contents leaf
+// Task 10 (+ OSHA finder-parity fix): a drill's `finder` paths must actually
+// be reachable through the tool(s) they name, or the hard-gate can never
+// release on that tool. The Index panel (codebook-mock.js) only ever emits
+// an entry's cite[0]; the Contents panel only emits a real outline leaf's
+// cite. A finder is not required to carry both paths — a book/topic with no
+// index entry for its cite (e.g. OSHA fall-protection) is legitimately
+// CONTENTS-ONLY, and the trainer chooser (js/screens/trainer.js) only offers
+// the tools a finder actually supports. So for every finder drill:
+//   (a) IF finder.indexPath is present, it must contain the cite[0] of at
+//       least one index entry in data/index/<book>.json — otherwise no index
+//       click can ever fire it.
+//   (b) every finder.contentsPath token present must be a real contents leaf
 //       (pathTo(outline, tok) non-null in data/contents/<book>.json).
+//   (c) every finder must carry at least one of indexPath/contentsPath — a
+//       finder with neither could never be satisfied by any tool at all.
 for (const topic of [...NEC, ...OSHA]) {
   test(`finder paths are reachable through their tool: ${topic}`, () => {
     const book = topic.startsWith('osha') ? 'osha' : 'nec';
@@ -42,17 +49,26 @@ for (const topic of [...NEC, ...OSHA]) {
     const outline = read(`data/contents/${book}.json`).outline;
     for (const d of drills) {
       if (!d.finder) continue;
-      const idxPath = d.finder.indexPath || [];
+      const hasIndexPath = Array.isArray(d.finder.indexPath) && d.finder.indexPath.length > 0;
+      const hasContentsPath = Array.isArray(d.finder.contentsPath) && d.finder.contentsPath.length > 0;
       assert.ok(
-        idxPath.some((tok) => indexCiteHeads.has(tok)),
-        `${topic}/${d.id}: no finder.indexPath token is the cite[0] of any index entry, so the Index tool can never satisfy this drill`
+        hasIndexPath || hasContentsPath,
+        `${topic}/${d.id}: finder has neither indexPath nor contentsPath, so no tool could ever satisfy it`
       );
-      for (const tok of d.finder.contentsPath || []) {
-        assert.notEqual(
-          pathTo(outline, tok),
-          null,
-          `${topic}/${d.id}: finder.contentsPath "${tok}" is not a real contents leaf`
+      if (hasIndexPath) {
+        assert.ok(
+          d.finder.indexPath.some((tok) => indexCiteHeads.has(tok)),
+          `${topic}/${d.id}: no finder.indexPath token is the cite[0] of any index entry, so the Index tool can never satisfy this drill`
         );
+      }
+      if (hasContentsPath) {
+        for (const tok of d.finder.contentsPath) {
+          assert.notEqual(
+            pathTo(outline, tok),
+            null,
+            `${topic}/${d.id}: finder.contentsPath "${tok}" is not a real contents leaf`
+          );
+        }
       }
     }
   });

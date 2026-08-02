@@ -107,7 +107,7 @@ const RING_C = 2 * Math.PI * RING_R;
 // (onPick below) can only ever be satisfied through the chosen finder. The
 // codebook's inner Tabs button then lands on this near-empty panel (cosmetic;
 // a full P3 pass would hide that button, but it can't leak a token now).
-const FINDER_TAB_PLACEHOLDER = [{ label: 'Section tabs off — use the finder above', targets: [], pillar: '' }];
+const FINDER_TAB_PLACEHOLDER = [{ label: 'Section tabs off. Use the finder above.', targets: [], pillar: '' }];
 
 function fmtClock(totalSeconds) {
   const s = Math.max(0, totalSeconds);
@@ -245,6 +245,24 @@ function renderDrill(root, ctx) {
     .map((h, i) => `<li class="tr-hint-item" data-rung="${i}" hidden>${h}</li>`)
     .join('');
 
+  // Finder tool chooser (Task 10, parity fix): only offer a tool the drill's
+  // `finder` can actually satisfy. Tab is always offered (it uses drill.
+  // lookupPath, which every drill has). Index/Contents are offered only when
+  // their own path array is present and non-empty — an OSHA drill like
+  // osha-falls has no index entry to find, so its finder carries no
+  // indexPath and the Index button must not appear (there would be no way
+  // to satisfy it).
+  const hasIndexTool = !!(drill.finder && Array.isArray(drill.finder.indexPath) && drill.finder.indexPath.length);
+  const hasContentsTool = !!(drill.finder && Array.isArray(drill.finder.contentsPath) && drill.finder.contentsPath.length);
+  const toolChoiceHtml = drill.finder
+    ? `
+          <div class="cb-viewswitch tr-tool-chooser" id="tr-tool-chooser" role="tablist" aria-label="Finder tool">
+            <button type="button" class="cb-view" data-tool="tab" role="tab" aria-selected="false">Tab</button>
+            ${hasIndexTool ? '<button type="button" class="cb-view" data-tool="index" role="tab" aria-selected="false">Index</button>' : ''}
+            ${hasContentsTool ? '<button type="button" class="cb-view" data-tool="contents" role="tab" aria-selected="false">Contents</button>' : ''}
+          </div>`
+    : '';
+
   root.innerHTML = `
     <section class="trainer-screen">
       <div class="tr-headrow">
@@ -289,12 +307,7 @@ function renderDrill(root, ctx) {
           </div>
         </div>
         <div class="tr-right">
-          ${drill.finder ? `
-          <div class="cb-viewswitch tr-tool-chooser" id="tr-tool-chooser" role="tablist" aria-label="Finder tool">
-            <button type="button" class="cb-view" data-tool="tab" role="tab" aria-selected="false">Tab</button>
-            <button type="button" class="cb-view" data-tool="index" role="tab" aria-selected="false">Index</button>
-            <button type="button" class="cb-view" data-tool="contents" role="tab" aria-selected="false">Contents</button>
-          </div>` : ''}
+          ${toolChoiceHtml}
           <div class="tr-codebook" id="tr-codebook"></div>
         </div>
       </div>
@@ -309,8 +322,15 @@ function renderDrill(root, ctx) {
   // Finder tool chooser (Task 10): only meaningful when drill.finder exists —
   // a drill without it never renders the chooser, so chosenTool stays 'tab'
   // and every lookup check below falls through to the old lookupPath-only
-  // behavior (backward compatible).
-  let chosenTool = (drill.finder && drill.finder.recommend) || 'tab';
+  // behavior (backward compatible). The default must be a tool the chooser
+  // actually offers (toolChoiceHtml above) — a contents-only finder (e.g.
+  // osha-falls) can still `recommend: "contents"` safely since Contents is
+  // offered, but a `recommend` naming a tool this drill can't satisfy would
+  // otherwise default-select a button that doesn't exist.
+  const recommended = drill.finder && drill.finder.recommend;
+  const recommendedIsOffered =
+    recommended === 'tab' || (recommended === 'index' && hasIndexTool) || (recommended === 'contents' && hasContentsTool);
+  let chosenTool = recommendedIsOffered ? recommended : 'tab';
 
   // The path the ACTIVE tool must hit for a hard drill's answer to score:
   // drill.lookupPath for 'tab', finder.indexPath for 'index', finder.contentsPath

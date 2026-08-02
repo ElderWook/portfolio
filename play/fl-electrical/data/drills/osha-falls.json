@@ -41,6 +41,7 @@
         "Cite: 1926.502. Read each system's spec in your book before you pick one"
       ],
       "lookupPath": ["Fall Protection", "1926.502"],
+      "finder": { "recommend": "contents", "contentsPath": ["1926.502", "1926.501"] },
       "timeTargetSec": 150,
       "tags": ["osha", "falls", "systems", "hard"],
       "verifyAgainst": "your book"
