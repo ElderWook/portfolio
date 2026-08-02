@@ -6,6 +6,7 @@
       "whyItMatters": "This is the signature OSHA-electrical topic for construction: temporary cord-and-plug equipment must be protected by ONE of two compliant methods, not both.",
       "searchNouns": ["GFCI construction site", "assured grounding program", "AEGCP", "cord sets", "temporary wiring"],
       "cite": "29 CFR 1926.404",
+      "citeTokens": ["1926.404"],
       "trap": "Believing GFCI protection and the assured equipment grounding conductor program are both required together. The standard treats them as alternative, either/or compliance paths."
     },
     {
@@ -13,6 +14,7 @@
       "whyItMatters": "De-energizing before work on exposed parts is the core 'qualified person' safety doctrine tested throughout this book.",
       "searchNouns": ["lockout tagout", "LOTO", "de-energized", "qualified person", "verify zero energy"],
       "cite": "29 CFR 1926.417, 29 CFR 1910.147",
+      "citeTokens": ["1926.417", "1910.147"],
       "trap": "Treating a tag alone as sufficient control without a physical lock, or skipping the try-before-you-touch verification step after lockout is applied."
     },
     {
@@ -20,6 +22,7 @@
       "whyItMatters": "Broad language protecting employees from exposed energized parts underlies many scenario-style questions.",
       "searchNouns": ["exposed energized parts", "worn or frayed cords", "protective shields", "warning signs"],
       "cite": "29 CFR 1926.416",
+      "citeTokens": ["1926.416"],
       "trap": "Assuming a cord or tool that still 'works' is compliant even though its insulation is visibly damaged. The rule is about condition, not function."
     },
     {
@@ -27,6 +30,7 @@
       "whyItMatters": "The 300/300A/301 forms and their posting/retention duties are a distinct recordkeeping question set, separate from safety-practice questions.",
       "searchNouns": ["OSHA 300 log", "300A summary", "301 incident report", "posting requirement", "record retention"],
       "cite": "29 CFR 1904.29, 29 CFR 1904.32",
+      "citeTokens": ["1904.29", "1904.32"],
       "trap": "Confusing the annual summary posting window with the multi-year retention period, or forgetting which employer sizes are exempt from routine recordkeeping."
     },
     {
@@ -34,6 +38,7 @@
       "whyItMatters": "The short reporting clocks (fatality vs. hospitalization/amputation/eye loss) are a favorite 'which number is it' question.",
       "searchNouns": ["reporting", "fatality", "hospitalization", "amputation", "loss of an eye"],
       "cite": "29 CFR 1904.39",
+      "citeTokens": ["1904.39"],
       "trap": "Assuming a single reporting deadline covers everything. A fatality and an in-patient hospitalization/amputation/eye-loss report are on two different clocks keyed to severity, so look up which one applies before you assume the timing."
     },
     {
@@ -41,6 +46,7 @@
       "whyItMatters": "Employer duties to assess hazards and provide PPE are a recurring general-safety subject that crosses into every trade.",
       "searchNouns": ["PPE hazard assessment", "employer-provided PPE", "eye and face protection", "head protection"],
       "cite": "29 CFR 1926.95, 29 CFR 1926.100",
+      "citeTokens": ["1926.95", "1926.100"],
       "trap": "Assuming PPE is only required where the hazard is 'obvious' instead of after a documented hazard assessment."
     },
     {
@@ -48,6 +54,7 @@
       "whyItMatters": "Ladder setup and use rules show up under the tools/testing side of this exam subject.",
       "searchNouns": ["ladder angle", "extension above landing", "ladder inspection", "three points of contact"],
       "cite": "29 CFR 1926.1053",
+      "citeTokens": ["1926.1053"],
       "trap": "Setting a portable ladder by feel instead of the required setup angle, and forgetting the separate rule that the side rails must extend above the landing point. Verify both against the standard."
     },
     {
@@ -55,6 +62,7 @@
       "whyItMatters": "A distinct construction-electrical hazard topic: ventilation and facility protection around charging areas, not just PPE.",
       "searchNouns": ["battery charging area", "ventilation", "eyewash facilities", "battery room"],
       "cite": "29 CFR 1926.441",
+      "citeTokens": ["1926.441"],
       "trap": "Treating battery-charging hazards as generic chemical storage instead of the specific ventilation and facility-protection duties this section actually imposes."
     }
   ]
