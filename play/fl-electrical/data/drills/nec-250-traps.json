@@ -41,6 +41,7 @@
         "Cite: the reduced-size GEC allowance at 250.66 is scoped to rod/pipe/plate electrodes. Reread the exact wording in your book"
       ],
       "lookupPath": ["250 Grounding", "250.66", "250.50 Electrodes", "250.52"],
+      "finder": { "recommend": "contents", "indexPath": ["250.66", "250.50"], "contentsPath": ["250.66", "250.50"] },
       "timeTargetSec": 150,
       "tags": ["250", "GEC", "electrode", "trap", "hard"],
       "verifyAgainst": "your book"

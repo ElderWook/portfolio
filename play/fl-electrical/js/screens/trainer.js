@@ -20,10 +20,23 @@
 //
 // SCORING lives in main.js (this module never touches storage — same pattern
 // as walkthrough.js/path.js/bookmap.js). On submit this calls back:
-//   onResult({ drill, correct, lookupHit, pickedPath, elapsed }) -> freshProgress
+//   onResult({ drill, correct, lookupHit, pickedPath, elapsed, chosenTool,
+//              climbed, termsTried }) -> freshProgress
 // main.js owns the trainerCorrectCount / XP / path-bonus / distinct-correct
 // topic-clear / OSHA-lane-unlock / missLog mutation and returns the updated
 // progress so this screen can show "topic cleared" / "OSHA unlocked" banners.
+//
+// FINDER TOOL CHOOSER (Task 10): a drill can carry a `finder` object —
+// { recommend, indexPath[], contentsPath[] } — added on top of its normal
+// `lookupPath`. When present, renderDrill shows a Tab | Index | Contents
+// chooser next to the codebook (default = finder.recommend) and re-mounts
+// the codebook in the matching view on every change. `lookupHit` becomes
+// TOOL-AWARE: it fires off drill.lookupPath for 'tab', finder.indexPath for
+// 'index', finder.contentsPath for 'contents' — the hard-gate check itself
+// (below) is untouched, it just now reads a tool-aware signal. `chosenTool`
+// rides along to onResult so main.js can credit indexFind/contentsFind XP
+// and toolUsage tallies. Drills with no `finder` never render the chooser
+// and behave exactly as before this task.
 //
 // UNLOCK: a Trainer topic is playable only once its walkthrough set
 // `trainer-topic:<id>` in progress.unlocked (isTrainerTopicUnlocked, imported
@@ -198,7 +211,7 @@ function renderResult(root, ctx) {
 }
 
 function renderDrill(root, ctx) {
-  const { drill, topicTitle, book, index, total, cleared, tabsByBook, editionPins, getProgress, onResult, onNext, onExit, forceDemo, onReplayGuide } = ctx;
+  const { drill, topicTitle, book, index, total, cleared, tabsByBook, indexByBook, contentsByBook, editionPins, getProgress, onResult, onNext, onExit, forceDemo, onReplayGuide } = ctx;
   // Book-derived mode/tabs/edition pin — never hardcoded to 'nec' (Task 9):
   // an OSHA topic's drills mount the OSHA codebook mode and show the OSHA
   // edition pin instead of the NEC one.
@@ -261,6 +274,12 @@ function renderDrill(root, ctx) {
           </div>
         </div>
         <div class="tr-right">
+          ${drill.finder ? `
+          <div class="cb-viewswitch tr-tool-chooser" id="tr-tool-chooser" role="tablist" aria-label="Finder tool">
+            <button type="button" class="cb-view" data-tool="tab" role="tab" aria-selected="false">Tab</button>
+            <button type="button" class="cb-view" data-tool="index" role="tab" aria-selected="false">Index</button>
+            <button type="button" class="cb-view" data-tool="contents" role="tab" aria-selected="false">Contents</button>
+          </div>` : ''}
           <div class="tr-codebook" id="tr-codebook"></div>
         </div>
       </div>
@@ -272,6 +291,22 @@ function renderDrill(root, ctx) {
   const pickedPath = [];
   let resolved = false;
   const startTs = Date.now();
+  // Finder tool chooser (Task 10): only meaningful when drill.finder exists —
+  // a drill without it never renders the chooser, so chosenTool stays 'tab'
+  // and every lookup check below falls through to the old lookupPath-only
+  // behavior (backward compatible).
+  let chosenTool = (drill.finder && drill.finder.recommend) || 'tab';
+
+  // The path the ACTIVE tool must hit for a hard drill's answer to score:
+  // drill.lookupPath for 'tab', finder.indexPath for 'index', finder.contentsPath
+  // for 'contents'. Drills without `finder` always resolve to lookupPath.
+  function activePath() {
+    if (drill.finder) {
+      if (chosenTool === 'index') return drill.finder.indexPath || [];
+      if (chosenTool === 'contents') return drill.finder.contentsPath || [];
+    }
+    return drill.lookupPath || [];
+  }
 
   const submitBtn = root.querySelector('#tr-submit');
   const lookupEl = root.querySelector('#tr-lookup');
@@ -340,10 +375,23 @@ function renderDrill(root, ctx) {
   activeTimerId = setInterval(paintTimer, 1000);
 
   // ---- right pane: codebook. onPick records the visitor's navigation and
-  // flags a lookup hit when they open a cited node/tab. Wrapped in mountCb so
-  // the first-drill demo tour can re-mount it with the correct tab pre-opened
-  // (highlightTarget) to SHOW which tab to flip to. ----
-  function mountCb(highlightTarget) {
+  // flags a lookup hit when the click matches the ACTIVE tool's path
+  // (activePath() above). Wrapped in mountCb so the first-drill demo tour AND
+  // the tool chooser can both re-mount it — the demo tour with the correct
+  // tab pre-opened (highlightTarget), the chooser in the newly-picked view
+  // (reads chosenTool off the closure, so no separate arg is needed).
+  // `forceTabs` is used ONLY by the demo tour below: its highlightTarget is
+  // always a tab-family label (drill.lookupPath[0]), which only pulses in the
+  // Tabs view — so the demo forces Tabs regardless of chosenTool/finder.
+  // Nothing clicks through onPick during the demo (it fakes the outcome
+  // directly), so activePath() staying tool-aware here is harmless. ----
+  function mountCb(highlightTarget, forceTabs = false) {
+    const tool = forceTabs ? 'tab' : chosenTool;
+    const extra = tool === 'index'
+      ? { view: 'index', index: (indexByBook || {})[mode] }
+      : tool === 'contents'
+        ? { view: 'contents', contents: (contentsByBook || {})[mode] }
+        : {};
     mountCodebook(root.querySelector('#tr-codebook'), {
       mode,
       tabs,
@@ -351,15 +399,42 @@ function renderDrill(root, ctx) {
       onPick: (id) => {
         if (resolved) return;
         pickedPath.push(id);
-        if ((drill.lookupPath || []).includes(id)) {
+        if (activePath().includes(id)) {
           lookupHit = true;
           lookupEl.hidden = false;
           hideHeld();
         }
       },
+      ...extra,
     });
   }
   mountCb(null);
+
+  // ---- finder tool chooser (Task 10): only present when drill.finder is
+  // set (see the template above). Switching tools re-mounts the codebook in
+  // the matching view and clears any stale "held" nudge, since the lookup
+  // requirement the visitor is chasing just changed underneath them. ----
+  const toolChooser = root.querySelector('#tr-tool-chooser');
+  if (toolChooser) {
+    const toolBtns = [...toolChooser.querySelectorAll('[data-tool]')];
+    const paintToolChooser = () => {
+      toolBtns.forEach((b) => {
+        const on = b.dataset.tool === chosenTool;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+    };
+    paintToolChooser();
+    toolBtns.forEach((b) => {
+      b.addEventListener('click', () => {
+        if (resolved || b.dataset.tool === chosenTool) return;
+        chosenTool = b.dataset.tool;
+        paintToolChooser();
+        hideHeld();
+        mountCb(null);
+      });
+    });
+  }
 
   submitBtn.addEventListener('click', () => {
     if (resolved || selected == null) return;
@@ -386,7 +461,21 @@ function renderDrill(root, ctx) {
     const beforeOsha = isOshaLaneUnlocked(before);
     const beforeOshaComplete = isOshaLaneComplete(before);
 
-    const after = onResult({ drill, correct, lookupHit, pickedPath: pickedPath.slice(), elapsed }) || getProgress();
+    // climbed/termsTried are P1 stubs: detecting a synonym "climb" or the
+    // exact search terms typed would need a callback out of the codebook's
+    // Index panel (js/codebook-mock.js), which is out of this task's file
+    // scope. main.js's scoring already reads these fields defensively, so
+    // wiring a real signal later (P3) is additive, not a rework.
+    const after = onResult({
+      drill,
+      correct,
+      lookupHit,
+      pickedPath: pickedPath.slice(),
+      elapsed,
+      chosenTool: drill.finder ? chosenTool : undefined,
+      climbed: false,
+      termsTried: [],
+    }) || getProgress();
 
     const justCleared = !beforeCleared && (after.trainerTopicClears || []).includes(drill.topic);
     const justUnlockedOsha = !beforeOsha && isOshaLaneUnlocked(after);
@@ -427,7 +516,7 @@ function renderDrill(root, ctx) {
       },
       {
         target: () => root.querySelector('#tr-codebook'),
-        onEnter: () => { if (demoTarget) mountCb(demoTarget); },
+        onEnter: () => { if (demoTarget) mountCb(demoTarget, true); },
         title: 'Flip to the right tab',
         body: 'Here is the tab and section for those key words, opened for you. On your own you flip to it yourself. These are the same tabs your real book has.',
       },
@@ -461,6 +550,10 @@ function renderDrill(root, ctx) {
 //                  and data/drills/osha-*.json.
 //   tabsByBook   — { nec: nec-curated tabs, osha: osha-curated tabs }; each
 //                  drill's mode/tab-set is picked off its topic's `book`.
+//   indexByBook, contentsByBook — (Task 10) the same per-book split as
+//                  tabsByBook, for a `finder` drill's Index/Contents tool
+//                  views (mountCodebook's own `index`/`contents` opts — see
+//                  js/codebook-mock.js). A topic's own `book` picks the map.
 //   editionPins  — manifest.editionPins ({ nec, osha }); the drill shown picks
 //                  the pin matching its own book so it visibly carries its
 //                  edition + "verify in your book".
@@ -472,7 +565,7 @@ function renderDrill(root, ctx) {
 //                  fresh state on every return trip (same reason as intro.js).
 //   onResult(payload) — main.js owns the storage mutation and RETURNS the
 //                  updated progress so this screen can show clear/unlock banners.
-export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, editionPins, oshaUnlockTarget, getProgress, onResult }) {
+export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, indexByBook = {}, contentsByBook = {}, editionPins, oshaUnlockTarget, getProgress, onResult }) {
   stopTimer(); // clear any interval a prior mount left running
   let forceDemo = false; // set by "Replay guide" to re-run the drill demo on demand
   let current = null; // { topicId, index } while a drill is open, null on the picker
@@ -529,6 +622,8 @@ export function renderTrainer(root, { topicsMeta, drillsByTopic, tabsByBook, edi
       total: drills.length,
       cleared: (progress.trainerTopicClears || []).includes(topicId),
       tabsByBook,
+      indexByBook,
+      contentsByBook,
       editionPins,
       getProgress,
       onResult,

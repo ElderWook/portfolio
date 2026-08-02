@@ -41,6 +41,7 @@
         "Cite: 250.66 / Table 250.66, sized from the service-entrance conductor. Read the value in your book"
       ],
       "lookupPath": ["250 Grounding", "250.66"],
+      "finder": { "recommend": "index", "indexPath": ["250.66"], "contentsPath": ["250.66"] },
       "timeTargetSec": 150,
       "tags": ["250", "GEC", "service", "hard"],
       "verifyAgainst": "your book"

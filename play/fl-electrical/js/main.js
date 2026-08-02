@@ -364,8 +364,22 @@ export async function boot() {
   //              id joins trainerCorrectDrills (deduped). A topic CLEARS at
   //              CLEAR_THRESHOLD distinct correct drills → trainerTopicClears.
   //              Three cleared nec-250 topics record OSHA_LANE_UNLOCK.
-  //   wrong    → a missLog entry { stemId, yourPath, correctPath, elapsed }.
-  function onTrainerResult({ drill, correct, lookupHit, pickedPath, elapsed }) {
+  //              Task 10: when the drill carried a `finder` and the visitor
+  //              picked a tool (chosenTool present), also credit toolUsage
+  //              + indexFind/contentsFind XP + indexReps/contentsReps, and
+  //              maintain ladderStreak (see below).
+  //   wrong    → a missLog entry { stemId, yourPath, correctPath, elapsed,
+  //              tool, termsTried } — the last two are additive (Task 10);
+  //              older callers that don't pass them just log undefined/empty.
+  //
+  // climbed/termsTried (Task 10 finder scoring, P1): trainer.js currently has
+  // no in-scope way to detect a synonym "climb" in the Index panel or record
+  // the exact terms typed (that needs a callback out of codebook-mock.js,
+  // out of this task's file list — see trainer.js's onResult call). It always
+  // passes climbed: false and termsTried: [] for now, so the ladderClimb XP
+  // path below is wired but dormant until a later task adds the real signal;
+  // ladderStreak still correctly resets to 0 on every non-climb index find.
+  function onTrainerResult({ drill, correct, lookupHit, pickedPath, elapsed, chosenTool, climbed = false, termsTried = [] }) {
     const timedTarget = manifest.unlock.trainerClearsForTimed;
     const before = loadProgress(KEY);
     const beforeClears = (before.trainerTopicClears || []).slice();
@@ -379,6 +393,33 @@ export async function boot() {
 
         if (!Array.isArray(p.trainerCorrectDrills)) p.trainerCorrectDrills = [];
         if (!p.trainerCorrectDrills.includes(drill.id)) p.trainerCorrectDrills.push(drill.id);
+
+        // Finder tool scoring (Task 10) — only when the drill actually carried
+        // a `finder` and the visitor had a tool to choose (trainer.js only
+        // sends chosenTool for finder drills). Defensive p.toolUsage init
+        // covers a save from before this field existed, even though
+        // progress.js's DEFAULT already seeds it.
+        if (chosenTool) {
+          if (!p.toolUsage) p.toolUsage = { tab: 0, index: 0, contents: 0 };
+          p.toolUsage[chosenTool] = (p.toolUsage[chosenTool] || 0) + 1;
+          if (chosenTool === 'index') {
+            p.xp += manifest.xp.indexFind;
+            p.indexReps = (p.indexReps || 0) + 1;
+            // A synonym "climb" (missed the exact term, climbed to the
+            // broader listed one) earns a streak bonus; any other index find
+            // resets the streak. See the P1 note above — climbed is always
+            // false today, so this branch is dormant but correctly wired.
+            if (climbed) {
+              p.xp += manifest.xp.ladderClimb;
+              p.ladderStreak = (p.ladderStreak || 0) + 1;
+            } else {
+              p.ladderStreak = 0;
+            }
+          } else if (chosenTool === 'contents') {
+            p.xp += manifest.xp.contentsFind;
+            p.contentsReps = (p.contentsReps || 0) + 1;
+          }
+        }
 
         // Distinct correct drills IN THIS topic — gate on this, never the raw
         // trainerCorrectCount (constraints.md).
@@ -398,6 +439,11 @@ export async function boot() {
           yourPath: pickedPath,
           correctPath: drill.lookupPath || [],
           elapsed,
+          // Additive (Task 10): which finder tool was active and what terms
+          // were tried, for a future miss-review search replay (P3). Older
+          // shape's three fields above are unchanged.
+          tool: chosenTool,
+          termsTried,
         });
       }
       return p;

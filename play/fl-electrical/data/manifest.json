@@ -7,6 +7,6 @@
     "osha": "OSHA Title 29 Parts 1926/1910/1904, July 2020 (flips 2025 ed. 2027-08-21)"
   },
   "unlock": { "trainerTopicsForOsha": 3, "trainerClearsForTimed": 5 },
-  "xp": { "walkthrough": 25, "trainerCorrect": 15, "trainerPathBonus": 10, "timedUnderTarget": 20 },
+  "xp": { "walkthrough": 25, "trainerCorrect": 15, "trainerPathBonus": 10, "timedUnderTarget": 20, "indexFind": 15, "contentsFind": 12, "ladderClimb": 8 },
   "screens": ["path", "bookmap", "walkthrough", "trainer", "timed"]
 }

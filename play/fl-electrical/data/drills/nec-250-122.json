@@ -41,6 +41,7 @@
         "Cite: Table 250.122 has separate copper vs aluminum/copper-clad-aluminum columns. Read the aluminum column value in your book"
       ],
       "lookupPath": ["250.122 EGC", "250.122"],
+      "finder": { "recommend": "index", "indexPath": ["250.122", "Table 250.122"], "contentsPath": ["250.122"] },
       "timeTargetSec": 150,
       "tags": ["250", "EGC", "material", "hard"],
       "verifyAgainst": "your book"

@@ -63,6 +63,7 @@
         "Cite: 250.122(B). Read the exact rounding language in your book before you commit"
       ],
       "lookupPath": ["250.122 EGC", "250.122(B)"],
+      "finder": { "recommend": "contents", "indexPath": ["250.122"], "contentsPath": ["250.122"] },
       "timeTargetSec": 150,
       "tags": ["250", "EGC", "rounding", "hard"],
       "verifyAgainst": "your book"
