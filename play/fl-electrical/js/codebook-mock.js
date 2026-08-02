@@ -7,33 +7,52 @@
 // verbatim code sentence. The values themselves live in the visitor's
 // physical book; this widget only teaches *where to look*.
 //
-//   mountCodebook(el, { mode: 'nec'|'osha', tabs, highlightTarget, onPick })
+//   mountCodebook(el, { mode: 'nec'|'osha', tabs, index, contents, view,
+//                        highlightTarget, onPick })
 //
 //     el              — container element; fully owned/re-rendered by this
 //                        module (same "renderX(root, opts)" convention as
 //                        checklist.js/bookmap.js/path.js elsewhere in this app).
-//     mode            — 'nec' (tab strip + article tree) or 'osha'
+//     mode            — the BOOK: 'nec' (tab strip + article tree) or 'osha'
 //                        (parts 1926/1904 + subpart/section tree). Both modes
 //                        share one engine: `tabs` is always the flat
 //                        { label, targets[], pillar } shape; `pillar` is the
 //                        grouping key (an NEC article family for 'nec', an
-//                        OSHA CFR part for 'osha').
+//                        OSHA CFR part for 'osha'). NOT to be confused with
+//                        `view` below — `mode` never means "which panel".
 //     tabs            — the tab list for this mode. Callers load this from
 //                        JSON (e.g. data/tabs/nec-curated.json for 'nec').
 //                        If omitted/empty in 'osha' mode, a small built-in
 //                        default parts list renders instead (no OSHA tabs
 //                        JSON file exists yet — Task 9 may supply its own
 //                        via this same `tabs` param later).
+//     index           — optional index corpus ({ bookId, entries[], climbs[] },
+//                        e.g. data/index/nec.json) that turns on the Index
+//                        view: a type-ahead search over `entries[].term`/
+//                        `aka[]`, falling back to a synonym "climb" hint from
+//                        `climbs[]` on a miss. See js/index-search.js.
+//     contents        — optional table-of-contents outline (Task 7) that
+//                        turns on the Contents view. Unused until then.
+//     view            — which internal panel is open: 'tabs' | 'index' |
+//                        'contents' (default 'tabs'). This is the widget's
+//                        OWN sub-navigation, orthogonal to `mode` (the book).
+//                        The switcher only offers the views the caller
+//                        supplied data for — always Tabs, plus Index/Contents
+//                        only when `index`/`contents` were passed.
 //     highlightTarget — a target string ("250.122(B)"), a tab label
 //                        ("250.122 EGC"), or the constant 'footnote-zone'.
 //                        The matching node gets a static highlight outline
 //                        plus a pulse animation (killed under
 //                        prefers-reduced-motion by styles.css's blanket
 //                        `animation: none !important` rule, leaving only the
-//                        static outline — see styles.css).
-//     onPick(id)      — fired on every click of a tab, a tree node, or the
-//                        footnote-zone panel, with that element's own id
-//                        (tab.label / target string / 'footnote-zone').
+//                        static outline — see styles.css). Only applies to
+//                        the Tabs view.
+//     onPick(id)      — fired on every click of a tab, a tree node, the
+//                        footnote-zone panel, or (Index view) an index entry,
+//                        with that element's own id (tab.label / target
+//                        string / 'footnote-zone' / index entry's cite[0]).
+//                        A climb-hint click does NOT call onPick — it re-runs
+//                        the search for the broader `listedAs` term instead.
 //                        Callers (walkthrough/trainer) compare `id` against
 //                        a step's/drill's expected target(s).
 //
@@ -43,6 +62,8 @@
 // (same pattern as every other renderX here) whenever they want to move the
 // highlight — e.g. a Trainer "hint" reveal — which is also the desired UX:
 // it mimics a teacher flipping straight to the right tab.
+
+import { searchIndex } from './index-search.js';
 
 const FOOTNOTE_ID = 'footnote-zone';
 
@@ -103,7 +124,8 @@ function resolveHighlight(tabs, highlightTarget) {
 const HI_CLASS = 'cb-hi cb-hi-pulse';
 
 export function mountCodebook(root, opts = {}) {
-  const { mode = 'nec', tabs: suppliedTabs, highlightTarget = null, onPick = () => {} } = opts;
+  const { mode = 'nec', tabs: suppliedTabs, index = null, contents = null,
+          view: initialView = 'tabs', highlightTarget = null, onPick = () => {} } = opts;
 
   const tabs = suppliedTabs && suppliedTabs.length ? suppliedTabs : mode === 'osha' ? DEFAULT_OSHA_TABS : [];
   const resolved = resolveHighlight(tabs, highlightTarget);
@@ -112,6 +134,10 @@ export function mountCodebook(root, opts = {}) {
   // pre-picked a tab for you — misleading (tab 0 is rarely the right one) and
   // it spoils the "flip to it yourself" habit the whole widget is teaching.
   let activeIndex = resolved.tabIndex != null ? resolved.tabIndex : -1;
+  // `view` is the widget's OWN sub-navigation (Tabs/Index/Contents) — separate
+  // from `mode` (the book). `query` is the Index view's live search text.
+  let view = initialView;
+  let query = '';
 
   function renderTabButton(tab) {
     const isActive = tab.index === activeIndex;
@@ -126,10 +152,25 @@ export function mountCodebook(root, opts = {}) {
     return `<li><button type="button" class="${cls}" data-target="${target}">${target}</button></li>`;
   }
 
-  function renderMarkup() {
-    if (!tabs.length) {
-      return `<div class="codebook codebook-empty"><p>No ${mode === 'osha' ? 'OSHA' : 'NEC'} tabs loaded.</p></div>`;
-    }
+  // The switcher between the widget's internal views. Only offers a view if
+  // the caller actually supplied the data it needs (Tabs always has `tabs`;
+  // Index needs an `index` corpus; Contents — Task 7 — needs `contents`). If
+  // Tabs is the only option there is nothing to switch between, so it renders
+  // nothing rather than a single dead button.
+  function renderSwitcher() {
+    const modes = [['tabs', 'Tabs']];
+    if (index) modes.push(['index', 'Index']);
+    if (contents) modes.push(['contents', 'Contents']);
+    if (modes.length === 1) return '';
+    return `<div class="cb-viewswitch" role="tablist">` + modes.map(([v, label]) =>
+      `<button type="button" class="cb-view ${v === view ? 'active' : ''}" data-view="${v}" role="tab" aria-selected="${v === view}">${label}</button>`
+    ).join('') + `</div>`;
+  }
+
+  // The existing tab-strip + article-tree body, unchanged from before the
+  // view switcher existed — just pulled into its own function so renderMarkup
+  // can branch between it and the other views.
+  function renderTabsPanel() {
     const groups = groupByPillar(tabs);
     const tabStrip = groups
       .map(
@@ -142,16 +183,45 @@ export function mountCodebook(root, opts = {}) {
       .join('');
 
     const active = activeIndex >= 0 ? tabs[activeIndex] : null;
+
+    return `
+      <div class="codebook-tabs" role="tablist">${tabStrip}</div>
+      <div class="codebook-tree">
+        <p class="cb-tree-heading">${active ? active.label : 'Select a tab'}</p>
+        <ul class="cb-tree-list">${active ? active.targets.map(renderNode).join('') : ''}</ul>
+      </div>`;
+  }
+
+  // Type-ahead search over the index corpus (js/index-search.js). A hit lists
+  // every matching entry; a miss that matches a known "too specific" synonym
+  // offers a climb to the broader term that's actually filed in the book.
+  function renderIndexPanel() {
+    const { matches, climb } = searchIndex(query, index);
+    const rows = matches.map((e) =>
+      `<li><button type="button" class="cb-ix-entry" data-cite="${e.cite[0]}">
+         <span class="cb-ix-term">${e.term}</span>
+         <span class="cb-ix-cites">${e.cite.join(' &middot; ')}</span>
+       </button>${e.cite.length > 1 ? '<span class="cb-ix-note">check each entry</span>' : ''}</li>`
+    ).join('');
+    const climbHtml = (!matches.length && climb)
+      ? `<p class="cb-ix-climb">Not listed. Climb broader: <button type="button" class="cb-ix-climbto" data-term="${climb.listedAs}">${climb.listedAs}</button><br><span class="cb-ix-why">${climb.why}</span></p>`
+      : (!matches.length && query ? `<p class="cb-ix-climb">No entry. Try a broader synonym.</p>` : '');
+    return `<div class="cb-index">
+      <input type="search" class="cb-ix-input" placeholder="search the index" value="${query}" aria-label="search the index">
+      <ul class="cb-ix-list">${rows}</ul>${climbHtml}</div>`;
+  }
+
+  function renderMarkup() {
+    if (!tabs.length) {
+      return `<div class="codebook codebook-empty"><p>No ${mode === 'osha' ? 'OSHA' : 'NEC'} tabs loaded.</p></div>`;
+    }
     const footnoteHi = resolved.kind === 'footnote' ? HI_CLASS : '';
 
     return `
       <div class="codebook" data-mode="${mode}">
         <p class="codebook-lede">${mode === 'osha' ? 'OSHA parts (mock)' : 'NEC tab kit (mock)'}. Tab labels and section numbers only. Verify every value against your book.</p>
-        <div class="codebook-tabs" role="tablist">${tabStrip}</div>
-        <div class="codebook-tree">
-          <p class="cb-tree-heading">${active ? active.label : 'Select a tab'}</p>
-          <ul class="cb-tree-list">${active ? active.targets.map(renderNode).join('') : ''}</ul>
-        </div>
+        ${renderSwitcher()}
+        ${view === 'index' ? renderIndexPanel() : renderTabsPanel()}
         <div class="codebook-footnote">
           <button type="button" class="cb-footnote-btn ${footnoteHi}" data-target="${FOOTNOTE_ID}">
             <span class="cb-footnote-label">Footnote zone</span>
@@ -164,9 +234,12 @@ export function mountCodebook(root, opts = {}) {
   function bind() {
     root.querySelectorAll('[data-tab-index]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const index = Number(btn.dataset.tabIndex);
-        activeIndex = index;
-        onPick(tabs[index].label);
+        // Named `tabIndex`, not `index` — the outer `index` opt is now the
+        // search corpus, and shadowing it here would be exactly the kind of
+        // confusion the mode/view split in this file is trying to avoid.
+        const tabIndex = Number(btn.dataset.tabIndex);
+        activeIndex = tabIndex;
+        onPick(tabs[tabIndex].label);
         render();
       });
     });
@@ -175,6 +248,20 @@ export function mountCodebook(root, opts = {}) {
     });
     const footnoteBtn = root.querySelector('.cb-footnote-btn');
     if (footnoteBtn) footnoteBtn.addEventListener('click', () => onPick(FOOTNOTE_ID));
+
+    root.querySelectorAll('[data-view]').forEach((b) =>
+      b.addEventListener('click', () => { view = b.dataset.view; render(); }));
+    const ix = root.querySelector('.cb-ix-input');
+    if (ix) ix.addEventListener('input', (e) => {
+      query = e.target.value;
+      render();
+      const el = root.querySelector('.cb-ix-input');
+      if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    });
+    root.querySelectorAll('.cb-ix-entry').forEach((b) =>
+      b.addEventListener('click', () => onPick(b.dataset.cite)));
+    root.querySelectorAll('.cb-ix-climbto').forEach((b) =>
+      b.addEventListener('click', () => { query = b.dataset.term; render(); }));
   }
 
   function render() {
