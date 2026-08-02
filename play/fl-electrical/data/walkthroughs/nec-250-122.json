@@ -11,6 +11,20 @@
       "teach": "Table 250.122 keys off the rating of the overcurrent device AHEAD of the circuit, not the ampacity of the conductor it protects. Ampacity is a Table 310.16 question, not this one."
     },
     {
+      "prompt": "You have the noun but not the section yet. Which finder?",
+      "action": "route",
+      "choices": ["tab", "contents", "index"],
+      "correctTarget": "index",
+      "teach": "You don't know the exact section yet, so the index is the GPS. A tab is only faster once you already know where it lives."
+    },
+    {
+      "prompt": "Search the index for the EGC sizing rule and open the citation it points to.",
+      "action": "findCitation",
+      "mode": "index",
+      "correctTarget": "250.122",
+      "teach": "Look up the equipment grounding conductor. The index sends you to 250.122."
+    },
+    {
       "prompt": "Which tab family holds this table?",
       "action": "pickTab",
       "correctTarget": "250.122 EGC",

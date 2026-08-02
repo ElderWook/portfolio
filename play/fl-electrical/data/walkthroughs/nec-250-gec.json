@@ -11,6 +11,20 @@
       "teach": "Noun-first: EGC, not the adjective 'minimum' or the OCPD rating. Those are inputs to the lookup, not the thing being sized."
     },
     {
+      "prompt": "You know you need the EGC table, but not which tab holds it yet. Which finder do you reach for?",
+      "action": "route",
+      "choices": ["tab", "contents", "index"],
+      "correctTarget": "contents",
+      "teach": "The Table of Contents lists 250.122 by name under Article 250, so drilling Chapter 2 > Article 250 lands you on the section directly. A tab is only faster once you already know it by number."
+    },
+    {
+      "prompt": "Drill the Contents outline: Chapter 2, Article 250 Grounding and Bonding, down to the EGC sizing section.",
+      "action": "findCitation",
+      "mode": "contents",
+      "correctTarget": "250.122",
+      "teach": "250.122 sits under Article 250 in Chapter 2. Drilling the outline gets you straight there without guessing a tab."
+    },
+    {
       "prompt": "Which tab family holds the EGC sizing table?",
       "action": "pickTab",
       "correctTarget": "250.122 EGC",

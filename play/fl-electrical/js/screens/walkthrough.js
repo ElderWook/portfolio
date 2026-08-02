@@ -10,14 +10,26 @@
 // height/ratio/reporting clock. Those come from the visitor's physical book.
 //
 // Each step names an `action`:
-//   pickNoun   — the step supplies its own `choices` array; rendered as
-//                plain buttons here (no codebook involved).
-//   pickTab    — mounts the shared codebook mock (js/codebook-mock.js) in
-//                the topic's own book mode ('nec' or 'osha'); a tab-strip
-//                click fires onPick(tab.label).
-//   openNotes  — same codebook mock; only the footnote-zone button is the
-//                expected pick (onPick('footnote-zone')).
-// In both codebook cases the step's `correctTarget` is always a tab LABEL or
+//   pickNoun     — the step supplies its own `choices` array; rendered as
+//                  plain buttons here (no codebook involved).
+//   route        — (Task 9) same plain-button rendering as pickNoun; the
+//                  step's `choices` are the finder names (['tab','contents',
+//                  'index']) and `correctTarget` is the recommended one. No
+//                  codebook mounts for this step either — it is choosing a
+//                  TOOL, not a tab.
+//   pickTab      — mounts the shared codebook mock (js/codebook-mock.js) in
+//                  the topic's own book mode ('nec' or 'osha'); a tab-strip
+//                  click fires onPick(tab.label).
+//   openNotes    — same codebook mock; only the footnote-zone button is the
+//                  expected pick (onPick('footnote-zone')).
+//   findCitation — (Task 9) mounts the same codebook mock, but opened on the
+//                  step's own `mode` ('index'|'contents') with the topic
+//                  book's `indexByBook`/`contentsByBook` packs supplied, so
+//                  the Index search box or Contents drill is live instead of
+//                  the tab strip. `correctTarget` is a citation TOKEN — the
+//                  `cite` an index entry or contents leaf hands back to
+//                  onPick, per codebook-mock.js's contract.
+// In pickTab/openNotes the step's `correctTarget` is always a tab LABEL or
 // the literal 'footnote-zone' string — never a bare section fragment — per
 // Task 6's note that a bare fragment like "250.122" can first-match-resolve
 // to the wrong tab. No `highlightTarget` is passed while playing, so the
@@ -47,6 +59,7 @@
 
 import { mountCodebook } from '../codebook-mock.js';
 import { coachmark, coachSeen, closeCoachmark } from '../coachmark.js';
+import { pathTo } from '../contents.js';
 
 export function trainerTopicUnlockKey(walkthroughId) {
   return `trainer-topic:${walkthroughId}`;
@@ -58,8 +71,10 @@ export function isTrainerTopicUnlocked(progress, walkthroughId) {
 
 function actionLabel(action) {
   if (action === 'pickNoun') return 'Pick the noun';
+  if (action === 'route') return 'Pick the finder';
   if (action === 'pickTab') return 'Pick the tab';
   if (action === 'openNotes') return 'Check the notes';
+  if (action === 'findCitation') return 'Find the citation';
   return action;
 }
 
@@ -112,15 +127,19 @@ function renderChips(steps, currentIndex) {
     .join('');
 }
 
-function renderPlayer(root, { topic, tabsByBook, stepIndex, wrong, onPick, onExit, onReplayGuide }) {
+function renderPlayer(root, { topic, tabsByBook, indexByBook = {}, contentsByBook = {}, stepIndex, wrong, onPick, onExit, onReplayGuide }) {
   // Codebook MODE follows the topic's own `book` field — never hardcoded to
   // 'nec' — so an OSHA topic mounts the OSHA parts/subparts tree instead of
   // the NEC tab strip (Task 6's mountCodebook contract).
   const mode = topic.book === 'osha' ? 'osha' : 'nec';
   const tabs = tabsByBook[mode] || [];
   const step = topic.steps[stepIndex];
-  const isNoun = step.action === 'pickNoun';
-  const choicesHtml = isNoun
+  // pickNoun and route both render plain choice buttons — no codebook — the
+  // difference is only what the choices MEAN (a noun to underline vs. a
+  // finder tool to pick). Every other action (pickTab/openNotes/
+  // findCitation) mounts the codebook instead.
+  const isChoiceStep = step.action === 'pickNoun' || step.action === 'route';
+  const choicesHtml = isChoiceStep
     ? `<div class="wt-choices">${(step.choices || [])
         .map((c) => `<button type="button" class="wt-choice" data-choice="${c}">${c}</button>`)
         .join('')}</div>`
@@ -142,23 +161,30 @@ function renderPlayer(root, { topic, tabsByBook, stepIndex, wrong, onPick, onExi
         ${choicesHtml}
         <p class="wt-teach" id="wt-teach" ${wrong ? '' : 'hidden'}><span class="wt-teach-label">Teach</span> ${step.teach}</p>
       </div>
-      ${!isNoun ? '<div class="wt-codebook" id="wt-codebook"></div>' : ''}
+      ${!isChoiceStep ? '<div class="wt-codebook" id="wt-codebook"></div>' : ''}
     </section>`;
 
   root.querySelector('#wt-exit').addEventListener('click', onExit);
   const wtReplay = root.querySelector('#wt-replay');
   if (wtReplay && onReplayGuide) wtReplay.addEventListener('click', onReplayGuide);
 
-  if (isNoun) {
+  if (isChoiceStep) {
     root.querySelectorAll('[data-choice]').forEach((btn) => {
       btn.addEventListener('click', () => onPick(btn.dataset.choice));
     });
   } else {
+    // findCitation opens the codebook straight into its own view (Index or
+    // Contents) with that book's packs, instead of the default Tabs view —
+    // everything else (pickTab/openNotes) keeps the plain tabs-only mount.
+    const isFindCitation = step.action === 'findCitation';
     mountCodebook(root.querySelector('#wt-codebook'), {
       mode,
       tabs,
       highlightTarget: null,
       onPick,
+      ...(isFindCitation
+        ? { view: step.mode, index: indexByBook[mode], contents: contentsByBook[mode] }
+        : {}),
     });
   }
 
@@ -184,7 +210,7 @@ function renderDone(root, topic, onExit) {
   root.querySelector('#wt-done-back').addEventListener('click', onExit);
 }
 
-// renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked, getProgress, onComplete })
+// renderWalkthrough(root, { topics, tabsByBook, indexByBook, contentsByBook, isOshaUnlocked, getProgress, onComplete })
 //   topics      — ALL parsed walkthrough JSON files, NEC + OSHA combined
 //                 (already fetched by main.js, same "preload, don't
 //                 lazy-fetch" pattern as path/checklist/books/kit). Each
@@ -193,6 +219,10 @@ function renderDone(root, topic, onExit) {
 //   tabsByBook  — { nec: data/tabs/nec-curated.json's tabs, osha:
 //                 data/tabs/osha-curated.json's tabs }, so renderPlayer can
 //                 mount the right tab set for whichever topic is active.
+//   indexByBook, contentsByBook — (Task 9) the same per-book split as
+//                 tabsByBook, for the corpora a `findCitation` step's Index/
+//                 Contents view needs (Task 8 wires these in from main.js;
+//                 see mountCodebook's own `index`/`contents` opts).
 //   isOshaUnlocked(progress) — Task 8's `isOshaLaneUnlocked`, injected from
 //                 main.js rather than imported directly here to avoid a
 //                 walkthrough.js <-> trainer.js import cycle (trainer.js
@@ -210,7 +240,7 @@ function renderDone(root, topic, onExit) {
 //                 topic's last step. The caller (main.js) owns the
 //                 mutateProgress call (push id, award XP, unlock trainer
 //                 topic) and any sidebar re-render.
-export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = () => false, getProgress, onComplete }) {
+export function renderWalkthrough(root, { topics, tabsByBook, indexByBook = {}, contentsByBook = {}, isOshaUnlocked = () => false, getProgress, onComplete }) {
   // Resolved once per startTopic() call rather than re-searched from
   // `topics` on every playStep()/handlePick() — a topic is picked once per
   // play-through, so there is exactly one lookup to do, not one per click.
@@ -253,16 +283,19 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
   }
 
   function playStep() {
-    renderPlayer(root, { topic: activeTopic, tabsByBook, stepIndex, wrong, onPick: handlePick, onExit: showPicker, onReplayGuide: replayGuide });
+    renderPlayer(root, { topic: activeTopic, tabsByBook, indexByBook, contentsByBook, stepIndex, wrong, onPick: handlePick, onExit: showPicker, onReplayGuide: replayGuide });
     if (demo) showStepCoach();
   }
 
   // Re-mount the walkthrough's codebook with a tab (or the footnote zone)
-  // pre-opened, so a demo step can SHOW the right place to look.
-  function remountWtCodebook(highlightTarget) {
+  // pre-opened, so a demo step can SHOW the right place to look. `extra` lets
+  // a findCitation demo also hand the mount its `view`/`index`/`contents`
+  // (see showStepCoach below) without every other caller having to know
+  // about those opts — they default to nothing, same Tabs-only mount as before.
+  function remountWtCodebook(highlightTarget, extra = {}) {
     const mode = activeTopic.book === 'osha' ? 'osha' : 'nec';
     const el = root.querySelector('#wt-codebook');
-    if (el) mountCodebook(el, { mode, tabs: tabsByBook[mode] || [], highlightTarget, onPick: handlePick });
+    if (el) mountCodebook(el, { mode, tabs: tabsByBook[mode] || [], highlightTarget, onPick: handlePick, ...extra });
   }
 
   // End the demo WITHOUT completing the topic — reset to step 1 in normal mode
@@ -282,22 +315,51 @@ export function renderWalkthrough(root, { topics, tabsByBook, isOshaUnlocked = (
   function showStepCoach() {
     const step = activeTopic.steps[stepIndex];
     const isLast = stepIndex + 1 >= activeTopic.steps.length;
+    const mode = activeTopic.book === 'osha' ? 'osha' : 'nec';
     if (step.action === 'pickTab') remountWtCodebook(step.correctTarget);
     else if (step.action === 'openNotes') remountWtCodebook('footnote-zone');
+    // findCitation has no tab/node to highlight (highlightTarget only applies
+    // to the Tabs view, per codebook-mock.js's contract) — instead it opens
+    // the codebook straight into the step's own Index/Contents view so the
+    // demo shows the SAME panel the visitor will search or drill themselves.
+    else if (step.action === 'findCitation') {
+      remountWtCodebook(null, { view: step.mode, index: indexByBook[mode], contents: contentsByBook[mode] });
+    }
 
     let target;
     let title;
     let body;
-    if (step.action === 'pickNoun') {
-      const nounBtn = [...root.querySelectorAll('.wt-choice')].find((b) => b.dataset.choice === step.correctTarget);
-      if (nounBtn) nounBtn.classList.add('wt-demo-pick');
-      target = nounBtn || root.querySelector('.wt-choices');
-      title = 'Find the noun';
-      body = `The key word here is "${step.correctTarget}". That is what you go search for.`;
+    if (step.action === 'pickNoun' || step.action === 'route') {
+      // route reuses the exact same "highlight the correct plain-button
+      // choice" mechanics as pickNoun — only the title/body wording differs,
+      // since a route choice is a FINDER tool, not a noun to underline.
+      const choiceBtn = [...root.querySelectorAll('.wt-choice')].find((b) => b.dataset.choice === step.correctTarget);
+      if (choiceBtn) choiceBtn.classList.add('wt-demo-pick');
+      target = choiceBtn || root.querySelector('.wt-choices');
+      if (step.action === 'route') {
+        title = 'Pick the finder';
+        body = `"${step.correctTarget}" is the right call here. That is the tool that gets you to the section.`;
+      } else {
+        title = 'Find the noun';
+        body = `The key word here is "${step.correctTarget}". That is what you go search for.`;
+      }
     } else if (step.action === 'openNotes') {
       target = root.querySelector('#wt-codebook .codebook-footnote') || root.querySelector('#wt-codebook');
       title = 'Check the notes';
       body = 'Before you answer, read the notes and exceptions under the table. The exam pulls its traps from there, not just the table body.';
+    } else if (step.action === 'findCitation') {
+      target = root.querySelector('#wt-codebook');
+      title = 'Find the citation';
+      // No new codebook-driving API here (mirrors pickTab below): the Index
+      // view can't be typed into for the visitor, so the coachmark body just
+      // names the move in words. A contents step gets the exact drill path,
+      // via the same pathTo() helper the outline drill itself is built on.
+      if (step.mode === 'contents') {
+        const path = pathTo((contentsByBook[mode] || {}).outline, step.correctTarget);
+        body = path ? `Drill Contents: ${path.map((n) => n.label).join(' > ')}.` : step.prompt;
+      } else {
+        body = step.prompt;
+      }
     } else {
       target = root.querySelector('#wt-codebook');
       title = 'Flip to the right tab';

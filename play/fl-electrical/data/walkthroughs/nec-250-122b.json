@@ -11,6 +11,20 @@
       "teach": "250.122(B) triggers specifically when the circuit's ungrounded conductors were UPSIZED. The reason they were upsized (voltage drop or anything else) doesn't matter. The trigger is the size increase itself."
     },
     {
+      "prompt": "You know the trigger is an upsized ungrounded conductor, but not where that rule is filed. Which finder?",
+      "action": "route",
+      "choices": ["tab", "contents", "index"],
+      "correctTarget": "contents",
+      "teach": "250.122(B) isn't its own line in the Table of Contents, it's folded under the 250.122 entry. Drilling Chapter 2 > Article 250 to 250.122 finds it directly."
+    },
+    {
+      "prompt": "Drill the Contents outline to the section that folds in the EGC upsize rule.",
+      "action": "findCitation",
+      "mode": "contents",
+      "correctTarget": "250.122",
+      "teach": "250.122(B) is a subsection, not a separate Contents entry. The outline stops at 250.122 EGC Sizing, and that's where the upsize language lives."
+    },
+    {
       "prompt": "Which tab family holds the rule that requires this EGC upsize?",
       "action": "pickTab",
       "correctTarget": "250.122 EGC",

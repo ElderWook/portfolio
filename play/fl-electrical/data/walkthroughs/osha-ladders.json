@@ -11,6 +11,20 @@
       "teach": "The rule is about the ANGLE at which you set the ladder. 'Non-self-supporting' and 'portable ladder' just describe which ladder type it covers."
     },
     {
+      "prompt": "You have the noun but not the section yet. Which finder?",
+      "action": "route",
+      "choices": ["tab", "contents", "index"],
+      "correctTarget": "index",
+      "teach": "'Setup angle' is a subject to search, not a section you already know. The index carries it as an alias and sends you straight to 1926.1053."
+    },
+    {
+      "prompt": "Search the index for ladder angle and open the citation it points to.",
+      "action": "findCitation",
+      "mode": "index",
+      "correctTarget": "1926.1053",
+      "teach": "Ladder angle, extension above landing, and ladder inspection are all filed under the same portable-ladder entry. It opens on 1926.1053."
+    },
+    {
       "prompt": "Which tab family holds portable ladder setup rules (angle, extension above landing, inspection)?",
       "action": "pickTab",
       "correctTarget": "Ladders",

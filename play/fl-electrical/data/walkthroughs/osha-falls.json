@@ -11,6 +11,20 @@
       "teach": "Noun-first: 'fall protection' is the thing being required. 'Duty' and 'employees' are the framing around it, not the lookup target."
     },
     {
+      "prompt": "You have the noun but not the exact section yet. Which finder?",
+      "action": "route",
+      "choices": ["tab", "contents", "index"],
+      "correctTarget": "contents",
+      "teach": "Subpart M lists each fall protection section by name and number. Drilling Part 1926 > Subpart M puts you on 1926.501 directly."
+    },
+    {
+      "prompt": "Drill the Contents outline to the section requiring fall protection once a hazard trigger is met.",
+      "action": "findCitation",
+      "mode": "contents",
+      "correctTarget": "1926.501",
+      "teach": "1926.500 only sets scope and definitions. The actual duty-to-provide rule is 1926.501, filed right below it under Subpart M."
+    },
+    {
       "prompt": "Which tab family holds the baseline rule that fall protection is required once a trigger condition is met?",
       "action": "pickTab",
       "correctTarget": "Fall Protection",

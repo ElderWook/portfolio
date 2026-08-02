@@ -11,6 +11,20 @@
       "teach": "The bonding jumper is the piece the rule is written about, not the conductor it lands on (neutral) or the enclosure it lands in."
     },
     {
+      "prompt": "You have the noun but not the section yet. Which finder?",
+      "action": "route",
+      "choices": ["tab", "contents", "index"],
+      "correctTarget": "index",
+      "teach": "'Bonding jumper' is a subject you can search, not a section you already know. The index sends you to where service equipment bonding is filed."
+    },
+    {
+      "prompt": "Search the index for service equipment bonding and open the citation it points to.",
+      "action": "findCitation",
+      "mode": "index",
+      "correctTarget": "250.28",
+      "teach": "Bonding jumper, main bonding jumper, and service equipment bonding are all filed under the same index entry. It opens on 250.28."
+    },
+    {
       "prompt": "Which tab family covers where that bonding jumper is (and is NOT) allowed?",
       "action": "pickTab",
       "correctTarget": "250 Bonding",
