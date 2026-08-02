@@ -103,7 +103,7 @@ function groupByPillar(tabs) {
   const groups = [];
   let current = null;
   tabs.forEach((tab, index) => {
-    const pillar = tab.pillar || '—';
+    const pillar = tab.pillar || '-';
     if (!current || current.pillar !== pillar) {
       current = { pillar, tabs: [] };
       groups.push(current);
