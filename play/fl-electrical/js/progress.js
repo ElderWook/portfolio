@@ -12,6 +12,10 @@ const DEFAULT = () => ({
   trainerCorrectCount: 0, // lifetime tally (may double-count re-answers); NEVER gate unlocks on this
   trainerCorrectDrills: [], // distinct drill ids answered correctly — reload-safe source of topic clears
   missLog: [],
+  indexReps: 0,
+  contentsReps: 0,
+  ladderStreak: 0,
+  toolUsage: { tab: 0, index: 0, contents: 0 },
   introDismissedSession: false,
   kitTouched: false,
   pathComplete: false,

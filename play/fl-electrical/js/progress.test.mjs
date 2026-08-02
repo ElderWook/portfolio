@@ -29,3 +29,12 @@ test('markStarted is idempotent (startedAt set once)', () => {
   const b = markStarted(KEY).startedAt;
   assert.equal(a, b);
 });
+test('new finder fields back-fill over an old save', () => {
+  resetProgress(KEY);
+  localStorage.setItem(KEY, JSON.stringify({ started: true }));  // old shape, pre-finder
+  const p = loadProgress(KEY);
+  assert.equal(p.indexReps, 0);
+  assert.equal(p.contentsReps, 0);
+  assert.equal(p.ladderStreak, 0);
+  assert.deepEqual(p.toolUsage, { tab: 0, index: 0, contents: 0 });
+});

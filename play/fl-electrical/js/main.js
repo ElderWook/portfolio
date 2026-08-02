@@ -47,7 +47,7 @@ export async function boot() {
   // skip the refreshed intro + first-visit site tour. This clears prior progress
   // and the show-once guide flags ONCE per release per browser, so everyone hits
   // the same fresh starting point here. Bump RELEASE to re-trigger.
-  const RELEASE = '2026-08-01-guided-tour';
+  const RELEASE = '2026-08-01-finder';
   try {
     if (localStorage.getItem('fl-electrical-release') !== RELEASE) {
       Object.keys(localStorage)
