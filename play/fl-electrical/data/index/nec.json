@@ -1,0 +1,73 @@
+{
+  "bookId": "nec",
+  "entries": [
+    {
+      "term": "Grounding electrode system",
+      "aka": ["grounding electrode", "ground rod", "ufer", "concrete-encased electrode", "water pipe electrode", "electrode bonding jumper"],
+      "cite": ["250.50", "250.52", "250.53"],
+      "subject": "Grounding electrodes"
+    },
+    {
+      "term": "Grounding electrode conductor sizing",
+      "aka": ["GEC sizing", "grounding electrode conductor", "Table 250.66", "service-entrance conductor size"],
+      "cite": ["250.66"],
+      "subject": "Grounding electrode conductor"
+    },
+    {
+      "term": "Equipment grounding conductor sizing",
+      "aka": ["equipment grounding conductor", "EGC sizing", "Table 250.122", "OCPD rating"],
+      "cite": ["250.122"],
+      "subject": "Equipment grounding conductor"
+    },
+    {
+      "term": "Bonding of service equipment",
+      "aka": ["main bonding jumper", "bonding jumper", "service equipment bonding", "supply-side bonding jumper"],
+      "cite": ["250.28", "250.92", "250.97"],
+      "subject": "Service bonding"
+    },
+    {
+      "term": "Conductor ampacity",
+      "aka": ["conductor ampacity table", "Table 310.16", "ampacity"],
+      "cite": ["310.15", "310.16"],
+      "subject": "Conductor ampacity"
+    },
+    {
+      "term": "General lighting load and demand factors",
+      "aka": ["general lighting load", "demand factors", "standard method", "optional method", "dwelling load calculation", "Article 220"],
+      "cite": ["220.12", "220.45"],
+      "subject": "Load calculations"
+    }
+  ],
+  "climbs": [
+    {
+      "tooSpecific": "driven rod",
+      "listedAs": "Grounding electrode system",
+      "why": "a driven rod is only one of several electrodes that must be bonded into the single required system"
+    },
+    {
+      "tooSpecific": "service conductor size",
+      "listedAs": "Grounding electrode conductor sizing",
+      "why": "GEC size is selected from a table keyed to the service-entrance conductor size, so that's where the sizing rule is filed"
+    },
+    {
+      "tooSpecific": "breaker size",
+      "listedAs": "Equipment grounding conductor sizing",
+      "why": "EGC size is picked from the upstream breaker or fuse rating, filed under EGC sizing rather than under the breaker itself"
+    },
+    {
+      "tooSpecific": "subpanel ground bar",
+      "listedAs": "Bonding of service equipment",
+      "why": "keeping neutral and ground separate downstream of the first disconnect is a consequence of the service bonding rule, filed there"
+    },
+    {
+      "tooSpecific": "wire size chart",
+      "listedAs": "Conductor ampacity",
+      "why": "the wire-size chart test-takers picture is Table 310.16, filed under conductor ampacity"
+    },
+    {
+      "tooSpecific": "square footage method",
+      "listedAs": "General lighting load and demand factors",
+      "why": "the VA-per-square-foot lighting figure is part of the general lighting load and demand factor calculation"
+    }
+  ]
+}

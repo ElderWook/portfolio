@@ -1,0 +1,80 @@
+{
+  "bookId": "osha",
+  "entries": [
+    {
+      "term": "GFCI vs. assured equipment grounding conductor program",
+      "aka": ["GFCI construction site", "assured grounding program", "AEGCP", "cord sets", "temporary wiring"],
+      "cite": ["1926.404"],
+      "subject": "Temporary power protection"
+    },
+    {
+      "term": "Lockout and tagging of circuits",
+      "aka": ["lockout tagout", "LOTO", "de-energized", "qualified person", "verify zero energy"],
+      "cite": ["1926.417", "1910.147"],
+      "subject": "Energy control"
+    },
+    {
+      "term": "General electrical safety-related work practices",
+      "aka": ["exposed energized parts", "worn or frayed cords", "protective shields", "warning signs"],
+      "cite": ["1926.416"],
+      "subject": "Work practices"
+    },
+    {
+      "term": "Injury and illness recordkeeping",
+      "aka": ["OSHA 300 log", "300A summary", "301 incident report", "posting requirement", "record retention"],
+      "cite": ["1904.29", "1904.32"],
+      "subject": "Recordkeeping"
+    },
+    {
+      "term": "Reporting severe injuries to OSHA",
+      "aka": ["reporting", "fatality", "hospitalization", "amputation", "loss of an eye"],
+      "cite": ["1904.39"],
+      "subject": "Incident reporting"
+    },
+    {
+      "term": "Personal protective equipment",
+      "aka": ["PPE hazard assessment", "employer-provided PPE", "eye and face protection", "head protection"],
+      "cite": ["1926.95", "1926.100"],
+      "subject": "PPE"
+    },
+    {
+      "term": "Portable ladder use",
+      "aka": ["ladder angle", "extension above landing", "ladder inspection", "three points of contact"],
+      "cite": ["1926.1053"],
+      "subject": "Ladders"
+    },
+    {
+      "term": "Battery charging and storage",
+      "aka": ["battery charging area", "ventilation", "eyewash facilities", "battery room"],
+      "cite": ["1926.441"],
+      "subject": "Battery charging"
+    }
+  ],
+  "climbs": [
+    {
+      "tooSpecific": "extension cord",
+      "listedAs": "GFCI vs. assured equipment grounding conductor program",
+      "why": "cord-and-plug equipment on a temporary circuit needs GFCI protection or the assured grounding program, filed under that either/or rule"
+    },
+    {
+      "tooSpecific": "tag out",
+      "listedAs": "Lockout and tagging of circuits",
+      "why": "a tag alone is not the rule; tags only count paired with a physical lock, so it is filed under lockout and tagging together"
+    },
+    {
+      "tooSpecific": "recordable injury",
+      "listedAs": "Injury and illness recordkeeping",
+      "why": "what counts as recordable is defined within the OSHA 300 log requirement, not under its own heading"
+    },
+    {
+      "tooSpecific": "eye wash station",
+      "listedAs": "Battery charging and storage",
+      "why": "eyewash facilities are a required part of the battery charging area rule, not a separate heading"
+    },
+    {
+      "tooSpecific": "hard hat",
+      "listedAs": "Personal protective equipment",
+      "why": "head protection is one PPE category under the hazard-assessment rule, not its own heading"
+    }
+  ]
+}
