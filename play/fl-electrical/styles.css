@@ -835,6 +835,41 @@ details.compartment[open] > summary::before { transform: rotate(90deg); }
 .cb-ix-climbto:hover { border-color: var(--acc2); }
 .cb-ix-why { display: block; margin-top: 4px; font-size: 11.5px; color: var(--ink3); }
 
+/* ---------- codebook: Contents panel (outline drill-down) ---------- */
+
+.cb-contents { border-top: 1px solid var(--line); padding-top: 12px; }
+.cb-toc-list {
+  list-style: none;
+  margin: 0;
+  padding-left: calc(var(--d, 0) * 14px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cb-toc-branch { display: flex; flex-direction: column; gap: 4px; }
+.cb-toc-label {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink3);
+}
+.cb-toc-leaf {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink2);
+  font: inherit;
+  font-size: 12.5px;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.cb-toc-leaf:hover {
+  border-color: color-mix(in srgb, var(--acc3) 45%, var(--line));
+  color: var(--ink);
+}
+
 /* ---------- Trainer screen (dual-pane drills) ---------- */
 
 .trainer-screen { max-width: 1040px; }

@@ -31,8 +31,11 @@
 //                        view: a type-ahead search over `entries[].term`/
 //                        `aka[]`, falling back to a synonym "climb" hint from
 //                        `climbs[]` on a miss. See js/index-search.js.
-//     contents        — optional table-of-contents outline (Task 7) that
-//                        turns on the Contents view. Unused until then.
+//     contents        — optional table-of-contents outline ({ bookId,
+//                        outline[] }, e.g. data/contents/nec.json) that turns
+//                        on the Contents view: a recursive drill-down through
+//                        branch nodes (`label` + `children[]`) down to leaf
+//                        nodes (`label` + `cite`).
 //     view            — which internal panel is open: 'tabs' | 'index' |
 //                        'contents' (default 'tabs'). This is the widget's
 //                        OWN sub-navigation, orthogonal to `mode` (the book).
@@ -48,9 +51,10 @@
 //                        static outline — see styles.css). Only applies to
 //                        the Tabs view.
 //     onPick(id)      — fired on every click of a tab, a tree node, the
-//                        footnote-zone panel, or (Index view) an index entry,
-//                        with that element's own id (tab.label / target
-//                        string / 'footnote-zone' / index entry's cite[0]).
+//                        footnote-zone panel, (Index view) an index entry, or
+//                        (Contents view) an outline leaf, with that element's
+//                        own id (tab.label / target string / 'footnote-zone'
+//                        / index entry's cite[0] / outline leaf's cite).
 //                        A climb-hint click does NOT call onPick — it re-runs
 //                        the search for the broader `listedAs` term instead.
 //                        Callers (walkthrough/trainer) compare `id` against
@@ -214,6 +218,22 @@ export function mountCodebook(root, opts = {}) {
       <ul class="cb-ix-list">${rows}</ul>${climbHtml}</div>`;
   }
 
+  // The Contents view: a recursive drill-down through the book's own outline
+  // (data/contents/nec.json), not the curated tab kit above. Branch nodes
+  // just render their label and recurse; leaves are cite-bearing buttons
+  // (same onPick(cite) contract as the Index view's .cb-ix-entry).
+  function renderContentsNodes(nodes, depth = 0) {
+    return `<ul class="cb-toc-list" style="--d:${depth}">` + nodes.map((n) => {
+      if (n.children && n.children.length) {
+        return `<li class="cb-toc-branch"><span class="cb-toc-label">${n.label}</span>${renderContentsNodes(n.children, depth + 1)}</li>`;
+      }
+      return `<li><button type="button" class="cb-toc-leaf" data-cite="${n.cite}">${n.label}</button></li>`;
+    }).join('') + `</ul>`;
+  }
+  function renderContentsPanel() {
+    return `<div class="cb-contents">${renderContentsNodes(contents.outline || [])}</div>`;
+  }
+
   function renderMarkup() {
     if (!tabs.length) {
       return `<div class="codebook codebook-empty"><p>No ${mode === 'osha' ? 'OSHA' : 'NEC'} tabs loaded.</p></div>`;
@@ -224,7 +244,7 @@ export function mountCodebook(root, opts = {}) {
       <div class="codebook" data-mode="${mode}">
         <p class="codebook-lede">${mode === 'osha' ? 'OSHA parts (mock)' : 'NEC tab kit (mock)'}. Tab labels and section numbers only. Verify every value against your book.</p>
         ${renderSwitcher()}
-        ${view === 'index' ? renderIndexPanel() : renderTabsPanel()}
+        ${view === 'contents' ? renderContentsPanel() : view === 'index' ? renderIndexPanel() : renderTabsPanel()}
         <div class="codebook-footnote">
           <button type="button" class="cb-footnote-btn ${footnoteHi}" data-target="${FOOTNOTE_ID}">
             <span class="cb-footnote-label">Footnote zone</span>
@@ -272,6 +292,8 @@ export function mountCodebook(root, opts = {}) {
       b.addEventListener('click', () => onPick(b.dataset.cite)));
     root.querySelectorAll('.cb-ix-climbto').forEach((b) =>
       b.addEventListener('click', () => { query = b.dataset.term; render(); }));
+    root.querySelectorAll('.cb-toc-leaf').forEach((b) =>
+      b.addEventListener('click', () => onPick(b.dataset.cite)));
   }
 
   function render() {
