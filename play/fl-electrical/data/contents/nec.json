@@ -1,0 +1,77 @@
+{
+  "bookId": "nec",
+  "outline": [
+    {
+      "id": "ch2",
+      "label": "Chapter 2 Wiring and Protection",
+      "children": [
+        {
+          "id": "art220",
+          "label": "Article 220 Branch-Circuit, Feeder & Service Calculations",
+          "children": [
+            { "id": "220.12", "label": "220.12 General Lighting Load", "cite": "220.12" },
+            { "id": "220.14", "label": "220.14 Other Loads", "cite": "220.14" },
+            { "id": "220.40", "label": "220.40 Feeder/Service Calc", "cite": "220.40" },
+            { "id": "220.45", "label": "220.45 Optional Calc Method", "cite": "220.45" }
+          ]
+        },
+        {
+          "id": "art250",
+          "label": "Article 250 Grounding and Bonding",
+          "children": [
+            { "id": "250-general", "label": "250 Grounding & Bonding General", "cite": "250" },
+            { "id": "250.28", "label": "250.28 Main Bonding Jumper", "cite": "250.28" },
+            { "id": "250.50", "label": "250.50 Grounding Electrode System", "cite": "250.50" },
+            { "id": "250.52", "label": "250.52 Electrodes Permitted", "cite": "250.52" },
+            { "id": "250.53", "label": "250.53 Electrode Installation", "cite": "250.53" },
+            { "id": "250.66", "label": "250.66 GEC Sizing", "cite": "250.66" },
+            { "id": "250.92", "label": "250.92 Bonding Service Equipment", "cite": "250.92" },
+            { "id": "250.97", "label": "250.97 Bonding Over 250V", "cite": "250.97" },
+            { "id": "250.122", "label": "250.122 EGC Sizing", "cite": "250.122" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "label": "Chapter 3 Wiring Methods and Materials",
+      "children": [
+        {
+          "id": "art310",
+          "label": "Article 310 Conductors for General Wiring",
+          "children": [
+            { "id": "310.15", "label": "310.15 Ampacity Rules", "cite": "310.15" },
+            { "id": "310.16", "label": "310.16 Ampacity Table", "cite": "310.16" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "label": "Chapter 4 Equipment for General Use",
+      "children": [
+        {
+          "id": "art430",
+          "label": "Article 430 Motors, Motor Circuits & Controllers",
+          "children": [
+            { "id": "430.6", "label": "430.6 Motor Ampacity Determination", "cite": "430.6" },
+            { "id": "430.22", "label": "430.22 Single-Motor Conductor Size", "cite": "430.22" },
+            { "id": "430.24", "label": "430.24 Multi-Motor Conductor Size", "cite": "430.24" },
+            { "id": "430.32", "label": "430.32 Overload Protection", "cite": "430.32" },
+            { "id": "430.52", "label": "430.52 Branch-Circuit SC/GF Protection", "cite": "430.52" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch9",
+      "label": "Chapter 9 Tables",
+      "children": [
+        { "id": "ch9-t1", "label": "Table 1 Conduit Fill Percent", "cite": "Chapter 9 Table 1" },
+        { "id": "ch9-t4", "label": "Table 4 Conduit Dimensions", "cite": "Chapter 9 Table 4" },
+        { "id": "ch9-t5", "label": "Table 5 Conductor Dimensions", "cite": "Chapter 9 Table 5" },
+        { "id": "ch9-t8", "label": "Table 8 Conductor Properties", "cite": "Chapter 9 Table 8" }
+      ]
+    }
+  ]
+}

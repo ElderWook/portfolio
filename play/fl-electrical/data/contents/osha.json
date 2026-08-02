@@ -1,0 +1,87 @@
+{
+  "bookId": "osha",
+  "outline": [
+    {
+      "id": "part1926",
+      "label": "Part 1926 Construction",
+      "children": [
+        {
+          "id": "sub-e-ppe",
+          "label": "Subpart E Personal Protective & Life Saving Equipment",
+          "children": [
+            { "id": "1926.95", "label": "1926.95 PPE Hazard Assessment", "cite": "1926.95" },
+            { "id": "1926.100", "label": "1926.100 Head Protection", "cite": "1926.100" }
+          ]
+        },
+        {
+          "id": "sub-k-electrical",
+          "label": "Subpart K Electrical",
+          "children": [
+            { "id": "1926.404", "label": "1926.404 Wiring Design & Protection", "cite": "1926.404" },
+            { "id": "1926.416", "label": "1926.416 General Work Practices", "cite": "1926.416" },
+            { "id": "1926.417", "label": "1926.417 Lockout & Tagging", "cite": "1926.417" },
+            { "id": "1926.441", "label": "1926.441 Battery Charging", "cite": "1926.441" }
+          ]
+        },
+        {
+          "id": "sub-m-fall",
+          "label": "Subpart M Fall Protection",
+          "children": [
+            { "id": "1926.500", "label": "1926.500 Fall Protection Scope", "cite": "1926.500" },
+            { "id": "1926.501", "label": "1926.501 Duty to Have Fall Protection", "cite": "1926.501" },
+            { "id": "1926.502", "label": "1926.502 Fall Protection Systems Criteria", "cite": "1926.502" },
+            { "id": "1926.503", "label": "1926.503 Training Requirements", "cite": "1926.503" }
+          ]
+        },
+        {
+          "id": "sub-x-ladders",
+          "label": "Subpart X Stairways and Ladders",
+          "children": [
+            { "id": "1926.1053", "label": "1926.1053 Ladder Use", "cite": "1926.1053" },
+            { "id": "1926.1060", "label": "1926.1060 Ladder Training", "cite": "1926.1060" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "part1910",
+      "label": "Part 1910 General Industry",
+      "children": [
+        {
+          "id": "sub-j-envctrl",
+          "label": "Subpart J General Environmental Controls",
+          "children": [
+            { "id": "1910.147", "label": "1910.147 Lockout/Tagout", "cite": "1910.147" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "part1904",
+      "label": "Part 1904 Recording and Reporting Injuries & Illnesses",
+      "children": [
+        {
+          "id": "sub-c-recordforms",
+          "label": "Subpart C Recordkeeping Forms and Recording Criteria",
+          "children": [
+            { "id": "1904.29", "label": "1904.29 Recordkeeping Forms", "cite": "1904.29" }
+          ]
+        },
+        {
+          "id": "sub-d-otherrecord",
+          "label": "Subpart D Other Recordkeeping Requirements",
+          "children": [
+            { "id": "1904.32", "label": "1904.32 Annual Summary", "cite": "1904.32" }
+          ]
+        },
+        {
+          "id": "sub-e-reporting",
+          "label": "Subpart E Reporting Fatalities, Hospitalizations & Losses",
+          "children": [
+            { "id": "1904.39", "label": "1904.39 Reporting Severe Injuries", "cite": "1904.39" }
+          ]
+        }
+      ]
+    }
+  ]
+}
