@@ -206,8 +206,11 @@ export function mountCodebook(root, opts = {}) {
     const climbHtml = (!matches.length && climb)
       ? `<p class="cb-ix-climb">Not listed. Climb broader: <button type="button" class="cb-ix-climbto" data-term="${climb.listedAs}">${climb.listedAs}</button><br><span class="cb-ix-why">${climb.why}</span></p>`
       : (!matches.length && query ? `<p class="cb-ix-climb">No entry. Try a broader synonym.</p>` : '');
+    // The live query is NOT interpolated into the value attribute here: a
+    // quote in the query (e.g. `3/4"` conduit) would break out of the
+    // attribute. It is set as a DOM property in bind() instead — see there.
     return `<div class="cb-index">
-      <input type="search" class="cb-ix-input" placeholder="search the index" value="${query}" aria-label="search the index">
+      <input type="search" class="cb-ix-input" placeholder="search the index" aria-label="search the index">
       <ul class="cb-ix-list">${rows}</ul>${climbHtml}</div>`;
   }
 
@@ -252,12 +255,19 @@ export function mountCodebook(root, opts = {}) {
     root.querySelectorAll('[data-view]').forEach((b) =>
       b.addEventListener('click', () => { view = b.dataset.view; render(); }));
     const ix = root.querySelector('.cb-ix-input');
-    if (ix) ix.addEventListener('input', (e) => {
-      query = e.target.value;
-      render();
-      const el = root.querySelector('.cb-ix-input');
-      if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
-    });
+    if (ix) {
+      // Set the field text as a DOM property, not an HTML attribute, so a
+      // quote in the query can't break out of (or truncate) the markup. This
+      // runs on every render — typing, a climb-hint click, or the initial
+      // Index render — so the box always reflects the live `query`.
+      ix.value = query;
+      ix.addEventListener('input', (e) => {
+        query = e.target.value;
+        render();
+        const el = root.querySelector('.cb-ix-input');
+        if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+      });
+    }
     root.querySelectorAll('.cb-ix-entry').forEach((b) =>
       b.addEventListener('click', () => onPick(b.dataset.cite)));
     root.querySelectorAll('.cb-ix-climbto').forEach((b) =>
