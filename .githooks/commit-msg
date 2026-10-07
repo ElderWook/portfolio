@@ -1,0 +1,92 @@
+#!/usr/bin/env sh
+# OGDK commit-msg hook - strip AI/assistant attribution from the commit message.
+#
+# The no-AI-attribution rule (AGENTS.md rule 4) is fleet-wide and non-negotiable, but
+# some agent harnesses append their own "Co-authored-by: <assistant>" trailer AFTER the
+# agent composed the message, and that injection survives both `--amend` and
+# `--no-verify` - the only way back out is rebuilding the commit with `git commit-tree`.
+# Relying on an agent to notice is luck, not a guard. This makes it mechanical, at the
+# one git event every environment reaches (a sandboxed agent commits but never pushes).
+#
+# A line is removed only when it BOTH names a known assistant AND looks like machine
+# attribution, case-insensitively:
+#   - a "<something>-by:" trailer naming an assistant (Co-authored-by, Assisted-by,
+#     Generated-by, Co-written-by, ...). A HUMAN co-author is KEPT - real collaborator
+#     credit is legitimate; only the machine's self-credit is not.
+#   - a "<something>-session:" trailer naming an assistant (Claude-Session: <url>, the
+#     harness session stamp), and any line carrying a claude.ai/code/session link.
+#   - a "Generated with <assistant>" advert line, emoji-prefixed form included, anchored
+#     at line start so the same words mid-sentence in prose are left alone.
+# then trims the blank lines the removal leaves behind, so the message does not end in
+# a ragged gap. NEVER blocks the commit: the message is corrected in place, because a
+# hard failure here would stall every commit an injecting harness makes.
+#
+# Requiring the assistant NAME is what keeps this safe on ordinary prose. An earlier
+# revision stripped any line merely starting with one of those keys and promptly ate a
+# sentence out of its OWN commit message, one that began "Generated-by: / Co-written-by:
+# trailers ...". Widen `ai` below to cover a new harness; never relax the name match.
+#
+# Cross-platform: git runs hooks through its bundled sh on Windows too, so this one sh
+# hook serves both OSes. It reads and rewrites ONLY git's own message file under .git/
+# - never the work tree - so there is no NTFS-write hazard. Skips cleanly when grep is
+# missing, so a bare environment is never blocked.
+# Override only when certain: git commit --no-verify
+msg="${1:-}"
+[ -n "$msg" ] || exit 0
+[ -f "$msg" ] || exit 0
+command -v grep >/dev/null 2>&1 || exit 0
+
+# Known assistant tokens: ONE list, tools/hooks/ai-attribution.tokens, shared with
+# safe-agent-push.{sh,ps1}. That wrapper cannot catch a harness that injects AFTER it builds
+# the message, which is the gap this hook closes. The built-in copy below is only the
+# fallback for a target that lacks the token file; tools/test-hooks asserts it equals the
+# file, so the two cannot drift. gpt-?[0-9] rather than a bare "gpt" so ordinary words are
+# never caught.
+ai='cursor|claude|copilot|chatgpt|openai|anthropic|codex|gemini|grok|xai|gpt-?[0-9]|devin|aider|cowork|agy|bard'
+tokfile="$(dirname "$0")/ai-attribution.tokens"
+if [ -f "$tokfile" ]; then
+    fromfile="$(tr -d '\r' < "$tokfile" | grep -v '^[[:space:]]*#' | grep -v '^[[:space:]]*$' | tr '\n' '|' | sed 's/|*$//')"
+    [ -n "$fromfile" ] && ai="$fromfile"
+fi
+
+# An attribution or session trailer ("...-by:" / "...-session:" naming an assistant), a
+# harness session link, or a "Generated with <assistant>" advert. The trailer and advert
+# REQUIRE the assistant name, so prose survives; the advert is anchored with [^A-Za-z]* so
+# an emoji prefix is allowed but a mid-sentence match is not.
+trailer="^[[:space:]]*[a-z-]*-(by|session)[[:space:]]*:.*($ai)"
+session='claude\.ai/code/session'
+advert="^[^A-Za-z]*generated[[:space:]]+(with|by)[[:space:]].*($ai)"
+
+tmp="$msg.ogdk-strip"
+grep -viE "($trailer)|($session)|($advert)" "$msg" > "$tmp" 2>/dev/null
+
+# An empty result means the message was nothing BUT attribution - leave the original
+# alone and let git's own empty-message check speak, rather than inventing a message.
+if [ ! -s "$tmp" ]; then
+    rm -f "$tmp"
+    exit 0
+fi
+
+# Trim the trailing blank lines the removal leaves behind (awk is optional: a ragged
+# tail is cosmetic, so its absence must not cost us the strip itself).
+if command -v awk >/dev/null 2>&1; then
+    if awk '{ buf[NR] = $0 }
+            END { last = NR
+                  while (last > 0 && buf[last] ~ /^[ \t]*$/) { last-- }
+                  for (i = 1; i <= last; i++) { print buf[i] } }' "$tmp" > "$tmp.trim" 2>/dev/null; then
+        [ -s "$tmp.trim" ] && mv -f "$tmp.trim" "$tmp"
+    fi
+    rm -f "$tmp.trim"
+fi
+
+# Only rewrite (and only report) when something actually changed.
+if command -v cmp >/dev/null 2>&1 && cmp -s "$msg" "$tmp"; then
+    rm -f "$tmp"
+    exit 0
+fi
+
+if cat "$tmp" > "$msg" 2>/dev/null; then
+    echo "commit-msg: stripped AI/assistant attribution from the message (AGENTS.md rule 4)." 1>&2
+fi
+rm -f "$tmp"
+exit 0

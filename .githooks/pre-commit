@@ -1,0 +1,207 @@
+#!/usr/bin/env sh
+# OGDK pre-commit hook - lean, fast guards that EVERY commit reaches (a
+# sandboxed agent e.g. Cowork commits but cannot push, so pre-push never fires
+# for it - the commit is the one git event every environment hits):
+#   0. PRIVATE FILES + SECRETS - block a staged per-owner private file, and secret
+#                  content (private-key blocks, well-known token shapes).
+#   1. PRIVACY   - block a commit that would leak a private marker, in the staged
+#                  CONTENT or in the CURRENT git identity that will author it.
+#   2. INTEGRITY - block the corruption classes we have actually shipped (NUL
+#                  bytes, truncated tools scripts), staged files only.
+# None runs the full gate (twin rule, links, py-compile, fsck) - those stay a
+# session-end `gate`. Each is the fast pre-commit subset of an authoritative scan
+# (check-kit-docs / check-git-identity / verify-file-integrity).
+#
+# wip: checkpoints are never blocked for HYGIENE reasons (privacy still always
+# runs); the INTEGRITY gate is panic-exempt via OGDK_SKIP_INTEGRITY (set by
+# checkpoint) so an emergency save of a half-broken tree is never blocked.
+#
+# Cross-platform: git runs hooks through its bundled sh on Windows too, so this
+# one sh hook serves both OSes. Pure-text + git-metadata reads only; writes
+# nothing. Each guard skips cleanly when its inputs are absent, so a fresh clone
+# is never blocked. Marker output reports the INDEX only, never its text, so it
+# stays shareable. Override only when certain: git commit --no-verify
+repo="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+[ -n "$repo" ] && cd "$repo" || exit 0
+
+# === 0. PRIVATE FILES (always runs) =========================================
+# The per-owner private files must never ENTER a commit, whatever the .gitignore says: a
+# tracked PRIVATE-MARKERS.list publishes the very strings the scan below hides (four fleet
+# repos shipped theirs through a blanket 'git add -A', audit H5). Staging a DELETION (the
+# 'git rm --cached' that fixes such a repo) is allowed; adding or modifying one is not.
+privstaged="$(git diff --cached --name-only --diff-filter=ACMR 2>/dev/null \
+                | grep -E '(^|/)(PRIVATE-MARKERS\.list|TARGETS\.list|STACK\.list|user-notes\.local\.md)$' || true)"
+if [ -n "$privstaged" ]; then
+    echo "pre-commit BLOCKED: per-owner private file(s) staged - these are never committed:" 1>&2
+    printf '%s\n' "$privstaged" | sed 's/^/  /' 1>&2
+    echo "  Unstage: git restore --staged <file>   and make sure .gitignore carries the OGDK private block." 1>&2
+    exit 1
+fi
+
+# === 0b. SECRETS (always runs) ==============================================
+# .gitignore only blocks secret FILENAMES; this catches secret CONTENT pasted into any
+# staged text file: an unencrypted private-key block or a well-known credential shape.
+# Promoted from the labos privacy gate (audit L10). Encrypted blobs (*.gpg) and public
+# keys (*.asc) are exempt by design. Reports file + kind only, never the matched text.
+# A test fixture that truly needs a fake secret should build it at runtime, not store it.
+if command -v grep >/dev/null 2>&1; then
+    secstaged="$(git diff --cached --name-only --diff-filter=ACMR 2>/dev/null || true)"
+    sechits=0
+    oldifs="$IFS"; IFS='
+'
+    for f in $secstaged; do
+        [ -f "$f" ] || continue
+        case "$f" in *.gpg|*.asc) continue ;; esac
+        for rule in \
+            'private key block|-----BEGIN ([A-Z0-9]+ )*PRIVATE KEY( BLOCK)?-----' \
+            'GitHub token|(gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{60,})' \
+            'AWS access key id|(AKIA|ASIA)[0-9A-Z]{16}' \
+            'Slack token|xox[abprs]-[A-Za-z0-9-]{10,}' \
+            'Anthropic API key|sk-ant-[A-Za-z0-9_-]{20,}' \
+            'OpenAI project key|sk-proj-[A-Za-z0-9_-]{20,}' \
+            'Google API key|AIza[0-9A-Za-z_-]{35}'; do
+            kind="${rule%%|*}"; rx="${rule#*|}"
+            if grep -qIE -- "$rx" "$f" 2>/dev/null; then
+                echo "pre-commit BLOCKED: possible $kind in staged file: $f (text withheld)" 1>&2
+                sechits=$((sechits + 1))
+            fi
+        done
+    done
+    IFS="$oldifs"
+    if [ "$sechits" -ne 0 ]; then
+        echo "  Remove the secret (rotate it if it was real), keep it in an ignored .env or a vault." 1>&2
+        echo "  A false positive? Override only if certain: git commit --no-verify" 1>&2
+        exit 1
+    fi
+fi
+
+# === 1. PRIVACY ============================================================
+# Runs only when markers are seeded (the gitignored per-owner list) and grep is
+# available; skips cleanly otherwise so a fresh clone is never blocked on it.
+# (The integrity gate below is independent of markers and always runs.)
+markfile="tools/PRIVATE-MARKERS.list"
+# Per-repo allowlist: markers that are legitimately part of THIS repo's own content -
+# typically its own project name, which the shared per-owner marker list also names to keep
+# it OUT of the kit. Tracked (its own name is already all over the repo), so it travels to
+# every clone. NEVER list a genuine leak here. The kit itself carries no allow file, so its
+# scan stays absolute.
+allowfile="tools/PRIVATE-MARKERS.allow"
+if [ -f "$markfile" ] && command -v grep >/dev/null 2>&1; then
+
+# Identity that will author this commit (fail fast before a bad author is baked in).
+identity="$(printf '%s %s' "$(git config user.name 2>/dev/null)" "$(git config user.email 2>/dev/null)" | tr '[:upper:]' '[:lower:]')"
+
+# Staged content (added/copied/modified only). The gitignored private lists are
+# excluded - they legitimately contain the markers we scan FOR.
+staged="$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null \
+            | grep -Ev '(^|/)(PRIVATE-MARKERS\.(list|allow)|TARGETS\.list|user-notes\.local\.md)$' || true)"
+
+issues=0
+midx=0
+while IFS= read -r raw || [ -n "$raw" ]; do
+    m="$(printf '%s' "$raw" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    case "$m" in ''|'#'*) continue ;; esac
+    midx=$((midx + 1))
+    # per-repo allowlist: skip a marker this repo legitimately owns (CR-tolerant, whole-line)
+    if [ -f "$allowfile" ] && tr -d '\r' < "$allowfile" | grep -qixF -- "$m" 2>/dev/null; then
+        continue
+    fi
+    ml="$(printf '%s' "$m" | tr '[:upper:]' '[:lower:]')"
+
+    # 1. current git identity
+    case "$identity" in
+        *"$ml"*)
+            echo "pre-commit BLOCKED: git identity matches private marker #$midx (text withheld)." 1>&2
+            echo "  Set a noreply identity first: git config user.email <id>+<name>@users.noreply.github.com" 1>&2
+            issues=$((issues + 1)) ;;
+    esac
+
+    # 2. staged file content
+    if [ -n "$staged" ]; then
+        hits=""
+        oldifs="$IFS"; IFS='
+'
+        for f in $staged; do
+            [ -f "$f" ] || continue
+            if grep -liIF -- "$m" "$f" >/dev/null 2>&1; then
+                hits="$hits  $f
+"
+            fi
+        done
+        IFS="$oldifs"
+        if [ -n "$hits" ]; then
+            echo "pre-commit BLOCKED: private marker #$midx (text withheld) in staged file(s):" 1>&2
+            printf '%s' "$hits" 1>&2
+            issues=$((issues + 1))
+        fi
+    fi
+done < "$markfile"
+
+if [ "$issues" -ne 0 ]; then
+    echo "Scrub the leak, then re-commit. Override only if certain: git commit --no-verify" 1>&2
+    exit 1
+fi
+fi  # end PRIVACY guard (markers seeded)
+
+# === 2. Cheap integrity gate (staged files only) ============================
+# Blocks the corruption classes we have actually shipped - zero-filled tails
+# (NUL bytes) and truncated tools scripts (missing EOF sentinel) - BEFORE they
+# enter history. Pure-text checks: no python/bash/pwsh, so this runs unchanged
+# under git's bundled sh on Windows too. The full gate (verify-file-integrity)
+# still owns py-compile / shell-parse / fsck at session end - this is its fast
+# pre-commit subset, mirroring how the privacy scan above subsets check-kit-docs.
+#
+# Panic-exempt: checkpoint.{sh,ps1} set OGDK_SKIP_INTEGRITY=1 so an emergency
+# 'wip:' save of a half-broken tree is never blocked (the privacy scan above
+# always runs regardless). Manual override: OGDK_SKIP_INTEGRITY=1 git commit ...
+if [ "${OGDK_SKIP_INTEGRITY:-}" = "1" ]; then
+    exit 0
+fi
+
+ig=0
+sfiles="$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)"
+oldifs="$IFS"; IFS='
+'
+for f in $sfiles; do
+    [ -f "$f" ] || continue
+    # 1. NUL bytes (zero-fill corruption). A file holds a NUL iff stripping NULs
+    #    changes its byte length - portable, no 'grep -P' dependency.
+    case "$f" in
+        *.md|*.txt|*.py|*.js|*.ts|*.jsx|*.tsx|*.json|*.ps1|*.sh|*.bat|*.cs|*.cpp|*.c|*.h|*.hpp|*.ini|*.yml|*.yaml|*.toml|*.html|*.css|*.xml|*.sql|*.uproject|*.uplugin|*.gitignore|*.gitattributes)
+            if command -v tr >/dev/null 2>&1 && command -v cmp >/dev/null 2>&1 \
+               && ! tr -d '\000' < "$f" | cmp -s - "$f"; then
+                echo "pre-commit BLOCKED: NUL bytes in staged file (corruption): $f" 1>&2
+                ig=$((ig + 1))
+            fi
+            ;;
+    esac
+    # 2. EOF sentinel on staged tools scripts - a truncation that lands inside a
+    #    comment can pass a syntax check, so the last non-blank line must start
+    #    'exit' or be the literal '# EOF' (same rule verify-file-integrity gates).
+    case "$f" in
+        tools/*.sh|tools/*.ps1)
+            last="$(grep -v '^[[:space:]]*$' "$f" | tail -1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+            case "$last" in
+                exit|exit\ *|'# EOF') ;;
+                *)
+                    echo "pre-commit BLOCKED: $f missing EOF sentinel (last non-blank line must start 'exit' or be '# EOF') - possible truncation." 1>&2
+                    ig=$((ig + 1)) ;;
+            esac
+            ;;
+    esac
+    # 3. Trailing-newline smell (warn only - a complete text file ends with \n).
+    case "$f" in
+        *.sh|*.ps1|*.py|*.md)
+            if [ -s "$f" ] && [ "$(tail -c 1 "$f" | od -An -tx1 | tr -d ' \n')" != "0a" ]; then
+                echo "pre-commit WARN: $f has no trailing newline (verify it is complete)." 1>&2
+            fi
+            ;;
+    esac
+done
+IFS="$oldifs"
+
+if [ "$ig" -ne 0 ]; then
+    echo "Integrity gate blocked the commit ($ig issue(s)). Fix it, or for an emergency save: OGDK_SKIP_INTEGRITY=1 git commit ...  (or ./tools/checkpoint.sh)." 1>&2
+    exit 1
+fi
+exit 0

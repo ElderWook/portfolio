@@ -1,0 +1,21 @@
+# AI/assistant name tokens - the ONE list behind every attribution stripper in the kit:
+# tools/hooks/commit-msg (sh) and safe-agent-push.{sh,ps1}. One extended-regex alternative
+# per line, case-insensitive; '#' starts a comment. Widen here to cover a new harness, never
+# relax a name into a common word (gpt-?[0-9], not a bare "gpt"). commit-msg carries a
+# built-in copy for a target that lacks this file; test-hooks asserts the two stay equal.
+cursor
+claude
+copilot
+chatgpt
+openai
+anthropic
+codex
+gemini
+grok
+xai
+gpt-?[0-9]
+devin
+aider
+cowork
+agy
+bard
